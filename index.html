@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="pt-BR" data-booting>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Victor Cardoso - Paginas que convertem. Sistemas que escalam.</title>
+  <meta name="description" content="Paginas de captura e automacoes para negocios que querem crescer. Sistemas sob medida, entrega editorial, conversao como metrica unica." />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Birthstone&family=Inter:wght@400;500;600;800&display=swap" rel="stylesheet" />
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Birthstone&family=Inter:wght@400;500;600;800&display=swap" />
+
+  <style>
+    html[data-booting], html[data-booting] body { background: #1b1a18; }
+    html[data-booting] body { overflow: hidden; }
+    html[data-booting] #__boot {
+      position: fixed;
+      inset: 0;
+      background: #1b1a18;
+      z-index: 99;
+      pointer-events: none;
+    }
+    html:not([data-booting]) #__boot { display: none; }
+  </style>
+</head>
+<body>
+  <div id="__boot" aria-hidden="true"></div>
+  <div id="root"></div>
+  <script type="module" src="/src/main.jsx"></script>
+</body>
+</html>

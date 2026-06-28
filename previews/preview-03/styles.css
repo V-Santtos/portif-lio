@@ -1,0 +1,373 @@
+:root {
+  --roofora-dark: #0e1201;
+  --roofora-lime: #cdf660;
+  --roofora-white: #ffffff;
+  --roofora-soft: rgba(255, 255, 255, 0.74);
+  --roofora-glass: rgba(74, 77, 72, 0.48);
+  --roofora-border: rgba(252, 255, 245, 0.18);
+  font-family: Urbanist, Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+@font-face {
+  font-family: "Urbanist";
+  font-style: normal;
+  font-weight: 400 800;
+  font-display: swap;
+  src: url("https://fonts.gstatic.com/s/urbanist/v18/L0x-DF02iFML4hGCyMqlbS0.woff2") format("woff2");
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+  background: var(--roofora-dark);
+  color: var(--roofora-white);
+}
+
+body {
+  display: grid;
+  place-items: center;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+.preview-frame {
+  width: min(100%, 1920px);
+  height: 100svh;
+  min-height: 760px;
+  overflow: hidden;
+  background: var(--roofora-dark);
+}
+
+.roofora-hero {
+  position: relative;
+  height: 100%;
+  overflow: hidden;
+  background: var(--roofora-dark);
+}
+
+.roofora-hero__nav {
+  position: relative;
+  z-index: 5;
+  height: 82px;
+  background: var(--roofora-dark);
+}
+
+.roofora-hero__nav-inner {
+  width: min(100% - 64px, 1140px);
+  height: 100%;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 28px;
+}
+
+.roofora-hero__brand {
+  justify-self: start;
+  width: 108px;
+}
+
+.roofora-hero__brand img {
+  width: 100%;
+  height: auto;
+}
+
+.roofora-hero__links {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 30px;
+  color: var(--roofora-white);
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.roofora-hero__links a {
+  position: relative;
+  white-space: nowrap;
+}
+
+.roofora-hero__links a.is-active {
+  color: var(--roofora-lime);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.roofora-hero__nav-cta {
+  justify-self: end;
+  min-height: 54px;
+  padding: 0 26px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--roofora-lime);
+  color: #050700;
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.roofora-hero__stage {
+  position: absolute;
+  inset: 82px 0 0;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.roofora-hero__image {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+.roofora-hero__image::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, rgba(14, 18, 1, 0.74) 0%, rgba(14, 18, 1, 0.38) 36%, rgba(14, 18, 1, 0.1) 68%, rgba(14, 18, 1, 0.2) 100%),
+    linear-gradient(180deg, rgba(14, 18, 1, 0.04) 0%, rgba(14, 18, 1, 0.26) 58%, rgba(14, 18, 1, 0.7) 100%);
+}
+
+.roofora-hero__image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 48%;
+  filter: brightness(0.72) contrast(1.04) saturate(0.95);
+}
+
+.roofora-hero__content {
+  position: absolute;
+  z-index: 2;
+  left: max(38px, calc((100% - 1140px) / 2));
+  top: clamp(106px, 15vh, 142px);
+  width: min(900px, 64vw);
+}
+
+.roofora-hero__content h1 {
+  margin: 0;
+  max-width: 900px;
+  color: var(--roofora-white);
+  font-size: clamp(68px, 4.75vw, 92px);
+  line-height: 1.18;
+  letter-spacing: -0.075em;
+  font-weight: 500;
+}
+
+.roofora-hero__content h1 span {
+  display: block;
+}
+
+.roofora-hero__content p {
+  width: min(100%, 620px);
+  margin: 30px 0 0;
+  color: var(--roofora-soft);
+  font-size: 19px;
+  line-height: 1.35;
+  font-weight: 600;
+  letter-spacing: -0.035em;
+}
+
+.roofora-hero__actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 34px;
+}
+
+.roofora-hero__primary,
+.roofora-hero__secondary {
+  min-height: 56px;
+  padding: 0 26px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.roofora-hero__primary {
+  background: var(--roofora-lime);
+  color: #050700;
+}
+
+.roofora-hero__secondary {
+  border: 1px solid rgba(252, 255, 245, 0.42);
+  color: var(--roofora-white);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.roofora-hero__cards {
+  position: absolute;
+  z-index: 3;
+  left: 50%;
+  bottom: clamp(30px, 4.5vh, 58px);
+  width: min(100% - 64px, 1140px);
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  transform: translateX(-50%);
+}
+
+.roofora-card {
+  min-height: 202px;
+  padding: 22px 20px 24px;
+  border: 1px solid var(--roofora-border);
+  border-radius: 8px;
+  background: var(--roofora-glass);
+  color: var(--roofora-white);
+  backdrop-filter: blur(8px);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.roofora-card__icon {
+  width: 46px;
+  height: 46px;
+  margin-bottom: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(252, 255, 245, 0.44);
+  border-radius: 999px;
+  position: relative;
+}
+
+.roofora-card__icon::before,
+.roofora-card__icon::after {
+  content: "";
+  position: absolute;
+  border-color: var(--roofora-white);
+}
+
+.roofora-card__icon--shield::before {
+  width: 16px;
+  height: 18px;
+  border: 2px solid var(--roofora-white);
+  border-radius: 4px 4px 8px 8px;
+  transform: translateY(1px);
+}
+
+.roofora-card__icon--shield::after {
+  width: 7px;
+  height: 4px;
+  border-left: 2px solid var(--roofora-white);
+  border-bottom: 2px solid var(--roofora-white);
+  transform: rotate(-45deg);
+}
+
+.roofora-card__icon--building::before {
+  width: 18px;
+  height: 20px;
+  border: 2px solid var(--roofora-white);
+}
+
+.roofora-card__icon--building::after {
+  width: 2px;
+  height: 2px;
+  background: var(--roofora-white);
+  box-shadow: 0 6px 0 var(--roofora-white), 6px 0 0 var(--roofora-white), 6px 6px 0 var(--roofora-white);
+  left: 14px;
+  top: 13px;
+}
+
+.roofora-card__icon--clock::before {
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--roofora-white);
+  border-radius: 999px;
+}
+
+.roofora-card__icon--clock::after {
+  width: 7px;
+  height: 7px;
+  border-left: 2px solid var(--roofora-white);
+  border-bottom: 2px solid var(--roofora-white);
+  transform: translate(2px, -2px) rotate(-90deg);
+}
+
+.roofora-card h2 {
+  margin: 0;
+  font-size: 20px;
+  line-height: 1.2;
+  letter-spacing: -0.045em;
+  font-weight: 800;
+}
+
+.roofora-card p {
+  margin: 12px 0 0;
+  color: rgba(255, 255, 255, 0.68);
+  font-size: 15px;
+  line-height: 1.42;
+  letter-spacing: -0.03em;
+  font-weight: 600;
+}
+
+@media (max-width: 980px) {
+  .preview-frame {
+    min-height: 100svh;
+  }
+
+  .roofora-hero__nav-inner {
+    width: calc(100% - 40px);
+    grid-template-columns: 1fr auto;
+  }
+
+  .roofora-hero__links {
+    display: none;
+  }
+
+  .roofora-hero__nav-cta {
+    min-height: 46px;
+    padding: 0 18px;
+  }
+
+  .roofora-hero__content {
+    left: 24px;
+    right: 24px;
+    top: 14vh;
+    width: auto;
+  }
+
+  .roofora-hero__content h1 {
+    font-size: clamp(46px, 10.5vw, 72px);
+  }
+
+  .roofora-hero__content p {
+    font-size: 17px;
+  }
+
+  .roofora-hero__cards {
+    left: 24px;
+    right: 24px;
+    bottom: 24px;
+    width: auto;
+    grid-template-columns: 1fr;
+    transform: none;
+  }
+
+  .roofora-card {
+    min-height: 0;
+    padding: 18px;
+  }
+
+  .roofora-card:nth-child(n + 2) {
+    display: none;
+  }
+
+  .roofora-card__icon {
+    margin-bottom: 18px;
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "sourceUrl": "https://nexous.framer.website/",
+  "dateAnalyzed": "2026-05-28",
+  "platform": "Framer",
+  "status": "generated-scaffold-from-confirmed-hero-evidence",
+  "scope": "Hero only",
+  "notLinkedToMainPortfolio": true,
+  "confirmedOriginalText": {
+    "nav": ["Home", "About", "Services", "Projects", "All Pages", "Contact"],
+    "brand": "NEXOUS™",
+    "badge": "Digital Creative Agency",
+    "headline": ["INNOVATIVE", "SOLUTIONS TO", "ELEVATE YOUR", "BRAND"],
+    "subtitle": "From creative marketing to performance strategy, we drive measurable business growth for ambitious brands worldwide consistently.",
+    "cta": "Book A Call"
+  },
+  "portuguesePreviewText": {
+    "nav": ["Início", "Sobre", "Serviços", "Projetos", "Todas as páginas", "Contato"],
+    "brand": "NEXOUS™",
+    "badge": "Agência criativa digital",
+    "headline": ["SOLUÇÕES", "INOVADORAS PARA", "ELEVAR SUA", "MARCA"],
+    "subtitle": "Da criação ao desempenho, desenvolvemos estratégias que geram crescimento mensurável para marcas ambiciosas.",
+    "cta": "Agendar conversa"
+  },
+  "assets": [
+    "assets/hero-bg.png",
+    "assets/thumb-innovative-left.png",
+    "assets/thumb-title-small.png",
+    "assets/thumb-brand-left.png",
+    "assets/thumb-brand-right.png"
+  ]
+}

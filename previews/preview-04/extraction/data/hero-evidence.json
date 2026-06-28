@@ -1,0 +1,62 @@
+{
+  "sourceUrl": "https://dinevo.framer.website/",
+  "capturedAt": "2026-05-28",
+  "evidence": [
+    {
+      "type": "metadata",
+      "classification": "confirmed",
+      "value": "Dinevo - Restaurant, Food & Cafe Framer Template"
+    },
+    {
+      "type": "platform",
+      "classification": "confirmed",
+      "value": "Framer generated page with framerusercontent assets and Framer runtime modules."
+    },
+    {
+      "type": "navigation",
+      "classification": "confirmed",
+      "value": ["Home", "About Us", "Menu", "Pages", "Contact"]
+    },
+    {
+      "type": "cta",
+      "classification": "confirmed",
+      "value": "BOOK A TABLE"
+    },
+    {
+      "type": "logo",
+      "classification": "confirmed",
+      "value": "Dinevo"
+    },
+    {
+      "type": "hero-eyebrow",
+      "classification": "confirmed",
+      "value": "上質な時間を"
+    },
+    {
+      "type": "hero-title",
+      "classification": "confirmed",
+      "value": "Where Elegance Meets Flavor"
+    },
+    {
+      "type": "assets",
+      "classification": "confirmed",
+      "value": [
+        "https://framerusercontent.com/images/CfBX6pKWPnpu2mygYIJgwhjE.png",
+        "https://framerusercontent.com/images/CzfdN5qVsx83ym62oovjpu5Ebs4.png",
+        "https://framerusercontent.com/images/jf0y0aHNGudi1X8QsO0FnOJpTBE.png",
+        "https://framerusercontent.com/images/zJFSFTfB2e7Xi1yIWPxQOJEoM.png",
+        "https://framerusercontent.com/images/pHJmUKJsFBrZf1F1BIRczPV4S0.jpg"
+      ]
+    },
+    {
+      "type": "colors",
+      "classification": "confirmed",
+      "value": ["rgb(254, 246, 223)", "rgb(0, 0, 0)", "rgb(233, 66, 34)", "rgb(255, 255, 255)"]
+    },
+    {
+      "type": "scaffold",
+      "classification": "generated scaffold",
+      "value": "Static HTML/CSS preview recreated for carousel testing. It is not the original Framer implementation."
+    }
+  ]
+}

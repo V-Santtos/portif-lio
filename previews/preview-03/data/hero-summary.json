@@ -1,0 +1,36 @@
+{
+  "sourceUrl": "https://roofora.framer.website/",
+  "dateAnalyzed": "2026-05-28",
+  "platform": "Framer",
+  "status": "generated-scaffold-from-confirmed-hero-evidence",
+  "scope": "Hero only",
+  "notLinkedToMainPortfolio": true,
+  "confirmedOriginalText": {
+    "nav": ["Home", "Pricing", "About Us", "Service", "Projects", "Blog", "Get In Touch"],
+    "brand": "Roofora",
+    "headline": "Trusted Experts for Home Repairs",
+    "subtitle": "Reliable roofing solutions built to last — safeguarding your home with expert craftsmanship and lasting quality.",
+    "ctas": ["Get a Free Estimate", "Call Us Today"],
+    "cards": [
+      "Certified & Experienced Roofers",
+      "Residential & Commercial Solutions",
+      "Quick Turnaround Time"
+    ]
+  },
+  "portuguesePreviewText": {
+    "nav": ["Início", "Preços", "Sobre", "Serviços", "Projetos", "Blog", "Entrar em contato"],
+    "brand": "Roofora",
+    "headline": "Especialistas confiáveis para reparos em casa",
+    "subtitle": "Soluções para telhados feitas para durar, protegendo sua casa com técnica especializada e qualidade consistente.",
+    "ctas": ["Solicitar orçamento", "Ligar hoje"],
+    "cards": [
+      "Profissionais certificados",
+      "Soluções residenciais e comerciais",
+      "Resposta rápida"
+    ]
+  },
+  "assets": [
+    "assets/hero-worker.png",
+    "assets/roofora-logo.png"
+  ]
+}

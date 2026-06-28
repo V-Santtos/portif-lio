@@ -1,0 +1,39 @@
+{
+  "sourceUrl": "https://eco-scape.framer.website/",
+  "scope": "hero-only",
+  "status": "generated scaffold based on extracted evidence",
+  "confirmedText": {
+    "nav": ["Home", "About Us", "Services", "Blog", "Pages", "Get Started"],
+    "eyebrow": "Lawn Mowing",
+    "headlineParts": ["Healthy Lawns", "Every", "Season-Long"],
+    "body": "Our expert care and tailored maintenance ensure your grass stays lush, green, and healthy no matter the weather.",
+    "cta": "Book Now",
+    "stat": ["M+", "Active users"]
+  },
+  "portugueseAdaptation": {
+    "nav": ["Inicio", "Sobre", "Servicos", "Blog", "Paginas", "Comecar"],
+    "eyebrow": "Manutencao de gramado",
+    "headline": "Jardins saudaveis em todas as estacoes",
+    "body": "Cuidado especializado e manutencao sob medida para manter seu jardim verde, vivo e bonito em qualquer clima.",
+    "cta": "Agendar agora",
+    "stat": ["1.2K+", "jardins cuidados"]
+  },
+  "confirmedVisualClues": {
+    "platform": "Framer",
+    "fonts": ["Geist", "Playfair Display italic", "Inter"],
+    "colors": {
+      "dark": "rgb(2, 9, 8)",
+      "limeAccent": "rgb(209, 252, 113)",
+      "lightSurface": "rgb(248, 248, 248)",
+      "mutedText": "rgba(2, 9, 8, 0.8)"
+    },
+    "breakpoints": ["min-width: 1200px", "810px-1199.98px", "max-width: 809.98px"],
+    "effects": ["Framer appear animations with opacity 0 and translateY(100px) on desktop variants"]
+  },
+  "downloadedAssets": [
+    "assets/hero-garden.png",
+    "assets/hero-worker.png",
+    "assets/avatar-01.png",
+    "assets/avatar-02.png"
+  ]
+}

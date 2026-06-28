@@ -1,0 +1,40 @@
+{
+  "sourceUrl": "https://roofora.framer.website/",
+  "capturedAt": "2026-05-28",
+  "confirmed": {
+    "platform": "Framer",
+    "tokens": {
+      "backgroundDark": "#0e1201",
+      "accentLime": "#cdf660",
+      "white": "#ffffff"
+    },
+    "fonts": ["Urbanist", "Fragment Mono", "Geist Mono"],
+    "nav": ["Home", "Pricing", "About Us", "Service", "Projects", "Blog", "Get In Touch"],
+    "hero": {
+      "headline": "Trusted Experts for Home Repairs",
+      "subtitle": "Reliable roofing solutions built to last — safeguarding your home with expert craftsmanship and lasting quality.",
+      "ctas": ["Get a Free Estimate", "Call Us Today"],
+      "image": "https://framerusercontent.com/images/dyUVy700DwPm1498uwEGVq8ZdA.png?width=2586&height=1724",
+      "imageAlt": "man wiring"
+    },
+    "cards": [
+      "Certified & Experienced Roofers",
+      "Residential & Commercial Solutions",
+      "Quick Turnaround Time"
+    ],
+    "assets": {
+      "logo": "https://framerusercontent.com/images/UO08WAP2Gw3s4SfewiR3XAaoAgk.png",
+      "heroImage": "https://framerusercontent.com/images/dyUVy700DwPm1498uwEGVq8ZdA.png?width=2586&height=1724"
+    }
+  },
+  "generatedPreview": {
+    "headline": "Especialistas confiáveis para reparos em casa",
+    "subtitle": "Soluções para telhados feitas para durar, protegendo sua casa com técnica especializada e qualidade consistente.",
+    "ctas": ["Solicitar orçamento", "Ligar hoje"],
+    "cards": [
+      "Profissionais certificados",
+      "Soluções residenciais e comerciais",
+      "Resposta rápida"
+    ]
+  }
+}

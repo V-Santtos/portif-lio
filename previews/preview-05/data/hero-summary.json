@@ -1,0 +1,21 @@
+{
+  "preview": "preview-05",
+  "name": "Minta",
+  "source": "https://minta.framer.ai/",
+  "scope": "hero only",
+  "original": {
+    "nav": ["Features", "Pricing", "Blog", "Get Access"],
+    "headline": "Step into the light. Your future is already waiting.",
+    "cta": "Get Early Access"
+  },
+  "adapted": {
+    "nav": ["Recursos", "Planos", "Blog", "Acesso antecipado"],
+    "headline": "Entre na luz. Seu futuro ja espera.",
+    "eyebrow": "Carteira cripto com IA",
+    "cta": "Entrar na lista"
+  },
+  "assets": [
+    "assets/hero-hand.jpg",
+    "assets/hero-light.png"
+  ]
+}

@@ -1,0 +1,59 @@
+{
+  "preview": "preview-04",
+  "sourceUrl": "https://dinevo.framer.website/",
+  "sourceTitle": "Dinevo - Restaurant, Food & Cafe Framer Template",
+  "status": "isolated scaffold",
+  "scope": "hero only",
+  "confirmedContent": {
+    "nav": ["Home", "About Us", "Menu", "Pages", "Contact"],
+    "cta": "BOOK A TABLE",
+    "logoText": "Dinevo",
+    "eyebrow": "上質な時間を",
+    "title": "Where Elegance Meets Flavor"
+  },
+  "portugueseAdaptation": {
+    "nav": ["Início", "Sobre", "Menu", "Páginas", "Contato"],
+    "cta": "Reservar mesa",
+    "eyebrow": "上質な時間を",
+    "title": "Onde a elegância encontra sabor",
+    "subtitle": "Transformamos cada refeição em uma experiência memorável. Pratos marcantes preparados a cada serviço.",
+    "secondaryCta": "Explorar menu"
+  },
+  "confirmedAssets": {
+    "heroPlate": {
+      "sourcePath": "https://framerusercontent.com/images/CfBX6pKWPnpu2mygYIJgwhjE.png",
+      "localPath": "./assets/hero-plate.png",
+      "width": 1200,
+      "height": 624
+    },
+    "chefPortrait": {
+      "sourcePath": "https://framerusercontent.com/images/CzfdN5qVsx83ym62oovjpu5Ebs4.png",
+      "localPath": "./assets/chef-portrait.png",
+      "width": 715,
+      "height": 1200
+    },
+    "dishSmall": {
+      "sourcePath": "https://framerusercontent.com/images/jf0y0aHNGudi1X8QsO0FnOJpTBE.png",
+      "localPath": "./assets/dish-small.png",
+      "width": 176,
+      "height": 176
+    },
+    "signatureDish": {
+      "sourcePath": "https://framerusercontent.com/images/pHJmUKJsFBrZf1F1BIRczPV4S0.jpg",
+      "localPath": "./assets/signature-dish-b.jpg",
+      "width": 1920,
+      "height": 1280
+    }
+  },
+  "confirmedColors": {
+    "cream": "rgb(254, 246, 223)",
+    "black": "rgb(0, 0, 0)",
+    "orange": "rgb(233, 66, 34)",
+    "white": "rgb(255, 255, 255)"
+  },
+  "notes": [
+    "Preview remains isolated under Victor/previews and is not linked to the production carousel.",
+    "Generated scaffold recreates the Hero visually from confirmed Framer HTML and assets.",
+    "Original Framer runtime and animation system were not ported."
+  ]
+}
