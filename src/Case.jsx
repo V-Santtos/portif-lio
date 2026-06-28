@@ -133,15 +133,16 @@ function Case() {
     btn.scrollIntoView({ behavior: "smooth", block: "center" });
     if (prefersReducedMotion()) return;
     window.setTimeout(() => {
+      // halo difuso (blur alto, spread baixo) que pulsa suave — sem anel duro
       gsap.fromTo(
         btn,
-        { boxShadow: "0 0 0 0 rgba(244,74,34,0.55)" },
-        { boxShadow: "0 0 0 18px rgba(244,74,34,0)", duration: 1, repeat: 2, ease: "power2.out", clearProps: "boxShadow" }
+        { boxShadow: "0 0 0px 0px rgba(244,74,34,0)" },
+        { boxShadow: "0 0 26px 3px rgba(244,74,34,0.5)", duration: 0.6, yoyo: true, repeat: 3, ease: "sine.inOut", clearProps: "boxShadow" }
       );
       gsap.fromTo(
         btn,
         { scale: 1 },
-        { scale: 1.06, duration: 0.22, yoyo: true, repeat: 5, ease: "power1.inOut", clearProps: "scale" }
+        { scale: 1.035, duration: 0.6, yoyo: true, repeat: 3, ease: "sine.inOut", clearProps: "scale" }
       );
     }, 650);
   };

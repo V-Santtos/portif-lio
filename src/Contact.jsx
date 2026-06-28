@@ -5,8 +5,31 @@ function Contact() {
   const sectionRef = useRef(null);
   const titleRef = useRef(null);
   const infoRef = useRef(null);
+  const waRef = useRef(null);
 
   useTitleReveal(titleRef, { trigger: sectionRef, start: "top 70%", stagger: 0.09 });
+
+  // Pulse discreto no WhatsApp quando o link "Contato" da navbar leva até aqui.
+  useIsoLayoutEffect(() => {
+    const highlight = () => {
+      const el = waRef.current;
+      if (!el || prefersReducedMotion()) return;
+      window.setTimeout(() => {
+        gsap.fromTo(
+          el,
+          { color: "#161616" },
+          { color: "#F44A22", duration: 0.42, yoyo: true, repeat: 5, ease: "sine.inOut", clearProps: "color" }
+        );
+        gsap.fromTo(
+          el,
+          { scale: 1 },
+          { scale: 1.08, duration: 0.42, yoyo: true, repeat: 5, ease: "sine.inOut", transformOrigin: "left center", clearProps: "scale" }
+        );
+      }, 700);
+    };
+    window.addEventListener("contact:highlight", highlight);
+    return () => window.removeEventListener("contact:highlight", highlight);
+  }, []);
 
   useIsoLayoutEffect(() => {
     if (!infoRef.current) return;
@@ -47,7 +70,7 @@ function Contact() {
               <span>Instagram</span>
               <span className="arrow" aria-hidden="true">↗</span>
             </a>
-            <a href="https://wa.me/5533984246770" aria-label="WhatsApp">
+            <a href="https://wa.me/5533984246770" aria-label="WhatsApp" ref={waRef}>
               <span>WhatsApp</span>
               <span className="arrow" aria-hidden="true">↗</span>
             </a>

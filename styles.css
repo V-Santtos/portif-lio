@@ -47,6 +47,15 @@ html.is-opening-screen body {
 }
 html.is-scroll-locked,
 html.is-scroll-locked body { overscroll-behavior: none; }
+/* Overlay do fadeJump — cross-fade suave no teleporte de Contato */
+.scroll-fade {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: var(--color-surface);
+  opacity: 0;
+  pointer-events: none;
+}
 body {
   font-family: var(--font-body);
   color: var(--color-foreground);
@@ -2342,7 +2351,7 @@ p { line-height: 1.6; }
 
 .auto__body {
   width: 100%;
-  padding: clamp(7rem, 12vh, 14rem) 0 8rem;
+  padding: clamp(7rem, 12vh, 14rem) 0 clamp(6rem, 9vh, 9rem);
 }
 
 .auto__cards {
@@ -2387,7 +2396,7 @@ p { line-height: 1.6; }
   margin: 0 auto;
   padding-inline: clamp(2rem, 5vw, 5rem);
   text-align: center;
-  padding-top: clamp(3rem, 5vh, 5rem);
+  padding-top: clamp(11rem, 18vh, 18rem);
 }
 
 .auto__cta-heading {
@@ -2410,6 +2419,7 @@ p { line-height: 1.6; }
 .auto__cta-btn {
   display: inline-flex;
   align-items: center;
+  gap: 0.6rem;
   padding: 0.85rem 2rem;
   background: var(--color-surface);
   color: var(--color-foreground);
@@ -2420,11 +2430,19 @@ p { line-height: 1.6; }
   text-transform: uppercase;
   text-decoration: none;
   border-radius: 6px;
-  transition: opacity 0.18s;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.18);
+  transition: transform 0.22s ease, box-shadow 0.22s ease;
+}
+
+.auto__cta-icon {
+  width: 18px;
+  height: 18px;
+  flex: none;
 }
 
 .auto__cta-btn:hover {
-  opacity: 0.85;
+  transform: translateY(-2px);
+  box-shadow: 0 12px 26px rgba(0, 0, 0, 0.3);
 }
 
 /* About */
@@ -2583,7 +2601,7 @@ p { line-height: 1.6; }
 /* Contact                                                          */
 /* ──────────────────────────────────────────────────────────────── */
 .contact {
-  padding: clamp(12rem, 22vh, 20rem) 0 0;
+  padding: clamp(8rem, 15vh, 14rem) 0 0;
   background: linear-gradient(
     to bottom,
     var(--color-surface) 0%,
@@ -3039,6 +3057,15 @@ p { line-height: 1.6; }
   display: flex;
   flex-direction: column;
   background: var(--color-surface);
+}
+
+/* Navbar do case full-bleed igual à home: estoura só a nav pra largura
+   total da viewport (logo na lateral esquerda, COMEÇAR na direita) com o
+   mesmo gutter da home. O conteúdo (tags/título/desc) segue no container
+   constrangido — título não muda de escala. */
+.case-hawk__hero .hero__nav {
+  margin-inline: calc(50% - 50vw);
+  padding-inline: clamp(1.25rem, 2.4vw, 2.75rem);
 }
 
 .case-hawk__hero-body {
@@ -3531,4 +3558,158 @@ p { line-height: 1.6; }
 
 .nav-overlay__link:hover {
   opacity: 0.5;
+}
+
+/* ── Página /comecar — questionário/contato ───────────────────────── */
+.comecar {
+  position: relative;
+  background: var(--color-surface);
+  color: var(--color-foreground);
+  min-height: 100vh;
+  padding: clamp(2.5rem, 5vh, 4rem) 0 clamp(5rem, 10vh, 9rem);
+}
+
+.comecar__head {
+  text-align: center;
+  margin-top: clamp(2.5rem, 6vh, 5rem);
+  container-type: inline-size;
+}
+.comecar__kicker {
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+  margin: 0 0 1.1rem;
+}
+.comecar__title {
+  font-family: var(--font-display);
+  font-weight: 400;
+  /* duas linhas (VAMOS / CONVERSAR.) — escala pela maior palavra (10 chars) */
+  font-size: clamp(3rem, calc(100cqi / 10 * 1.7), 18rem);
+  line-height: 0.84;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+  margin: 0;
+}
+.comecar__title .word {
+  display: block;
+  overflow: hidden;
+}
+.comecar__title .word > span {
+  display: inline-block;
+}
+
+.comecar__form {
+  width: min(100%, 640px);
+  margin: clamp(3rem, 7vh, 6rem) auto 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+.comecar__field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  border: none;
+  padding: 0;
+  margin: 0;
+  min-inline-size: 0;
+}
+.comecar__label {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--color-foreground);
+  padding: 0;
+}
+.comecar__label span {
+  color: var(--color-accent);
+}
+.comecar__input {
+  width: 100%;
+  background: rgba(22, 22, 22, 0.04);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: 1rem 1.1rem;
+  font-family: var(--font-body);
+  font-size: 16px;
+  color: var(--color-foreground);
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+.comecar__input::placeholder {
+  color: rgba(22, 22, 22, 0.35);
+}
+.comecar__input:focus {
+  outline: none;
+  border-color: var(--color-accent);
+  background: rgba(22, 22, 22, 0.02);
+}
+.comecar__textarea {
+  resize: vertical;
+  min-height: 130px;
+  line-height: 1.6;
+}
+
+.comecar__hint {
+  font-size: 12.5px;
+  color: rgba(22, 22, 22, 0.5);
+  letter-spacing: 0.01em;
+}
+.comecar__hint span {
+  color: var(--color-accent);
+}
+.comecar__hint.is-error {
+  color: var(--color-accent);
+  font-weight: 600;
+}
+
+.comecar__radios {
+  display: flex;
+  flex-direction: column;
+  gap: 1.05rem;
+  margin-top: 0.6rem;
+}
+.comecar__radio {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+}
+.comecar__radio input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--color-accent);
+  cursor: pointer;
+  flex: none;
+}
+
+.comecar__submit-row {
+  margin-top: 0.6rem;
+}
+.comecar__submit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  align-self: flex-start;
+  min-width: 170px;
+  padding: 0.9rem 2.6rem;
+  background: var(--color-foreground);
+  color: #fff;
+  border: none;
+  border-radius: 9px;
+  font-family: var(--font-display);
+  font-size: 24px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: transform 0.2s ease, background 0.25s ease;
+}
+.comecar__submit:hover {
+  transform: translateY(-2px);
+}
+.comecar__submit.is-sent {
+  background: var(--color-accent);
 }

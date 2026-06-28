@@ -4,6 +4,7 @@ import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import App from "./App.jsx";
 import Projetos from "./Projetos.jsx";
 import Case from "./Case.jsx";
+import Comecar from "./Comecar.jsx";
 import LogoTest from "./LogoTest.jsx";
 import { PageTransitionProvider } from "./PageTransition.jsx";
 import Navbar from "./Navbar.jsx";
@@ -29,6 +30,7 @@ createRoot(document.getElementById("root")).render(
           <Route path="/"                        element={<App />} />
           <Route path="/projetos"                element={<Projetos />} />
           <Route path="/projetos/:slug"          element={<Case />} />
+          <Route path="/comecar"                 element={<Comecar />} />
           <Route path="/logo-test"               element={<LogoTest />} />
         </Routes>
       </PageTransitionProvider>

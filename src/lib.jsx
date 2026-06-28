@@ -13,6 +13,35 @@ export const prefersReducedMotion = () =>
   typeof window !== "undefined" &&
   window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
+// Salto de página suavizado: um fade rápido cobre a tela, o jump acontece
+// instantâneo por trás (sem atravessar o scrub do carrossel) e revela no
+// destino. Peça simples — só opacity num div fixo, sem scroll-lock.
+export function fadeJump(doJump) {
+  if (prefersReducedMotion()) { doJump(); return; }
+  const overlay = document.createElement("div");
+  overlay.className = "scroll-fade";
+  document.body.appendChild(overlay);
+  gsap.fromTo(
+    overlay,
+    { opacity: 0 },
+    {
+      opacity: 1,
+      duration: 0.24,
+      ease: "power2.inOut",
+      onComplete: () => {
+        doJump();
+        gsap.to(overlay, {
+          opacity: 0,
+          duration: 0.34,
+          ease: "power2.inOut",
+          delay: 0.05,
+          onComplete: () => overlay.remove(),
+        });
+      },
+    }
+  );
+}
+
 export function splitWordsHTML(text) {
   return text
     .split(/(\s+)/)

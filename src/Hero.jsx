@@ -1,9 +1,23 @@
 import { useRef } from "react";
-import { gsap, prefersReducedMotion, useIsoLayoutEffect } from "./lib.jsx";
+import { gsap, prefersReducedMotion, useIsoLayoutEffect, fadeJump } from "./lib.jsx";
 import { usePageTransition } from "./PageTransition.jsx";
 
 function Hero({ ready }) {
   const { transitionTo } = usePageTransition();
+
+  // Links da navbar como âncoras de seção (Projetos continua sendo rota).
+  const scrollToId = (id) => {
+    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+  };
+  // Contato: salto até o final suavizado por um fade (não atravessa o scrub do
+  // carrossel, que dá impressão de travamento) e sinaliza o destino no WhatsApp.
+  const goToContact = () => {
+    fadeJump(() => {
+      document.getElementById("contato")?.scrollIntoView();
+      window.dispatchEvent(new CustomEvent("contact:highlight"));
+    });
+  };
+
   const sectionRef = useRef(null);
   const titleRef = useRef(null);
   const metaLeftRef = useRef(null);
@@ -56,19 +70,22 @@ function Hero({ ready }) {
             <img src="/LOGO.svg" alt="Victor Cardoso" className="hero__logo-mark" />
           </a>
           <div className="hero__nav-links">
-            <a href="#lp">Páginas</a>
             <button onClick={() => transitionTo("/projetos")} className="hero__nav-link-btn">Projetos</button>
-            <a href="#auto">Automacao</a>
-            <a href="#contato">Contato</a>
+            <button onClick={() => scrollToId("auto")} className="hero__nav-link-btn">Automatize</button>
+            <button onClick={goToContact} className="hero__nav-link-btn">Contato</button>
           </div>
-          <a
-            href="#contato"
-            className="btn btn--ghost btn--sm hero__nav-cta"
-            aria-label="Ir para contato"
-          >
-            <span>Contato</span>
-            <span className="dot-accent" aria-hidden="true"></span>
-          </a>
+          <button type="button" onClick={() => transitionTo("/comecar")} className="hero__talk-btn" aria-label="Começar">
+            <span className="hero__talk-avatar" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="5" y="5" width="14" height="16" rx="2" />
+                <path d="M9 5V4.2A1.2 1.2 0 0 1 10.2 3h3.6A1.2 1.2 0 0 1 15 4.2V5" />
+                <line x1="8.5" y1="11" x2="15.5" y2="11" />
+                <line x1="8.5" y1="14.5" x2="15.5" y2="14.5" />
+                <line x1="8.5" y1="18" x2="12.5" y2="18" />
+              </svg>
+            </span>
+            <span className="hero__talk-label">Começar</span>
+          </button>
         </nav>
 
         <div className="hero__main">
