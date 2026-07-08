@@ -56,7 +56,7 @@ export function PageTransitionProvider({ children }) {
 
     // logo: preenche
     tl.to(paths, {
-      fill: "white",
+      fill: "#1b1a18",
       strokeOpacity: 0,
       duration: 0.3,
       ease: "power1.in",
@@ -94,7 +94,7 @@ export function PageTransitionProvider({ children }) {
               key={i}
               d={d}
               fill="transparent"
-              stroke="white"
+              stroke="#1b1a18"
               strokeWidth="5"
               strokeLinecap="round"
               strokeLinejoin="round"

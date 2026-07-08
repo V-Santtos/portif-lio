@@ -1,17 +1,33 @@
-import { useRef } from "react";
+import { useRef, useState, useEffect } from "react";
 import { gsap, useIsoLayoutEffect, prefersReducedMotion, useTitleReveal } from "./lib.jsx";
 import { usePageTransition } from "./PageTransition.jsx";
 
+const MOBILE_QUERY = "(max-width: 767px)";
+
 const PROJECTS = [
   { id: "minas-tintas", name: "Minas Tintas", img: "/minas-tintas.png",        href: "/projetos/minas-tintas" },
-  { id: "barbearia",    name: "Barbearia",    video: "/videos/barbearia.mp4",  href: "/projetos/barbearia"    },
+  // Oculto temporariamente — basta descomentar para voltar à listagem.
+  // { id: "barbearia",    name: "Barbearia",    video: "/videos/barbearia.mp4",  href: "/projetos/barbearia"    },
   { id: "hawk-street",  name: "Hawk Street",  video: "/hawk-street.mp4",       href: "/projetos/hawk-street"  },
   { id: "flux-time",    name: "Flux Time",    video: "/videos/flux.mp4",       href: "/projetos/flux-time"    },
-  { id: "art-piso",     name: "Art Piso",     img: "/art-piso.jpg",            href: "/projetos/art-piso"     },
+  // Oculto temporariamente — basta descomentar para voltar à listagem.
+  // { id: "art-piso",     name: "Art Piso",     img: "/art-piso.jpg",            href: "/projetos/art-piso"     },
 ];
 
 function Projetos() {
   const { transitionTo } = usePageTransition();
+  // Touch não tem hover: no mobile cada item empilha a própria mídia
+  // e a lógica de frame deslizante é desligada.
+  const [isMobile, setIsMobile] = useState(
+    () => typeof window !== "undefined" && window.matchMedia(MOBILE_QUERY).matches
+  );
+  useEffect(() => {
+    const mq = window.matchMedia(MOBILE_QUERY);
+    const onChange = (e) => setIsMobile(e.matches);
+    mq.addEventListener("change", onChange);
+    return () => mq.removeEventListener("change", onChange);
+  }, []);
+
   const titleRef   = useRef(null);
   const activeRef  = useRef(0);
   const itemRefs   = useRef([]);
@@ -27,6 +43,8 @@ function Projetos() {
   }, []);
 
   useIsoLayoutEffect(() => {
+    if (isMobile) return;
+
     const items = itemRefs.current;
     const imgs  = imgRefs.current;
     const media = mediaRef.current;
@@ -156,7 +174,7 @@ function Projetos() {
         item.removeEventListener("mouseenter", handler)
       );
     };
-  }, []);
+  }, [isMobile]);
 
   return (
     <section className="section projetos" id="projetos" data-screen-label="Projetos">
@@ -196,11 +214,34 @@ function Projetos() {
                     </span>
                   ))}
                 </span>
+                {isMobile && (
+                  <span className="projetos__item-media">
+                    {project.video ? (
+                      <video
+                        src={project.video}
+                        className="projetos__img"
+                        autoPlay
+                        muted
+                        loop
+                        playsInline
+                        preload="metadata"
+                      />
+                    ) : (
+                      <img
+                        src={project.img}
+                        alt={project.name}
+                        className="projetos__img"
+                        draggable="false"
+                      />
+                    )}
+                  </span>
+                )}
               </li>
             ))}
           </ul>
 
-          {/* Trilha (coluna inteira) + frame que desliza */}
+          {/* Trilha (coluna inteira) + frame que desliza — só desktop */}
+          {!isMobile && (
           <div className="projetos__media" ref={mediaRef}>
            <div className="projetos__frame" ref={frameRef}>
             {PROJECTS.map((project, i) => (
@@ -236,6 +277,7 @@ function Projetos() {
             ))}
            </div>
           </div>
+          )}
 
         </div>
       </div>

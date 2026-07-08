@@ -86,6 +86,19 @@ function Hero({ ready }) {
             </span>
             <span className="hero__talk-label">Começar</span>
           </button>
+          {/* Mobile: hambúrguer no lugar do COMEÇAR — abre o overlay global (Navbar) */}
+          <button
+            type="button"
+            className="hero__menu-btn"
+            aria-label="Abrir menu"
+            onClick={() => window.dispatchEvent(new CustomEvent("nav:open-menu"))}
+          >
+            <svg width="22" height="14" viewBox="0 0 22 14" fill="none" aria-hidden="true">
+              <rect width="22" height="2" fill="currentColor" />
+              <rect y="6" width="22" height="2" fill="currentColor" />
+              <rect y="12" width="22" height="2" fill="currentColor" />
+            </svg>
+          </button>
         </nav>
 
         <div className="hero__main">

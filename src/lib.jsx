@@ -100,7 +100,10 @@ export function useTitleReveal(ref, { trigger, start = "top 80%", delay = 0, sta
       return;
     }
 
-    gsap.set(spans, { y: 0, yPercent: 110 });
+    // 160 (não 110): o til de "impressão"/"Ã" vaza pela máscara — e a folga
+    // de baixo do cedilha (padding-bottom 0.15em na .word) estende a janela
+    // visível, então precisa afundar além dos 135 usados na Automation.
+    gsap.set(spans, { y: 0, yPercent: 160 });
 
     const opts = {
       y: 0,

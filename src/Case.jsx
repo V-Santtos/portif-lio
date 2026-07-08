@@ -3,6 +3,8 @@ import { useParams, Navigate } from "react-router-dom";
 import { gsap, ScrollTrigger, SplitText, useIsoLayoutEffect, prefersReducedMotion } from "./lib.jsx";
 import { usePageTransition } from "./PageTransition.jsx";
 import { CASES } from "./casesData.js";
+import CaseCompare from "./CaseCompare.jsx";
+import CaseReveal from "./CaseReveal.jsx";
 
 function Case() {
   const { slug } = useParams();
@@ -121,6 +123,31 @@ function Case() {
     return () => tweens.forEach((t) => { t.scrollTrigger?.kill(); t.kill(); });
   }, [data]);
 
+  // Entrada especial dos blocos com `entrance`: a mídia "assenta" no lugar
+  // (começa maior e levemente deslocada) e, na sequência, o texto entra.
+  // Uma peça só, sem pin/scrub — degrada pra fade no reduced-motion.
+  useIsoLayoutEffect(() => {
+    if (!data || prefersReducedMotion()) return;
+    const root = blocksRef.current;
+    if (!root) return;
+    const media = root.querySelector('[data-entrance="media"]');
+    if (!media) return;
+    const textBox = root.querySelector('[data-entrance="text"]');
+    const textEls = textBox ? Array.from(textBox.children) : [];
+
+    gsap.set(media, { opacity: 0, scale: 1.08, xPercent: 6 });
+    gsap.set(textEls, { opacity: 0, y: 24 });
+
+    const tl = gsap.timeline({
+      defaults: { ease: "power3.out" },
+      scrollTrigger: { trigger: media, start: "top 78%", toggleActions: "play none none none" },
+    });
+    tl.to(media, { opacity: 1, scale: 1, xPercent: 0, duration: 1.0 })
+      .to(textEls, { opacity: 1, y: 0, duration: 0.7, stagger: 0.12 }, "-=0.45");
+
+    return () => { tl.scrollTrigger?.kill(); tl.kill(); };
+  }, [data]);
+
   // "Contato" do nav: rola até o CTA final deste case e dá um brilho no botão "Bora!"
   const goToCta = (e) => {
     e.preventDefault();
@@ -180,6 +207,19 @@ function Case() {
                 </svg>
               </span>
               <span className="hero__talk-label">Começar</span>
+            </button>
+            {/* Mobile: hambúrguer no lugar do COMEÇAR — abre o overlay global (Navbar) */}
+            <button
+              type="button"
+              className="hero__menu-btn"
+              aria-label="Abrir menu"
+              onClick={() => window.dispatchEvent(new CustomEvent("nav:open-menu"))}
+            >
+              <svg width="22" height="14" viewBox="0 0 22 14" fill="none" aria-hidden="true">
+                <rect width="22" height="2" fill="currentColor" />
+                <rect y="6" width="22" height="2" fill="currentColor" />
+                <rect y="12" width="22" height="2" fill="currentColor" />
+              </svg>
             </button>
           </nav>
 
@@ -280,21 +320,90 @@ function Case() {
                 </section>
               );
             }
-            if (block.type === "split") {
+            if (block.type === "compare") {
               return (
-                <section className="section case-split" key={i}>
+                <section className="section case-compare-section" key={i}>
                   <div className="container-x">
-                    <div className="case-split__grid">
-                      <figure className="case-split__media" data-reveal>
+                    <div className="case-compare__wrap" data-reveal>
+                      {(block.title || block.description || block.caption) && (
+                        <div className="case-compare__head">
+                          {block.title && <h3 className="case-compare__title">{block.title}</h3>}
+                          {block.description && <p className="case-compare__desc">{block.description}</p>}
+                          {block.caption && <span className="case-compare__hint">{block.caption}</span>}
+                        </div>
+                      )}
+                      <CaseCompare
+                        before={block.before}
+                        after={block.after}
+                        beforeAlt={block.beforeAlt}
+                        afterAlt={block.afterAlt}
+                        beforeLabel={block.beforeLabel}
+                        afterLabel={block.afterLabel}
+                        ratio={block.ratio}
+                        url={block.url}
+                        start={block.start}
+                        mockup={block.mockup}
+                      />
+                    </div>
+                  </div>
+                </section>
+              );
+            }
+            if (block.type === "reveal") {
+              return (
+                <CaseReveal
+                  key={i}
+                  image={block.image}
+                  imageMobile={block.imageMobile}
+                  alt={block.alt}
+                  ratio={block.ratio}
+                  mobileRatio={block.mobileRatio}
+                  revealInset={block.revealInset}
+                  title={block.title}
+                  body={block.body}
+                />
+              );
+            }
+            if (block.type === "showcase") {
+              return (
+                <section className="section case-showcase" key={i}>
+                  <div className="container-x">
+                    <div className="case-showcase__grid">
+                      <figure className="case-showcase__media" data-entrance="media">
                         <img
-                          className="case-split__img"
+                          className="case-showcase__img"
                           src={block.image}
                           alt={block.alt || ""}
                           style={block.ratio ? { aspectRatio: block.ratio } : undefined}
                           loading="lazy"
                         />
                       </figure>
-                      <div className="case-split__text" data-reveal>
+                      <div className="case-showcase__text" data-entrance="text">
+                        {block.title && <h3 className="case-showcase__title">{block.title}</h3>}
+                        {block.body && <p className="case-showcase__body">{block.body}</p>}
+                      </div>
+                    </div>
+                  </div>
+                </section>
+              );
+            }
+            if (block.type === "split") {
+              const mediaAttr = block.entrance ? { "data-entrance": "media" } : { "data-reveal": true };
+              const textAttr = block.entrance ? { "data-entrance": "text" } : { "data-reveal": true };
+              return (
+                <section className="section case-split" key={i}>
+                  <div className="container-x">
+                    <div className="case-split__grid">
+                      <figure className="case-split__media" {...mediaAttr}>
+                        <img
+                          className={`case-split__img${block.rounded ? " case-split__img--rounded" : ""}`}
+                          src={block.image}
+                          alt={block.alt || ""}
+                          style={block.ratio ? { aspectRatio: block.ratio } : undefined}
+                          loading="lazy"
+                        />
+                      </figure>
+                      <div className="case-split__text" {...textAttr}>
                         {block.title && <h3 className="case-split__title">{block.title}</h3>}
                         {block.body && <p className="case-split__body">{block.body}</p>}
                       </div>

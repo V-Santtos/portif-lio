@@ -122,6 +122,22 @@ function Bridge() {
       hasPlayed = true;
       window.removeEventListener("scroll", checkTrigger);
 
+      // Mobile: sem scroll-lock nem handoff — touch briga com lock (momentum
+      // do iOS). Só roda o letter-swap; a Automation entra rolando normal e
+      // recebe o evento pra animar o word-swap dela.
+      if (window.matchMedia("(max-width: 767px)").matches) {
+        tl = gsap.timeline({
+          defaults: { ease: "power3.inOut" },
+          onComplete: () => {
+            window.dispatchEvent(new CustomEvent("automation:word-swap"));
+          },
+        })
+          .to(firstLetters, { yPercent: -50, duration: 0.9, stagger: 0.028 })
+          .to({}, { duration: 0.5 })
+          .to(secondLetters, { yPercent: -50, duration: 0.9, stagger: 0.028 });
+        return;
+      }
+
       const automation = document.querySelector(".automation");
       if (automation) {
         automationTop = automation.getBoundingClientRect().top + window.scrollY;

@@ -68,6 +68,13 @@ function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // Hero mobile abre o overlay pelo hambúrguer (sem COMEÇAR na barra)
+  useEffect(() => {
+    const open = () => setMenuOpen(true);
+    window.addEventListener("nav:open-menu", open);
+    return () => window.removeEventListener("nav:open-menu", open);
+  }, []);
+
   useEffect(() => {
     const overlay = overlayRef.current;
     if (!overlay) return;
@@ -169,6 +176,8 @@ function Navbar() {
           <button onClick={() => handleLink("/")} className="nav-overlay__link">INÍCIO</button>
           <button onClick={() => handleLink("/projetos")} className="nav-overlay__link">PROJETOS</button>
           <button onClick={() => handleLink("#contato")} className="nav-overlay__link">CONTATO</button>
+          {/* Mobile: COMEÇAR entra na lista (a barra esconde o botão) */}
+          <button onClick={() => handleLink("/comecar")} className="nav-overlay__link nav-overlay__link--comecar">COMEÇAR</button>
         </nav>
       </div>
     </>

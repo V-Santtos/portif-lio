@@ -18,6 +18,7 @@ const CARDS = [
 
 function Automation() {
   const sectionRef = useRef(null);
+  const titleRef = useRef(null);
   const wordBoxRef = useRef(null);
   const wordOutRef = useRef(null);
   const wordInRef = useRef(null);
@@ -102,24 +103,81 @@ function Automation() {
     };
     window.addEventListener("resize", onResize);
 
-    // Triggered by Bridge after handoff completes.
-    const onWordSwap = () => gsap.delayedCall(1.6, playWordSwap);
-    window.addEventListener("automation:word-swap", onWordSwap, { once: true });
+    // Sequência da seção: entrada do título (reveal por máscara, palavra a
+    // palavra — assinatura do site) → subtítulo sobe em fade → beat → swap
+    // da tarja. Dispara quando o TÍTULO está visível de verdade: rect medido
+    // ao vivo a cada scroll (imune ao spacer do pin do carrossel, mesma
+    // técnica da Bridge). Vale pros dois ambientes — no desktop o scroll
+    // pós-handoff da Bridge aciona o check.
+    const title = titleRef.current;
+    const intro = sectionRef.current?.querySelector(".auto__intro");
+    const wordSpans = title ? title.querySelectorAll(".word > span") : [];
+
+    // 135% (e não 110%): o til do Ã de PADRÃO sobe além do corpo da letra
+    // e com 110% a pontinha vazava pra dentro da máscara no estado escondido.
+    gsap.set(wordSpans, { yPercent: 135 });
+    if (intro) gsap.set(intro, { opacity: 0, y: 18 });
+
+    let sequenceStarted = false;
+    let sequenceTl = null;
+    const playSequence = () => {
+      if (sequenceStarted) return;
+      sequenceStarted = true;
+      sequenceTl = gsap.timeline();
+      sequenceTl.to(wordSpans, {
+        yPercent: 0,
+        duration: 0.95,
+        ease: "power3.out",
+        stagger: 0.07,
+      });
+      if (intro) {
+        sequenceTl.to(intro, { opacity: 1, y: 0, duration: 0.55, ease: "power3.out" }, "-=0.45");
+      }
+      sequenceTl.add(playWordSwap, "+=0.4");
+    };
+
+    const checkTitleVisible = () => {
+      if (sequenceStarted || !title) return;
+      const rect = title.getBoundingClientRect();
+      // título "chegando": topo cruzou 75% da tela
+      if (rect.top > window.innerHeight * 0.75) return;
+      window.removeEventListener("scroll", checkTitleVisible);
+      playSequence();
+    };
+
+    window.addEventListener("scroll", checkTitleVisible, { passive: true });
+    checkTitleVisible();
 
     return () => {
       setupCancelled = true;
       window.removeEventListener("resize", onResize);
-      window.removeEventListener("automation:word-swap", onWordSwap);
+      window.removeEventListener("scroll", checkTitleVisible);
+      if (sequenceTl) sequenceTl.kill();
     };
   }, []);
 
   return (
     <section className="section automation" id="auto" ref={sectionRef}>
       <div className="auto__hero">
-        <h2 className="auto__title">
-          Tudo o que segue<br />
-          um padrão pode<br />
-          ser{" "}
+        {/* Quebras controladas por breakpoint: desktop = "um padrão pode / ser [caixa]";
+            mobile = "um padrão pode ser / [caixa]" — a caixa mora SOZINHA na última
+            linha pra o swap MELHORADO→AUTOMATIZADO. nunca re-quebrar o parágrafo. */}
+        {/* Palavras em máscara pro reveal de entrada (assinatura dos títulos
+            do site). A tarja também entra mascarada e o swap roda DEPOIS da
+            entrada, em sequência. */}
+        <h2 className="auto__title" ref={titleRef}>
+          <span className="word"><span>Tudo</span></span>{" "}
+          <span className="word"><span>o</span></span>{" "}
+          <span className="word"><span>que</span></span>{" "}
+          <span className="word"><span>segue</span></span>
+          <br />
+          <span className="word"><span>um</span></span>{" "}
+          <span className="word"><span>padrão</span></span>{" "}
+          <span className="word"><span>pode</span></span>
+          <br className="auto__br--desktop" />{" "}
+          <span className="word"><span>ser</span></span>{" "}
+          <br className="auto__br--mobile" />
+          <span className="word word--box"><span>
           <span className="word-box" ref={wordBoxRef}>
             <span className="word-out" ref={wordOutRef}>
               {"melhorado".split("").map((ch, i) => (
@@ -132,10 +190,18 @@ function Automation() {
               ))}
             </span>
           </span>
+          </span></span>
         </h2>
+        {/* Quebras mobile controladas: sem viúvas ("existe automação." /
+            "pode fazer." soltos no fim de linha) */}
         <p className="auto__intro">
-          Processos, tarefas, ideias — se existe padrão, existe automação.
-          <br />Eu monto o sistema. Você foca no que só você pode fazer.
+          Processos, tarefas, ideias —{" "}
+          <br className="auto__br--mobile" />
+          se existe padrão, existe automação.
+          <br />
+          Eu monto o sistema.{" "}
+          <br className="auto__br--mobile" />
+          Você foca no que só você pode fazer.
         </p>
       </div>
 
@@ -151,9 +217,15 @@ function Automation() {
 
         <div className="auto__cta">
           <p className="auto__cta-heading">Tem uma ideia diferente?</p>
+          {/* Quebras mobile controladas — sem "infinitas." viúvo */}
           <p className="auto__cta-copy">
-            A verdade é que as possibilidades são infinitas.
-            <br />Me conta o que você gostaria de automatizar.
+            A verdade é que{" "}
+            <br className="auto__br--mobile" />
+            as possibilidades são infinitas.
+            <br />
+            Me conta o que você{" "}
+            <br className="auto__br--mobile" />
+            gostaria de automatizar.
           </p>
           <a href="#contact" className="auto__cta-btn" ref={ctaBtnRef}>
             <svg className="auto__cta-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">

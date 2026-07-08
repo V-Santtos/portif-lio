@@ -14,9 +14,13 @@ function Comecar() {
   const { transitionTo } = usePageTransition();
   const titleRef = useRef(null);
   const formRef = useRef(null);
+  const contactRef = useRef(null);
+  const messageRef = useRef(null);
   const [sent, setSent] = useState(false);
   const [contact, setContact] = useState("");
   const [contactMode, setContactMode] = useState("email"); // "email" | "tel"
+  const [contactError, setContactError] = useState("");
+  const [messageError, setMessageError] = useState("");
 
   useIsoLayoutEffect(() => {
     document.documentElement.removeAttribute("data-booting");
@@ -62,11 +66,52 @@ function Comecar() {
       setContactMode("email");
       setContact(raw);
     }
+    if (contactError) setContactError(""); // some ao corrigir
   };
 
-  // Placeholder: sem destino real ainda (WhatsApp/n8n será plugado depois).
+  // Valida o campo de contato conforme o modo. Retorna "" se válido, ou a
+  // mensagem de erro. O "vazio" já é coberto pelo `required` nativo, então
+  // aqui só cuidamos do formato (celular = 11 dígitos; e-mail = padrão são).
+  const validateContact = () => {
+    const value = contact.trim();
+    if (contactMode === "tel") {
+      const digits = value.replace(/\D/g, "");
+      if (digits.length !== 11) return "Telefone incompleto — precisa do DDD + 9 dígitos.";
+      return "";
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) return "E-mail inválido — confira o endereço.";
+    return "";
+  };
+
+  // "Descreva sua ideia" é obrigatório: preciso entender do que se trata pra
+  // montar a proposta. Exige pelo menos ~10 caracteres, então "oi" ou "." não
+  // passam — mas a copy do campo deixa claro que pode ser curtinho.
+  const validateMessage = () => {
+    const value = (messageRef.current?.value || "").trim();
+    if (value.length < 10) return "Me conta rapidinho sua ideia — só umas palavrinhas já me ajudam.";
+    return "";
+  };
+
+  const handleMessage = () => {
+    if (messageError) setMessageError(""); // some ao corrigir
+  };
+
+  // Placeholder de envio: valida contato + ideia; se ok, mostra "Enviado ✓".
+  // Destino real (WhatsApp/n8n) será plugado depois.
   const handleSubmit = (e) => {
     e.preventDefault();
+    const cErr = validateContact();
+    const mErr = validateMessage();
+    setContactError(cErr);
+    setMessageError(mErr);
+    if (cErr) {
+      contactRef.current?.focus();
+      return;
+    }
+    if (mErr) {
+      messageRef.current?.focus();
+      return;
+    }
     setSent(true);
     window.setTimeout(() => setSent(false), 2600);
   };
@@ -102,17 +147,17 @@ function Comecar() {
             <input
               id="cm-contato"
               name="contato"
+              ref={contactRef}
               type="text"
               inputMode={contactMode === "tel" ? "tel" : "email"}
-              className="comecar__input"
+              className={`comecar__input${contactError ? " is-invalid" : ""}`}
               placeholder="voce@email.com  ·  (00) 00000-0000"
               value={contact}
               onChange={handleContact}
+              aria-invalid={contactError ? "true" : undefined}
               required
             />
-            <span className="comecar__hint">
-              Começou com número? Vira telefone. Senão, e-mail.
-            </span>
+            {contactError && <span className="comecar__hint is-error">{contactError}</span>}
           </div>
 
           <fieldset className="comecar__field comecar__field--radios" data-reveal>
@@ -140,8 +185,19 @@ function Comecar() {
           </fieldset>
 
           <div className="comecar__field" data-reveal>
-            <label className="comecar__label" htmlFor="cm-msg">Mensagem</label>
-            <textarea id="cm-msg" name="mensagem" rows="5" className="comecar__input comecar__textarea" placeholder="Me conta sua ideia..."></textarea>
+            <label className="comecar__label" htmlFor="cm-msg">Descreva sua ideia <span>*</span></label>
+            <textarea
+              id="cm-msg"
+              name="mensagem"
+              ref={messageRef}
+              rows="5"
+              className={`comecar__input comecar__textarea${messageError ? " is-invalid" : ""}`}
+              placeholder="Pode ser em poucas linhas — o que você quer criar, resolver ou automatizar?"
+              onChange={handleMessage}
+              aria-required="true"
+              aria-invalid={messageError ? "true" : undefined}
+            ></textarea>
+            {messageError && <span className="comecar__hint is-error">{messageError}</span>}
           </div>
 
           <div className="comecar__field comecar__submit-row" data-reveal>

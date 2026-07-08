@@ -451,6 +451,32 @@ p { line-height: 1.6; }
   color: var(--color-muted-foreground);
 }
 
+/* ── Hero mobile — mesmo poster, cadência em 4 linhas ─────────── */
+@media (max-width: 767px) {
+  /* svh: altura estável com a barra de URL do navegador mobile */
+  .hero { min-height: 100svh; }
+  .hero__nav { padding: 1.1rem 0; }
+  .hero__logo-mark { height: 26px; }
+  .hero__main { padding: 1.75rem 0 1.5rem; }
+  /* Poster: as linhas quebram por palavra (os .word são inline-block,
+     a máscara da animação continua funcionando linha a linha) */
+  .hero__line { white-space: normal; }
+  .hero__title {
+    font-size: clamp(48px, 15.5vw, 76px);
+    line-height: 0.92;
+  }
+  .hero__meta {
+    grid-template-columns: 1fr;
+    gap: 1.1rem;
+    padding-bottom: 2rem;
+  }
+  .hero__meta .right {
+    text-align: left;
+    justify-self: start;
+    align-self: auto;
+  }
+}
+
 /* ──────────────────────────────────────────────────────────────── */
 /* Section common heading                                           */
 /* ──────────────────────────────────────────────────────────────── */
@@ -475,8 +501,11 @@ p { line-height: 1.6; }
   padding-right: 0.06em;
   padding-top: 0.18em;
   margin-top: -0.18em;
+  /* folga embaixo pro cedilha (Ç de SOLUÇÃO) — line-height 0.9 corta o descender */
+  padding-bottom: 0.15em;
+  margin-bottom: -0.15em;
 }
-.section-title .word > span { display: inline-block; transform: translateY(110%); }
+.section-title .word > span { display: inline-block; transform: translateY(160%); }
 .section-title .accent { color: var(--color-accent); }
 
 /* ──────────────────────────────────────────────────────────────── */
@@ -856,6 +885,103 @@ p { line-height: 1.6; }
   line-height: 0.95;
   text-transform: uppercase;
   font-weight: 400;
+}
+
+/* ── Carrossel mobile — cards maiores, expansão com mais contraste ── */
+@media (max-width: 767px) {
+  .lp { padding-top: 7rem; }
+  .lp__scaling-header { padding: 3.5rem 5vw 10vh; }
+  /* 100vh do desktop deixa ~340px de creme sobrando abaixo do card 16:9;
+     aqui o card fica só com uma folga curta (fundo creme segue contínuo) */
+  .lp__scaling-video { min-height: 0; padding-block: 3.5rem; }
+  /* thumb inicial menor → o Flip até o card grande ganha impacto */
+  .lp__thumb-box--small { width: min(46vw, 210px); }
+  .lp__thumb-box--large { width: 88vw; }
+  .lp__preview-card { width: 88vw; }
+  .lp__carousel-track { gap: 1.25rem; }
+  .lp__thumb-pill { padding: 0.4rem 0.75rem; font-size: 10px; }
+  /* overlay sempre visível no touch — tipografia menor pra não cobrir o preview */
+  .lp__preview-overlay { padding: 0.9rem 1rem; }
+  .lp__preview-overlay span { font-size: 9px; }
+  .lp__preview-overlay strong { font-size: 18px; }
+}
+/* Touch não tem hover: tag+título dos previews sempre visíveis */
+@media (hover: none) {
+  .lp__preview-overlay { opacity: 1; }
+}
+
+/* ── Faixas satélites do carrossel — placeholders (só mobile) ──── */
+.lp__strip { display: none; }
+
+@media (max-width: 767px) {
+  /* as faixas vivem fora da caixa do carrossel — libera o clip vertical
+     (o track principal continua clipado pelo próprio carousel-viewport) */
+  .lp__scaling-video { overflow: visible; }
+
+  .lp__strip {
+    display: block;
+    position: absolute;
+    left: 0;
+    right: 0;
+    overflow: hidden; /* a faixa é uma "janela": deslizá-la esconde/revela os cards */
+    pointer-events: none; /* a faixa não intercepta gesto de scroll... */
+  }
+  .lp__strip-card {
+    pointer-events: auto; /* ...mas o card aceita o tap certeiro (click) */
+    cursor: pointer;
+  }
+  /* offset vertical = altura do card central (88vw × 9/16 = 49.5vw) + gap.
+     A janela fica parada; quem entra/sai/roda é o TREM de cards (track). */
+  .lp__strip--top { top: calc(50% - 74.25vw - 1.25rem); }
+  .lp__strip--bottom { top: calc(50% + 24.75vw + 1.25rem); }
+
+  .lp__strip-track {
+    display: flex;
+    gap: 1.25rem;
+    width: max-content;
+    will-change: transform;
+  }
+  /* estado inicial (antes do JS): trens fora da tela, janela vazia */
+  .lp__strip--top .lp__strip-track { transform: translateX(120vw); }
+  .lp__strip--bottom .lp__strip-track { transform: translateX(-800vw); }
+
+  .lp__strip-card {
+    flex: 0 0 auto;
+    width: 88vw;
+    aspect-ratio: 16 / 9;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border: 1px solid rgba(0, 0, 0, 0.16);
+    border-radius: var(--lp-card-radius);
+    /* sem sombra: em sequência elas marcavam o vão entre os cards */
+    overflow: hidden;
+  }
+  .lp__strip-card--dark {
+    background: linear-gradient(160deg, #2a2723, #161513);
+    color: #f1ede0;
+  }
+  .lp__strip-card--light {
+    background: linear-gradient(160deg, #ffffff, #efe8d6);
+    color: var(--color-foreground);
+  }
+  .lp__strip-tag {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    opacity: 0.55;
+  }
+  .lp__strip-title {
+    font-family: var(--font-display);
+    font-size: 36px;
+    font-weight: 400;
+    line-height: 1;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+  }
 }
 
 .lp__meta {
@@ -2162,6 +2288,20 @@ p { line-height: 1.6; }
   }
 }
 
+/* ── Performance mobile: backdrop-filter re-amostra o fundo a cada frame
+   enquanto o carrossel se move — troca o vidro por fundo simples ── */
+@media (max-width: 767px) {
+  .lp-preview .nexous-hero__badge,
+  .lp-preview .roofora-card,
+  .lp-preview .minta-hero__cta,
+  .lp__thumb-pill {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+  /* sem o blur, o vidro da Roofora fica escuro levemente opaco pra manter leitura */
+  .lp-preview .roofora-card { background: rgba(16, 20, 24, 0.45); }
+}
+
 /* ──────────────────────────────────────────────────────────────── */
 /* Bridge                                                            */
 /* ──────────────────────────────────────────────────────────────── */
@@ -2267,6 +2407,24 @@ p { line-height: 1.6; }
   background: rgba(20, 20, 20, 0.42);
 }
 
+/* ── Bridge mobile — sem lock: seção mais curta, respiros menores ── */
+@media (max-width: 767px) {
+  /* Respiro moderado e SIMÉTRICO em volta da frase — isola a mensagem
+     sem colar no carrossel (em cima) nem na Automation (embaixo) */
+  /* topo espelha o respiro de baixo: 3.5 (folga do card) + 6 + 3.5 = 13rem */
+  .bridge__approach { height: 6rem; }
+  .bridge-stage {
+    height: auto;
+    min-height: 62svh;
+    /* respiro generoso embaixo — área clara isola a frase antes da dark */
+    padding: 3.5rem 5vw 13rem;
+    justify-content: center;
+  }
+  .bridge__kicker { margin-bottom: 2.5rem; }
+  /* tracinho decorativo removido no mobile (pedido do Victor) */
+  .bridge__dash { display: none; }
+}
+
 /* ──────────────────────────────────────────────────────────────── */
 /* Automation                                                       */
 /* ──────────────────────────────────────────────────────────────── */
@@ -2297,6 +2455,21 @@ p { line-height: 1.6; }
   text-transform: uppercase;
   letter-spacing: -0.01em;
 }
+
+/* Máscaras da entrada do título (mesmo reveal dos section-titles).
+   O estado inicial escondido é setado via JS — sem JS/reduced-motion o
+   título fica visível. */
+.auto__title .word {
+  display: inline-block;
+  overflow: hidden;
+  padding-right: 0.06em;
+  padding-top: 0.18em;
+  margin-top: -0.18em;
+  vertical-align: bottom;
+}
+.auto__title .word > span { display: inline-block; }
+/* a máscara da tarja precisa de folga extra pro raio/contorno da caixa */
+.auto__title .word--box { padding-bottom: 0.08em; margin-bottom: -0.08em; }
 
 .word-box {
   display: inline-flex;
@@ -2374,6 +2547,34 @@ p { line-height: 1.6; }
   text-align: center;
 }
 
+/* Quebra de linha do título: cada breakpoint usa só o seu <br> */
+.auto__br--mobile { display: none; }
+
+/* ── Automation mobile — cards empilhados ── */
+@media (max-width: 767px) {
+  .auto__hero {
+    /* respiro superior generoso — mesmo tratamento da frase da Bridge */
+    min-height: 0;
+    padding: 13rem 5vw 4rem;
+  }
+  /* Cadência mobile do título: TUDO O QUE SEGUE / UM PADRÃO PODE SER /
+     [AUTOMATIZADO.] — fonte dimensionada pra linha mais longa caber e a
+     caixa ficar sempre sozinha (o swap não re-quebra nada) */
+  .auto__br--desktop { display: none; }
+  .auto__br--mobile { display: inline; }
+  .auto__title { font-size: 12vw; }
+  .auto__cards {
+    grid-template-columns: 1fr;
+    width: min(100% - 2.5rem, 480px);
+    gap: 1.25rem;
+  }
+  .auto__card {
+    min-height: 0;
+    padding: 2.25rem 1.75rem;
+  }
+  .auto__body { padding: 5rem 0; }
+}
+
 .auto__card-title {
   margin: 0 0 1rem;
   font-family: var(--font-display);
@@ -2397,6 +2598,10 @@ p { line-height: 1.6; }
   padding-inline: clamp(2rem, 5vw, 5rem);
   text-align: center;
   padding-top: clamp(11rem, 18vh, 18rem);
+}
+
+@media (max-width: 767px) {
+  .auto__cta { padding-top: 7rem; }
 }
 
 .auto__cta-heading {
@@ -2734,6 +2939,41 @@ p { line-height: 1.6; }
   transform: translateY(-3px);
 }
 
+/* ── Contact/footer + botões voltar-ao-topo no mobile ─────────────
+   (depois das regras base pra vencer na cascata) */
+@media (max-width: 767px) {
+  .contact { padding-top: 6rem; }
+  /* desktop: faixa nowrap full-bleed; mobile: empilha BORA / CONSTRUIR / JUNTOS! */
+  .contact__title {
+    white-space: normal;
+    font-size: clamp(64px, 19vw, 90px);
+    line-height: 0.9;
+    padding-inline: 0.5rem;
+  }
+  .contact__info {
+    flex-direction: column;
+    gap: 2rem;
+    /* o shorthand da base zera o padding lateral do container-x — devolve */
+    padding-inline: var(--gutter-x);
+  }
+  .footer {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.35rem;
+    padding: 1.5rem var(--gutter-x) 2rem;
+  }
+  .footer__back-top,
+  .lp__back-top {
+    right: 1.25rem;
+    width: 54px;
+    height: 54px;
+    font-size: 22px;
+  }
+  .footer__back-top { bottom: 7.5rem; }
+  /* seta do carrossel removida no mobile — outro efeito entra no lugar */
+  .lp__back-top { display: none; }
+}
+
 /* ──────────────────────────────────────────────────────────────── */
 /* Scroll progress indicator                                        */
 /* ──────────────────────────────────────────────────────────────── */
@@ -2946,6 +3186,32 @@ p { line-height: 1.6; }
   color: var(--color-muted-foreground);
 }
 
+/* ── Projetos mobile — sem hover: cada item empilha a própria mídia ── */
+@media (max-width: 767px) {
+  .projetos { padding-block: 6.5rem 4rem; }
+  .projetos__heading { margin-bottom: 2.5rem; }
+  .projetos__inner {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+  .projetos__item {
+    flex-wrap: wrap;
+    row-gap: 1.1rem;
+    padding-block: 1.9rem;
+  }
+  /* sem numeração no mobile — título flush à esquerda, na margem do card */
+  .projetos__num { display: none; }
+  .projetos__item-media {
+    display: block;
+    width: 100%;
+    aspect-ratio: 1920 / 954;
+    border-radius: var(--lp-card-radius);
+    overflow: hidden;
+    outline: 1.5px solid rgba(0, 0, 0, 0.15);
+    background: #0a0a0a;
+  }
+}
+
 /* ──────────────────────────────────────────────────────────────── */
 /* Projetos — Back button                                           */
 /* ──────────────────────────────────────────────────────────────── */
@@ -3006,7 +3272,10 @@ p { line-height: 1.6; }
   position: fixed;
   inset: 0;
   z-index: 9999;
-  background: var(--color-dark);
+  /* Creme (não escuro): o Safari iOS amostra a tela em momentos imprevisíveis
+     (troca de rota inclusa) pra colorir a status bar — painel escuro deixava
+     a tarja preta grudada na página seguinte. */
+  background: var(--color-surface);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -3187,6 +3456,174 @@ p { line-height: 1.6; }
   font-size: 0.8rem;
 }
 
+/* ── Bloco compare: comparador antes/depois arrastável ─────────── */
+.case-compare-section {
+  position: relative;
+  z-index: 2;
+  background: var(--color-surface);
+  padding-block: clamp(4rem, 11vw, 10rem);
+}
+.case-compare__wrap {
+  max-width: 1180px;
+  margin: 0 auto;
+}
+.case-compare {
+  border-radius: clamp(10px, 1.4vw, 16px);
+  overflow: hidden;
+  background: #0e0e0e;
+  box-shadow: 0 30px 80px -34px rgba(0, 0, 0, 0.55);
+}
+/* Barra de navegador falsa — vende que é um site de verdade */
+.case-compare__bar {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  padding: 0.7rem 1rem;
+  background: #1c1c1c;
+}
+.case-compare__dots {
+  display: inline-flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+.case-compare__dots i {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #3a3a3a;
+}
+.case-compare__dots i:nth-child(1) { background: #ff5f57; }
+.case-compare__dots i:nth-child(2) { background: #febc2e; }
+.case-compare__dots i:nth-child(3) { background: #28c840; }
+.case-compare__url {
+  font-family: var(--font-body);
+  font-size: 12.5px;
+  color: rgba(255, 255, 255, 0.45);
+  background: #2a2a2a;
+  padding: 0.32rem 0.95rem;
+  border-radius: 6px;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 60%;
+}
+.case-compare__frame {
+  --pos: 50%;
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  background: #111;
+  cursor: ew-resize;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+/* Moldura de mockup (ex: notebook): a comparação vive posicionada por %
+   dentro do recorte da tela; o próprio mockup (com o vão transparente)
+   entra por cima e faz o papel de moldura — sem barra de navegador falsa. */
+.case-compare--mockup {
+  background: transparent;
+  box-shadow: none;
+  border-radius: 0;
+  overflow: visible;
+}
+.case-compare__mockup {
+  position: relative;
+  width: 100%;
+}
+.case-compare--mockup .case-compare__frame {
+  position: absolute;
+  width: auto;
+  height: auto;
+}
+.case-compare__mockup-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 3;
+  pointer-events: none;
+}
+.case-compare__img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  pointer-events: none;
+}
+/* camada "antes" recortada da esquerda até a divisória */
+.case-compare__before {
+  position: absolute;
+  inset: 0;
+  clip-path: inset(0 calc(100% - var(--pos)) 0 0);
+}
+.case-compare__label {
+  position: absolute;
+  top: 14px;
+  z-index: 3;
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.5);
+  color: #fff;
+  backdrop-filter: blur(4px);
+  pointer-events: none;
+}
+.case-compare__label--before { left: 14px; }
+.case-compare__label--after { right: 14px; }
+/* divisória vertical + botão redondo */
+.case-compare__handle {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: var(--pos);
+  width: 2px;
+  transform: translateX(-50%);
+  background: rgba(255, 255, 255, 0.9);
+  z-index: 4;
+  cursor: ew-resize;
+  /* emenda de tom duplo, acompanha a barra:
+     - glow branco → aparece sobre o lado escuro (o "antes")
+     - sombra neutra → aparece sobre o lado claro (o "depois"), onde o branco some
+     assim a divisória fica legível nos dois fundos, sem virar neon */
+  box-shadow:
+    0 0 14px 3px rgba(255, 255, 255, 0.95),
+    0 0 40px 8px rgba(255, 255, 255, 0.7),
+    0 0 18px 3px rgba(0, 0, 0, 0.3),
+    0 0 0 1px rgba(0, 0, 0, 0.14);
+}
+.case-compare__knob {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: #fff;
+  color: #141414;
+  display: grid;
+  place-items: center;
+  /* halo branco costura o knob à faixa de luz da divisória */
+  box-shadow: 0 0 20px 3px rgba(255, 255, 255, 0.6), 0 4px 16px rgba(0, 0, 0, 0.32);
+}
+.case-compare__knob svg {
+  width: 22px;
+  height: 22px;
+}
+.case-compare__handle:focus-visible {
+  outline: none;
+}
+.case-compare__handle:focus-visible .case-compare__knob {
+  box-shadow: 0 0 0 3px var(--color-accent), 0 4px 16px rgba(0, 0, 0, 0.32);
+}
+
 /* ── Bloco split: foto vertical à esquerda + texto centralizado ── */
 .case-split {
   position: relative;
@@ -3217,6 +3654,183 @@ p { line-height: 1.6; }
   height: auto;
   max-width: 700px;
   margin: 0;
+}
+.case-split__img--rounded {
+  border-radius: clamp(10px, 1.4vw, 16px);
+  overflow: hidden;
+}
+
+/* ── Bloco reveal: imagem larga cortada por máscara até sobrar o modal ── */
+.case-reveal {
+  position: relative;
+  z-index: 2;
+  background: var(--color-surface);
+  padding-block: clamp(4rem, 11vw, 10rem);
+}
+/* full-bleed: a imagem cresce e cola perto da borda direita */
+.case-reveal > .container-x {
+  max-width: none;
+  padding-inline: clamp(1.25rem, 3.5vw, 3.5rem);
+}
+.case-reveal__stage {
+  position: relative;
+  width: 100%;
+}
+.case-reveal__media {
+  --mask: 0%;
+  position: relative;
+  width: min(1360px, 76vw);
+  margin: 0 0 0 auto; /* ancora à direita */
+  aspect-ratio: var(--ar, 1665 / 947);
+  clip-path: inset(0 0 0 var(--mask) round clamp(10px, 1.4vw, 16px));
+}
+.case-reveal__img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  border-radius: clamp(10px, 1.4vw, 16px);
+}
+.case-reveal__img--portrait { display: none; }
+.case-reveal__text {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 8%;
+  right: 36%;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 2rem clamp(1rem, 2vw, 2rem);
+}
+.case-reveal__title {
+  font-family: var(--font-display);
+  font-size: clamp(2.25rem, 4vw, 3.75rem);
+  line-height: 0.95;
+  letter-spacing: -0.005em;
+  text-transform: uppercase;
+}
+.case-reveal__body {
+  margin: 1.5rem auto 0;
+  max-width: 42ch;
+  font-size: 1.05rem;
+  line-height: 1.6;
+  color: var(--color-muted-foreground);
+}
+
+@media (max-width: 860px) {
+  .case-reveal__stage { display: flex; flex-direction: column; }
+  .case-reveal__media {
+    width: 100%;
+    max-width: 460px;
+    margin-inline: auto;
+    aspect-ratio: var(--ar-m, 813 / 947);
+    clip-path: none;
+    order: 1;
+  }
+  .case-reveal__img--wide { display: none; }
+  .case-reveal__img--portrait { display: block; }
+  .case-reveal__text {
+    position: static;
+    left: auto;
+    right: auto;
+    width: 100%;
+    order: 2;
+    padding: clamp(1.5rem, 6vw, 2.5rem) 0 0;
+  }
+}
+
+/* ── Bloco showcase: catálogo à esquerda, texto à direita, com assentamento ── */
+.case-showcase {
+  position: relative;
+  z-index: 2;
+  background: var(--color-surface);
+  padding-block: clamp(4rem, 11vw, 10rem);
+  overflow-x: clip; /* segura o transiente do settle (scale/shift) sem criar scroll */
+}
+.case-showcase > .container-x {
+  max-width: none;
+  padding-inline: clamp(1.5rem, 4vw, 4rem);
+}
+.case-showcase__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
+  align-items: center;
+  gap: clamp(2rem, 5vw, 5.5rem);
+}
+.case-showcase__media {
+  justify-self: start;
+  width: 100%;
+  margin: 0;
+}
+.case-showcase__img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 1.5px solid rgba(0, 0, 0, 0.1); /* hairline: separa o branco do print do fundo creme */
+  border-radius: clamp(10px, 1.4vw, 16px);
+  box-shadow: 0 30px 60px -30px rgba(0, 0, 0, 0.35);
+}
+.case-showcase__text {
+  justify-self: center;
+  text-align: center;
+}
+.case-showcase__title {
+  font-family: var(--font-display);
+  font-size: clamp(2.25rem, 4vw, 3.75rem);
+  line-height: 0.95;
+  letter-spacing: -0.005em;
+  text-transform: uppercase;
+}
+.case-showcase__body {
+  margin: 1.5rem auto 0;
+  max-width: 42ch;
+  font-size: 1.05rem;
+  line-height: 1.6;
+  color: var(--color-muted-foreground);
+}
+@media (max-width: 860px) {
+  .case-showcase__grid {
+    grid-template-columns: 1fr;
+    gap: clamp(2rem, 8vw, 3rem);
+  }
+  .case-showcase__text {
+    justify-self: stretch;
+  }
+}
+
+/* Cabeçalho da comparação: título + subtítulo em cima (parte de baixo livre) */
+.case-compare__head {
+  max-width: 760px;
+  margin: 0 auto clamp(2rem, 4vw, 3.5rem);
+  text-align: center;
+}
+.case-compare__title {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 4.2vw, 3.5rem);
+  line-height: 0.98;
+  letter-spacing: -0.005em;
+  text-transform: uppercase;
+}
+.case-compare__desc {
+  margin: 1.15rem auto 0;
+  max-width: 58ch;
+  font-size: 1.12rem;
+  line-height: 1.68;
+  color: var(--color-muted-foreground);
+}
+.case-compare__hint {
+  display: block;
+  margin: clamp(1.1rem, 2.2vw, 1.6rem) auto 0;
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-muted-foreground);
 }
 .case-split__text {
   justify-self: start;
@@ -3440,6 +4054,21 @@ p { line-height: 1.6; }
   cursor: pointer;
 }
 
+/* ── Case mobile — overview empilhado ──────────────────────────── */
+@media (max-width: 767px) {
+  /* Poster: no mobile o título do case enche a largura — fator maior que o
+     1.4 do desktop na mesma fórmula fit-to-width por nº de caracteres */
+  .case-hawk__title {
+    font-size: clamp(3rem, calc(100cqi / var(--title-len, 4) * 2), 18rem);
+  }
+  .case-hawk__overview-grid {
+    grid-template-columns: 1fr;
+    gap: 3rem;
+    padding-top: 4.5rem;
+    padding-bottom: 4.5rem;
+  }
+}
+
 /* ── Floating Navbar ───────────────────────────────────────────── */
 .floating-nav {
   position: fixed;
@@ -3560,6 +4189,36 @@ p { line-height: 1.6; }
   opacity: 0.5;
 }
 
+/* Hambúrguer do hero — só existe no mobile */
+.hero__menu-btn {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 44px;
+  background: var(--color-foreground);
+  color: #fff;
+  border-radius: 8px;
+}
+
+/* COMEÇAR dentro da lista do overlay — só no mobile */
+.nav-overlay__link--comecar {
+  display: none;
+  color: var(--color-surface);
+}
+
+@media (max-width: 767px) {
+  /* Hero da home E dos cases: hambúrguer no lugar do COMEÇAR (menu comporta
+     todas as opções; nos cases a conversão fica com o BORA! do fim). */
+  .hero .hero__talk-btn,
+  .case-hawk .hero__talk-btn { display: none; }
+  .hero__menu-btn { display: inline-flex; }
+  /* COMEÇAR sai das barras (flutuante e do overlay) e vira link do menu */
+  .floating-nav > .hero__talk-btn,
+  .nav-overlay__bar > .hero__talk-btn { display: none; }
+  .nav-overlay__link--comecar { display: block; }
+}
+
 /* ── Página /comecar — questionário/contato ───────────────────────── */
 .comecar {
   position: relative;
@@ -3645,6 +4304,10 @@ p { line-height: 1.6; }
   border-color: var(--color-accent);
   background: rgba(22, 22, 22, 0.02);
 }
+.comecar__input.is-invalid {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px rgba(214, 40, 40, 0.12);
+}
 .comecar__textarea {
   resize: vertical;
   min-height: 130px;
@@ -3712,4 +4375,22 @@ p { line-height: 1.6; }
 }
 .comecar__submit.is-sent {
   background: var(--color-accent);
+}
+
+@media (max-width: 767px) {
+  /* Mais respiro entre a seta+logo e o bloco de título — no desktop o clamp
+     em vh já resolve, mas no mobile isso encolhe demais e gruda tudo. */
+  .comecar__head {
+    display: flex;
+    flex-direction: column;
+    margin-top: 4.5rem;
+  }
+  /* Kicker desce pra depois do título: "preencha abaixo" só faz sentido
+     literal perto do formulário — vira uma ponte discreta pro primeiro
+     campo, em vez de um preâmbulo solto acima do título gigante. */
+  .comecar__title { order: 1; }
+  .comecar__kicker {
+    order: 2;
+    margin: 1.4rem 0 0;
+  }
 }
