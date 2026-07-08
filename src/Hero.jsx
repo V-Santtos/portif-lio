@@ -27,7 +27,7 @@ function Hero({ ready }) {
   useIsoLayoutEffect(() => {
     if (prefersReducedMotion()) return;
     const titleSpans = titleRef.current?.querySelectorAll(".word > span");
-    if (titleSpans) gsap.set(titleSpans, { y: 0, yPercent: 110 });
+    if (titleSpans) gsap.set(titleSpans, { y: 0, yPercent: 160 });
     gsap.set([metaLeftRef.current, metaRightRef.current], { y: 16, opacity: 0 });
     gsap.set(navRef.current, { y: -16, opacity: 0 });
   }, []);

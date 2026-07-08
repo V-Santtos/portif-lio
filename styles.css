@@ -236,18 +236,6 @@ p { line-height: 1.6; }
   font-size: clamp(3rem, 4.1vw, 5rem);
 }
 
-.initial-loader__capsule {
-  position: fixed;
-  left: 50%;
-  bottom: max(1.1rem, env(safe-area-inset-bottom));
-  width: clamp(32px, 2.1vw, 42px);
-  height: 7px;
-  border: 1px solid rgba(255, 255, 255, 0.65);
-  border-radius: 999px;
-  transform: translateX(-50%);
-  opacity: 0.7;
-}
-
 @media (max-width: 767px) {
   .initial-loader__counter {
     left: clamp(1.55rem, 9vw, 2.8rem);
@@ -388,7 +376,7 @@ p { line-height: 1.6; }
   padding-top: 0.18em;
   margin-top: -0.18em;
 }
-.hero__title .word > span { display: inline-block; transform: translateY(110%); }
+.hero__title .word > span { display: inline-block; transform: translateY(160%); }
 .hero__title .accent { color: var(--color-accent); }
 
 .hero__meta {
@@ -426,11 +414,11 @@ p { line-height: 1.6; }
     linear-gradient(
       to top,
       #f05235 0%,
-      rgba(240, 82, 53, 0.92) 14%,
-      rgba(240, 82, 53, 0.68) 32%,
-      rgba(240, 82, 53, 0.34) 55%,
-      rgba(240, 82, 53, 0.10) 78%,
-      transparent 100%
+      rgba(240, 82, 53, 0.86) 18%,
+      rgba(240, 82, 53, 0.55) 38%,
+      rgba(240, 82, 53, 0.28) 58%,
+      rgba(240, 82, 53, 0.10) 80%,
+      rgba(240, 82, 53, 0) 100%
     );
   z-index: 0;
 }
@@ -462,7 +450,7 @@ p { line-height: 1.6; }
      a máscara da animação continua funcionando linha a linha) */
   .hero__line { white-space: normal; }
   .hero__title {
-    font-size: clamp(48px, 15.5vw, 76px);
+    font-size: clamp(52px, 18vw, 88px);
     line-height: 0.92;
   }
   .hero__meta {
@@ -3326,6 +3314,13 @@ p { line-height: 1.6; }
   display: flex;
   flex-direction: column;
   background: var(--color-surface);
+}
+/* Mobile: mesma altura svh da home (a base é 100vh). Sem isso o hero do case
+   é mais alto que a viewport visível e joga a base SÓLIDA do wash pra baixo da
+   dobra — o laranja que chega na barra fica "ralo". Com svh, o laranja sólido
+   assenta na borda visível e casa com a barra, igual à home. */
+@media (max-width: 767px) {
+  .case-hawk__hero { min-height: 100svh; }
 }
 
 /* Navbar do case full-bleed igual à home: estoura só a nav pra largura

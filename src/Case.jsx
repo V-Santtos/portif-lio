@@ -21,7 +21,14 @@ function Case() {
   const ctaBtnRef   = useRef(null);
 
   useIsoLayoutEffect(() => {
-    document.documentElement.removeAttribute("data-booting");
+    // Adia a remoção 1 frame pra a primeira pintura acontecer COM o boot
+    // (creme→laranja) visível — assim o Safari iOS amostra a barra inferior
+    // laranja no reload do case. O Case monta rápido; sem o defer o boot some
+    // antes de pintar e a barra reseta pra creme. Mesmo efeito do hero.
+    const raf = requestAnimationFrame(() => {
+      document.documentElement.removeAttribute("data-booting");
+    });
+    return () => cancelAnimationFrame(raf);
   }, []);
 
   useIsoLayoutEffect(() => {

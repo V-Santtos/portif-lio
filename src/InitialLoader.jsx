@@ -140,8 +140,6 @@ function InitialLoader({ onDone }) {
         <span className="initial-loader__number">{label}</span>
         <span className="initial-loader__percent">%</span>
       </div>
-
-      <div className="initial-loader__capsule" aria-hidden="true"></div>
     </div>
   );
 }
