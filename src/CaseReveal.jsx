@@ -26,8 +26,23 @@ function CaseReveal({
     const media = mediaRef.current;
     if (!stage || !media) return;
 
-    // Mobile: layout empilhado, imagem retrato, sem máscara — nada a animar.
-    if (window.matchMedia("(max-width: 860px)").matches) return;
+    // Mobile: sem máscara (imagem retrato empilhada). Em vez de nada, ganha o
+    // MESMO assentamento do bloco `showcase` de baixo — a mídia assenta
+    // (scale/shift) e o texto entra em seguida. O desktop segue com a máscara
+    // (código abaixo), intocado.
+    if (window.matchMedia("(max-width: 860px)").matches) {
+      if (prefersReducedMotion()) return; // estado final estático
+      const textEls = textRef.current ? Array.from(textRef.current.children) : [];
+      gsap.set(media, { opacity: 0, scale: 1.08, xPercent: 6 });
+      gsap.set(textEls, { opacity: 0, y: 24 });
+      const tl = gsap.timeline({
+        defaults: { ease: "power3.out" },
+        scrollTrigger: { trigger: media, start: "top 78%", toggleActions: "play none none none" },
+      });
+      tl.to(media, { opacity: 1, scale: 1, xPercent: 0, duration: 1.0 })
+        .to(textEls, { opacity: 1, y: 0, duration: 0.7, stagger: 0.12 }, "-=0.45");
+      return () => { tl.scrollTrigger?.kill(); tl.kill(); };
+    }
 
     // Reduced-motion: aplica direto o estado final (máscara fechada).
     if (prefersReducedMotion()) {

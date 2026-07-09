@@ -1,6 +1,8 @@
 import { useRef, useState } from "react";
-import { gsap, prefersReducedMotion, useIsoLayoutEffect } from "./lib.jsx";
+import { gsap, prefersReducedMotion, useIsoLayoutEffect, SplitText, fireConfetti } from "./lib.jsx";
 import { usePageTransition } from "./PageTransition.jsx";
+import Seo from "./Seo.jsx";
+import { getStaticSeo } from "./seo.js";
 
 const TIMELINES = ["Imediato", "Em 1 mês", "Em 2-3 meses", "Ainda não sei"];
 const BUDGETS = [
@@ -10,13 +12,25 @@ const BUDGETS = [
   "Acima de R$ 5.000",
 ];
 
+// Destino do formulário: webhook do n8n (workflow "portfolio").
+// PRODUÇÃO (padrão) — exige o workflow ATIVO no n8n:
+const WEBHOOK_URL = "https://webhook.autohost.shop/webhook/portifolio";
+// TESTE (só dispara com "Listen for test event" ligado no n8n; captura 1 envio):
+// const WEBHOOK_URL = "https://webhook.autohost.shop/webhook-test/portifolio";
+// Nota: o node do webhook precisa liberar CORS (Options → Allowed Origins) pro
+// domínio do site, senão o fetch cross-origin do navegador falha.
+
 function Comecar() {
   const { transitionTo } = usePageTransition();
   const titleRef = useRef(null);
   const formRef = useRef(null);
   const contactRef = useRef(null);
   const messageRef = useRef(null);
-  const [sent, setSent] = useState(false);
+  const pageRef = useRef(null);
+  const successRef = useRef(null);
+  const successMsgRef = useRef(null);
+  const checkRef = useRef(null);
+  const [success, setSuccess] = useState(false);
   const [contact, setContact] = useState("");
   const [contactMode, setContactMode] = useState("email"); // "email" | "tel"
   const [contactError, setContactError] = useState("");
@@ -96,8 +110,10 @@ function Comecar() {
     if (messageError) setMessageError(""); // some ao corrigir
   };
 
-  // Placeholder de envio: valida contato + ideia; se ok, mostra "Enviado ✓".
-  // Destino real (WhatsApp/n8n) será plugado depois.
+  // Envio: valida contato + ideia; se ok, dispara o POST de forma OTIMISTA e já
+  // mostra a tela de sucesso. Não esperamos a resposta do n8n de propósito — o
+  // servidor às vezes leva ~30s e estoura em 504, mas o request já foi entregue
+  // (por isso `keepalive`). A experiência não fica refém do servidor.
   const handleSubmit = (e) => {
     e.preventDefault();
     const cErr = validateContact();
@@ -112,13 +128,83 @@ function Comecar() {
       messageRef.current?.focus();
       return;
     }
-    setSent(true);
-    window.setTimeout(() => setSent(false), 2600);
+
+    const fd = new FormData(e.currentTarget);
+    const payload = {
+      nome: (fd.get("nome") || "").toString().trim(),
+      contato: contact.trim(),
+      contatoTipo: contactMode, // "email" | "tel"
+      prazo: (fd.get("prazo") || "").toString(),
+      orcamento: (fd.get("orcamento") || "").toString(),
+      mensagem: (fd.get("mensagem") || "").toString().trim(),
+      origem: "portfolio /comecar",
+      enviadoEm: new Date().toISOString(),
+    };
+
+    // Dispara e esquece (não trava a UI). `.catch` silencioso: o dado chega no
+    // n8n mesmo quando a resposta demora/estoura.
+    try {
+      fetch(WEBHOOK_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+        keepalive: true,
+      }).catch(() => {});
+    } catch {
+      /* noop — a tela de sucesso segue mesmo assim */
+    }
+
+    setSuccess(true);
   };
+
+  // Coreografia de sucesso: o conteúdo some, e no centro entram o ✓ que se
+  // desenha (DrawSVG), a frase que sobe palavra por palavra (SplitText) e o
+  // confete (Physics2D), tudo num só tempo. Gated por reduced-motion.
+  useIsoLayoutEffect(() => {
+    if (!success) return;
+
+    if (prefersReducedMotion()) {
+      gsap.set(pageRef.current, { display: "none" });
+      gsap.set(successRef.current, { autoAlpha: 1 });
+      return;
+    }
+
+    const split = new SplitText(successMsgRef.current, { type: "words", mask: "words" });
+    gsap.set(split.words, { yPercent: 115, opacity: 0 });
+
+    const tl = gsap.timeline();
+    tl.to(pageRef.current, { autoAlpha: 0, y: -18, scale: 0.98, duration: 0.4, ease: "power2.in" })
+      .set(pageRef.current, { display: "none" })
+      .set(successRef.current, { autoAlpha: 1 });
+
+    const marks = successRef.current?.querySelectorAll(".comecar__check path, .comecar__check circle");
+    if (marks?.length) {
+      tl.fromTo(marks, { drawSVG: "0%" }, { drawSVG: "100%", duration: 0.55, ease: "power2.inOut", stagger: 0.12 }, ">-0.05");
+    }
+    tl.to(split.words, { yPercent: 0, opacity: 1, duration: 0.7, ease: "power3.out", stagger: 0.09 }, ">-0.15");
+    tl.add(() => {
+      const r = successMsgRef.current?.getBoundingClientRect();
+      fireConfetti({
+        x: window.innerWidth / 2,
+        y: r ? r.top + r.height / 2 : window.innerHeight * 0.42,
+      });
+    }, "<0.05");
+
+    // Botão de saída entra por último, com um respiro (~1s), pra não brigar
+    // com o momento do confete/frase.
+    const backBtn = successRef.current?.querySelector(".comecar__success-back");
+    if (backBtn) {
+      gsap.set(backBtn, { opacity: 0, y: 12 });
+      tl.to(backBtn, { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" }, ">+0.4");
+    }
+
+    return () => split.revert();
+  }, [success]);
 
   return (
     <section className="section comecar" data-screen-label="Comecar">
-      <div className="container-x">
+      <Seo {...getStaticSeo("comecar")} />
+      <div className="container-x" ref={pageRef}>
         <button className="projetos__back" aria-label="Voltar para o início" onClick={() => transitionTo("/")}>
           <span className="projetos__back-arrow">←</span>
           <svg viewBox="0 0 660 415" className="projetos__back-logo" aria-hidden="true">
@@ -201,11 +287,20 @@ function Comecar() {
           </div>
 
           <div className="comecar__field comecar__submit-row" data-reveal>
-            <button type="submit" className={`comecar__submit${sent ? " is-sent" : ""}`}>
-              {sent ? "Enviado ✓" : "Bora!"}
-            </button>
+            <button type="submit" className="comecar__submit">Bora!</button>
           </div>
         </form>
+      </div>
+
+      <div className="comecar__success" ref={successRef} role="status" aria-live="polite">
+        <svg className="comecar__check" viewBox="0 0 52 52" aria-hidden="true">
+          <circle cx="26" cy="26" r="24" />
+          <path d="M15 27 l7.5 7.5 L38 19" />
+        </svg>
+        <p className="comecar__success-msg" ref={successMsgRef}>Enviado! Em breve entro em contato com você.</p>
+        <button className="comecar__success-back" onClick={() => transitionTo("/")}>
+          <span className="comecar__success-arrow" aria-hidden="true">←</span> Voltar ao início
+        </button>
       </div>
     </section>
   );

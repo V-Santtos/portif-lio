@@ -3719,6 +3719,9 @@ p { line-height: 1.6; }
 }
 
 @media (max-width: 860px) {
+  /* segura o transiente do assentamento (scale/shift) sem criar scroll lateral
+     — mesmo motivo do overflow-x:clip no .case-showcase. Só no mobile. */
+  .case-reveal { overflow-x: clip; }
   .case-reveal__stage { display: flex; flex-direction: column; }
   .case-reveal__media {
     width: 100%;
@@ -3931,6 +3934,60 @@ p { line-height: 1.6; }
 }
 .case-foot .footer__back-top {
   position: static;
+}
+
+/* Botão "próximo projeto" — canto inferior direito da área final do case */
+.case-next {
+  position: absolute;
+  right: 4rem;
+  bottom: clamp(2rem, 4vw, 3rem);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  text-align: center;
+  color: var(--color-foreground);
+}
+.case-next__label {
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-muted-foreground);
+  transition: color 220ms ease;
+}
+.case-next__name {
+  position: relative;
+  display: inline-flex;
+  align-items: baseline;
+  font-family: var(--font-display);
+  font-size: clamp(24px, 3vw, 40px);
+  line-height: 1;
+  text-transform: uppercase;
+  letter-spacing: -0.005em;
+}
+/* seta fora do fluxo: não conta na largura, então o eyebrow centra sobre a PALAVRA */
+.case-next__arrow {
+  position: absolute;
+  left: 100%;
+  bottom: 0.06em;
+  margin-left: 0.35rem;
+  font-family: var(--font-body);
+  font-size: 0.6em;
+  transition: transform 260ms ease;
+}
+.case-next:hover .case-next__label { color: var(--color-accent); }
+.case-next:hover .case-next__arrow { transform: translateX(6px); }
+
+@media (max-width: 767px) {
+  /* empilha: "próximo projeto" acima do voltar-ao-topo, tudo centralizado */
+  .case-foot {
+    flex-direction: column-reverse;
+    gap: 2rem;
+  }
+  .case-next { position: static; }
+  .case-next__name { font-size: 28px; }
 }
 
 /* Botão "vamos conversar" do nav do case (estilo Bogdan, avatar placeholder) */
@@ -4180,8 +4237,36 @@ p { line-height: 1.6; }
   transition: opacity 0.2s ease;
 }
 
-.nav-overlay__link:hover {
-  opacity: 0.5;
+/* Fallback (reduced-motion ou antes do roll montar): só troca a cor */
+.nav-overlay__link:not(.nav-overlay__link--roll):hover {
+  color: var(--color-surface);
+}
+
+/* Roll-swap por caractere (hover) — cada letra rola e uma cópia creme sobe.
+   Cada cell é uma janela de 1 linha; a coluna guarda [preto / creme]
+   empilhados e sobe metade da própria altura no hover. */
+.nav-roll__char {
+  display: inline-block;
+  overflow: hidden;
+  height: 1.15em;
+  line-height: 1.15;
+  vertical-align: top;
+  pointer-events: none;
+}
+.nav-roll__col {
+  display: block;
+  will-change: transform;
+}
+.nav-roll__layer {
+  display: block;
+  height: 1.15em;
+  line-height: 1.15;
+}
+.nav-roll__top {
+  color: var(--color-foreground);
+}
+.nav-roll__bot {
+  color: var(--color-surface);
 }
 
 /* Hambúrguer do hero — só existe no mobile */
@@ -4368,8 +4453,69 @@ p { line-height: 1.6; }
 .comecar__submit:hover {
   transform: translateY(-2px);
 }
-.comecar__submit.is-sent {
-  background: var(--color-accent);
+/* Tela de sucesso: takeover central após o envio (o form some; entram o ✓ que
+   se desenha, a frase por palavra e o confete). Começa oculta — a coreografia
+   GSAP a revela. */
+.comecar__success {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.6rem;
+  padding: 2rem;
+  text-align: center;
+  visibility: hidden;
+  opacity: 0;
+}
+.comecar__check {
+  width: clamp(64px, 9vw, 96px);
+  height: clamp(64px, 9vw, 96px);
+  fill: none;
+  stroke: var(--color-accent);
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  overflow: visible;
+}
+.comecar__success-msg {
+  margin: 0;
+  max-width: 16ch;
+  font-family: var(--font-display);
+  font-size: clamp(30px, 5vw, 56px);
+  line-height: 1.06;
+  letter-spacing: 0.01em;
+  color: var(--color-foreground);
+}
+.comecar__success-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.6rem;
+  padding: 0.75rem 1.7rem;
+  background: none;
+  border: 1.5px solid rgba(20, 18, 16, 0.18);
+  border-radius: 9px;
+  color: var(--color-foreground);
+  font-family: var(--font-display);
+  font-size: 18px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: border-color 0.25s ease, color 0.25s ease, transform 0.2s ease;
+}
+.comecar__success-back:hover {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+  transform: translateY(-2px);
+}
+.comecar__success-arrow {
+  transition: transform 0.2s ease;
+}
+.comecar__success-back:hover .comecar__success-arrow {
+  transform: translateX(-3px);
 }
 
 @media (max-width: 767px) {

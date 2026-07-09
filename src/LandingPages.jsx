@@ -138,6 +138,18 @@ function LandingPages() {
       const totalMove = (cardCount - 1) * (cardW + gapPx);
       const scrollDist = totalMove * (isMobile ? 2.4 : 1.5);
 
+      // Pista de desaceleração na SAÍDA (só mobile): um trecho de scroll no fim
+      // do pin onde tudo já terminou e está parado. Num flick forte o momentum
+      // QUEIMA aqui — o scroll nativo desacelera ao longo da distância — em vez
+      // de despejar velocidade na Bridge e o usuário passar batido. Sem lock,
+      // sem brigar com o momentum do iOS. Calibrar pela fração da viewport:
+      // maior = freia mais (mais dedo pra sair); menor = freia menos.
+      const EXIT_RUNWAY_VH = 0.7;
+      const runway = isMobile ? Math.round(window.innerHeight * EXIT_RUNWAY_VH) : 0;
+      const endDist = scrollDist + runway;
+      // Fração do pin em que cards/faixas realmente animam; o resto é a pista.
+      const activeFrac = endDist > 0 ? scrollDist / endDist : 1;
+
       gsap.set(carouselTrack, { x: initialX });
 
       const hasStrips =
@@ -161,7 +173,7 @@ function LandingPages() {
         // idêntica (antes o de baixo percorria meio trem na mesma rampa e
         // entrava ~3.7× mais rápido). O +40 é folga anti-fresta no wrap.
         const cruiseX = movesLeft ? 0 : -2 * halfW + vw + 40;
-        const state = { offset: 0, exitFromX: null };
+        const state = { offset: 0, exitFromX: null, enterToX: null, lastX: null };
 
         const update = (p, dt) => {
           // marquee acumula só no cruzeiro (wrap na meia-volta duplicada)
@@ -175,23 +187,38 @@ function LandingPages() {
             x = startX;
             state.offset = 0;
             state.exitFromX = null;
+            state.enterToX = null;
           } else if (p < P_IN_B) {
-            // entrada: o trem chega pela borda, proporcional ao progresso
+            // entrada: rampa da borda até a posição de cruzeiro ATUAL
+            // (cruiseX + offset), espelhando a saída (que captura exitFromX).
+            // Sem isso, descer do cruzeiro pra entrada pulava ~offset px porque
+            // o cruzeiro carrega +offset e a entrada largava em +0. Capturar o
+            // offset aqui casa os dois lados no mesmo ponto — contínuo indo e
+            // voltando, em qualquer velocidade — mantendo o marquee vivo.
+            if (state.enterToX === null) state.enterToX = cruiseX + state.offset;
             const t = easeOutQ((p - P_IN_A) / (P_IN_B - P_IN_A));
-            x = startX + (cruiseX - startX) * t;
+            x = startX + (state.enterToX - startX) * t;
             state.exitFromX = null;
           } else if (p < P_OUT_A) {
             x = cruiseX + state.offset;
             state.exitFromX = null;
+            state.enterToX = null;
           } else if (p < P_OUT_B) {
             // saída: retrocede pra borda de origem, proporcional ao progresso
             if (state.exitFromX === null) state.exitFromX = cruiseX + state.offset;
             const t = easeInQ((p - P_OUT_A) / (P_OUT_B - P_OUT_A));
             x = state.exitFromX + (startX - state.exitFromX) * t;
+            state.enterToX = null;
           } else {
             x = startX;
+            state.enterToX = null;
           }
-          gsap.set(trackEl, { x });
+          // Pula o set quando nada mudou (parado fora da rampa/cruzeiro): evita
+          // reescrever o transform todo frame à toa.
+          if (state.lastX === null || Math.abs(x - state.lastX) > 0.01) {
+            gsap.set(trackEl, { x });
+            state.lastX = x;
+          }
         };
 
         update(0, 0);
@@ -209,8 +236,19 @@ function LandingPages() {
         // os cards centrais). Num flick violento o scrub suaviza o salto —
         // faixas e carrossel percorrem o caminho juntos, sem pop.
         const onTick = (time, deltaTime) => {
+          // Só trabalha enquanto o carrossel está engatado (pin ativo). Fora
+          // dele as faixas estão paradas na borda (startX, fora da tela) — não
+          // há motivo pra rodar o cálculo/set todo frame. Corta o custo do
+          // ticker pra ~zero quando a seção não está em tela.
+          const st = carouselTl && carouselTl.scrollTrigger;
+          if (!st || !st.isActive) return;
           const dt = Math.min(deltaTime, 100) / 1000;
-          const p = carouselTl ? carouselTl.progress() : 0;
+          // progresso da TIMELINE = valor amortecido pelo scrub (não o cru da
+          // ScrollTrigger) — é o que segura o flick sem pop. Reescalado pela
+          // fração ativa: as faixas completam a saída junto com os cards e ficam
+          // paradas (p=1) durante a pista de desaceleração.
+          const pRaw = carouselTl.progress();
+          const p = activeFrac < 1 ? Math.min(1, pRaw / activeFrac) : pRaw;
           strips.forEach((s) => s.update(p, dt));
         };
         gsap.ticker.add(onTick);
@@ -221,11 +259,24 @@ function LandingPages() {
         scrollTrigger: {
           trigger: endWrapper,
           start: "center center",
-          end: `+=${scrollDist}`,
+          end: `+=${endDist}`,
           scrub: isMobile ? 1 : 0.6,
-          // Snap por card no touch: o flick "aterrissa" no card mais próximo
+          // Snap por card no touch: o flick "aterrissa" no card mais próximo.
+          // Pontos reescalados pela fração ativa (a pista de saída empurrou os
+          // cards pra [0, activeFrac]); o ponto final (1) faz a pista "assentar"
+          // na borda da Bridge se o usuário parar nela.
           snap: isMobile
-            ? { snapTo: 1 / (cardCount - 1), duration: { min: 0.25, max: 0.6 }, ease: "power2.out" }
+            ? {
+                snapTo: [
+                  ...Array.from({ length: cardCount }, (_, i) => (i / (cardCount - 1)) * activeFrac),
+                  1,
+                ],
+                duration: { min: 0.25, max: 0.6 },
+                ease: "power2.out",
+                // Assenta só no SENTIDO do movimento: descendo, a pista flui pro
+                // fim (Bridge) — nunca puxa de volta pro último card (yank).
+                directional: true,
+              }
             : undefined,
           pin: section,
           anticipatePin: 1,
@@ -253,7 +304,11 @@ function LandingPages() {
         },
       });
 
-      carouselTl.to(carouselTrack, { x: initialX - totalMove, ease: "none" });
+      carouselTl.to(carouselTrack, { x: initialX - totalMove, ease: "none", duration: scrollDist });
+      // Cauda parada = a pista de desaceleração. Com scrub, o que importa é a
+      // razão das durações (scrollDist : runway), então o momentum de um flick
+      // forte tem onde morrer antes do pin soltar pra Bridge.
+      if (runway > 0) carouselTl.to({}, { duration: runway });
     }
 
     const delayedBuild = gsap.delayedCall(0.2, () => {

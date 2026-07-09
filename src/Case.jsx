@@ -3,6 +3,9 @@ import { useParams, Navigate } from "react-router-dom";
 import { gsap, ScrollTrigger, SplitText, useIsoLayoutEffect, prefersReducedMotion } from "./lib.jsx";
 import { usePageTransition } from "./PageTransition.jsx";
 import { CASES } from "./casesData.js";
+import { nextProject } from "./projectsList.js";
+import Seo from "./Seo.jsx";
+import { getCaseSeo } from "./seo.js";
 import CaseCompare from "./CaseCompare.jsx";
 import CaseReveal from "./CaseReveal.jsx";
 
@@ -181,11 +184,17 @@ function Case() {
     }, 650);
   };
 
+  // Próximo projeto na lista visível (cicla pro primeiro no fim)
+  const next = nextProject(slug);
+
   // Slug inexistente: volta para a lista de projetos
   if (!data) return <Navigate to="/projetos" replace />;
 
+  const seo = getCaseSeo(slug);
+
   return (
     <div className="case-hawk">
+      {seo && <Seo {...seo} />}
 
       {/* ── Seção 1 — Hero ─────────────────────────────────────── */}
       <section className="section case-hawk__hero" ref={heroRef}>
@@ -456,6 +465,20 @@ function Case() {
         >
           ↑
         </a>
+        {next && (
+          <a
+            className="case-next"
+            href={next.href}
+            aria-label={`Próximo projeto: ${next.name}`}
+            onClick={(e) => { e.preventDefault(); transitionTo(next.href); }}
+          >
+            <span className="case-next__label">Próximo projeto</span>
+            <span className="case-next__name">
+              {next.name}
+              <span className="case-next__arrow" aria-hidden="true">→</span>
+            </span>
+          </a>
+        )}
       </div>
 
     </div>

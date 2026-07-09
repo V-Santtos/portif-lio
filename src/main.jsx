@@ -1,6 +1,7 @@
 import React, { useLayoutEffect } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import { HelmetProvider } from "react-helmet-async";
 import App from "./App.jsx";
 import Projetos from "./Projetos.jsx";
 import Case from "./Case.jsx";
@@ -21,17 +22,19 @@ function ScrollToTop() {
 
 createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <BrowserRouter>
-      <PageTransitionProvider>
-        <ScrollToTop />
-        <Navbar />
-        <Routes>
-          <Route path="/"                        element={<App />} />
-          <Route path="/projetos"                element={<Projetos />} />
-          <Route path="/projetos/:slug"          element={<Case />} />
-          <Route path="/comecar"                 element={<Comecar />} />
-        </Routes>
-      </PageTransitionProvider>
-    </BrowserRouter>
+    <HelmetProvider>
+      <BrowserRouter>
+        <PageTransitionProvider>
+          <ScrollToTop />
+          <Navbar />
+          <Routes>
+            <Route path="/"                        element={<App />} />
+            <Route path="/projetos"                element={<Projetos />} />
+            <Route path="/projetos/:slug"          element={<Case />} />
+            <Route path="/comecar"                 element={<Comecar />} />
+          </Routes>
+        </PageTransitionProvider>
+      </BrowserRouter>
+    </HelmetProvider>
   </React.StrictMode>
 );

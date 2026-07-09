@@ -1,18 +1,11 @@
 import { useRef, useState, useEffect } from "react";
 import { gsap, useIsoLayoutEffect, prefersReducedMotion, useTitleReveal } from "./lib.jsx";
 import { usePageTransition } from "./PageTransition.jsx";
+import { PROJECTS } from "./projectsList.js";
+import Seo from "./Seo.jsx";
+import { getStaticSeo } from "./seo.js";
 
 const MOBILE_QUERY = "(max-width: 767px)";
-
-const PROJECTS = [
-  { id: "minas-tintas", name: "Minas Tintas", img: "/minas-tintas.png",        href: "/projetos/minas-tintas" },
-  // Oculto temporariamente — basta descomentar para voltar à listagem.
-  // { id: "barbearia",    name: "Barbearia",    video: "/videos/barbearia.mp4",  href: "/projetos/barbearia"    },
-  { id: "hawk-street",  name: "Hawk Street",  video: "/hawk-street.mp4",       href: "/projetos/hawk-street"  },
-  { id: "flux-time",    name: "Flux Time",    video: "/videos/flux.mp4",       href: "/projetos/flux-time"    },
-  // Oculto temporariamente — basta descomentar para voltar à listagem.
-  // { id: "art-piso",     name: "Art Piso",     img: "/art-piso.jpg",            href: "/projetos/art-piso"     },
-];
 
 function Projetos() {
   const { transitionTo } = usePageTransition();
@@ -178,6 +171,7 @@ function Projetos() {
 
   return (
     <section className="section projetos" id="projetos" data-screen-label="Projetos">
+      <Seo {...getStaticSeo("projetos")} />
       <div className="container-x">
 
         <button className="projetos__back" aria-label="Voltar para o início" onClick={() => transitionTo("/")}>

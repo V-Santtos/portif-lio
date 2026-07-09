@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+
+# Domínio atual: deploy grátis da Vercel. Ao migrar pro domínio próprio,
+# trocar a URL do Sitemap abaixo (e as <loc> do sitemap.xml).
+Sitemap: https://portif-lio-three-kohl.vercel.app/sitemap.xml

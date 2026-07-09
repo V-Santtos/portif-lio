@@ -15,6 +15,10 @@ vite-dev.err.log
 uploads/
 gsap/
 
+# Dev probes / scratch scripts (local-only)
+.probe-*.mjs
+.render-og.mjs
+
 # Editor / OS
 .vscode/*
 !.vscode/extensions.json

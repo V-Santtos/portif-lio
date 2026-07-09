@@ -78,28 +78,65 @@ function Automation() {
     };
 
     let widths = applyStartWidth();
-    let played = false;
     let setupCancelled = false;
 
-    const playWordSwap = () => {
-      if (played) return;
-      played = true;
+    // Timeline REVERSÍVEL do swap MELHORADO→AUTOMATIZADO, montada uma vez e
+    // pausada no início. A entrada automática dá play() (comportamento atual,
+    // intacto). O clique na tarja alterna play() ↔ reverse() — o reverse é o
+    // inverso exato da animação (mesmos caminhos), sem 2ª animação.
+    let swapTl = null;
+    let atEnd = false; // false = "melhorado" visível · true = "automatizado."
+
+    const buildSwap = () => {
       widths = measureBoxWidths();
-      const tl = gsap.timeline();
+      gsap.set(wordBox, { width: widths.start });
+      gsap.set(charsOut, { yPercent: 0 });
+      gsap.set(charsIn, { yPercent: 100 });
+      const tl = gsap.timeline({ paused: true });
       tl.to(wordBox, { width: widths.end, duration: 0.45, ease: "power2.inOut" }, 0);
       tl.to(charsOut, { yPercent: -120, duration: 0.35, stagger: 0.025, ease: "power2.in" }, 0);
       tl.to(charsIn, { yPercent: 0, duration: 0.5, stagger: 0.025, ease: "power2.out" }, 0.08);
+      return tl;
     };
 
+    // Entrada automática (chamada pela sequência, one-shot pela própria seq).
+    const playWordSwap = () => {
+      if (!swapTl) swapTl = buildSwap();
+      swapTl.play();
+      atEnd = true;
+    };
+
+    // Clique: alterna a palavra. SEM indicar que é clicável — só pra quem
+    // clicar (perdeu a 1ª palavra ou curiosidade). Trava de 1s por interação:
+    // a anim dura ~0.5s, o lock cobre + dá um respiro, sem spam.
+    let clickLocked = false;
+    let unlockTimer = null;
+    const onWordClick = () => {
+      if (clickLocked) return;
+      if (!swapTl) swapTl = buildSwap();
+      clickLocked = true;
+      if (atEnd) { swapTl.reverse(); atEnd = false; }
+      else { swapTl.play(); atEnd = true; }
+      unlockTimer = setTimeout(() => { clickLocked = false; }, 1000);
+    };
+    wordBox.addEventListener("click", onWordClick);
+
     document.fonts?.ready.then(() => {
-      if (!setupCancelled && !played) {
+      if (!setupCancelled && !swapTl) {
         widths = applyStartWidth();
       }
     });
 
     const onResize = () => {
       widths = measureBoxWidths();
-      gsap.set(wordBox, { width: played ? widths.end : widths.start });
+      if (swapTl) {
+        // rebuild preservando o estado atual (largura da caixa muda com a fonte)
+        swapTl.kill();
+        swapTl = buildSwap();
+        if (atEnd) swapTl.progress(1);
+      } else {
+        gsap.set(wordBox, { width: widths.start });
+      }
     };
     window.addEventListener("resize", onResize);
 
@@ -152,7 +189,10 @@ function Automation() {
       setupCancelled = true;
       window.removeEventListener("resize", onResize);
       window.removeEventListener("scroll", checkTitleVisible);
+      wordBox.removeEventListener("click", onWordClick);
+      if (unlockTimer) clearTimeout(unlockTimer);
       if (sequenceTl) sequenceTl.kill();
+      if (swapTl) swapTl.kill();
     };
   }, []);
 

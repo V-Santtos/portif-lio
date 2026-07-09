@@ -8,6 +8,8 @@ import Bridge from "./Bridge.jsx";
 import Automation from "./Automation.jsx";
 import About from "./About.jsx";
 import Contact from "./Contact.jsx";
+import Seo from "./Seo.jsx";
+import { getStaticSeo } from "./seo.js";
 
 const SHOW_ABOUT_SECTION = false;
 
@@ -130,6 +132,7 @@ function App() {
 
   return (
     <>
+      <Seo {...getStaticSeo("home")} />
       <div className="scroll-progress" ref={progressRef} aria-hidden="true"></div>
       {loaderState.showInitialLoader && (
         <InitialLoader

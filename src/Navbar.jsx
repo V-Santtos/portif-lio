@@ -75,6 +75,76 @@ function Navbar() {
     return () => window.removeEventListener("nav:open-menu", open);
   }, []);
 
+  // Roll-swap no hover dos links (INÍCIO / PROJETOS / CONTATO): cada letra
+  // rola pra cima e uma cópia creme sobe no lugar (máscara por caractere).
+  // Só desktop tem hover; reduced-motion mantém o fallback CSS de cor.
+  useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const root = linksRef.current;
+    if (!root) return;
+
+    const links = root.querySelectorAll(
+      ".nav-overlay__link:not(.nav-overlay__link--comecar)"
+    );
+    const cleanups = [];
+
+    links.forEach((btn) => {
+      // Build do DOM uma vez só (StrictMode roda o efeito 2×). Os listeners
+      // ficam FORA deste guard — precisam ser re-anexados a cada mount, já que
+      // o cleanup do mount anterior os remove.
+      if (!btn.dataset.rollReady) {
+      const text = btn.textContent;
+      btn.textContent = "";
+      const frag = document.createDocumentFragment();
+      for (const ch of text) {
+        const glyph = ch === " " ? " " : ch;
+        const cell = document.createElement("span");
+        cell.className = "nav-roll__char";
+        const col = document.createElement("span");
+        col.className = "nav-roll__col";
+        const top = document.createElement("span");
+        top.className = "nav-roll__layer nav-roll__top";
+        top.textContent = glyph;
+        const bot = document.createElement("span");
+        bot.className = "nav-roll__layer nav-roll__bot";
+        bot.textContent = glyph;
+        col.append(top, bot);
+        cell.append(col);
+        frag.append(cell);
+      }
+      btn.append(frag);
+      btn.dataset.rollReady = "1";
+      btn.classList.add("nav-overlay__link--roll");
+      }
+
+      const cols = btn.querySelectorAll(".nav-roll__col");
+      const enter = () =>
+        gsap.to(cols, {
+          yPercent: -50,
+          duration: 0.45,
+          ease: "power3.out",
+          stagger: 0.03,
+          overwrite: true,
+        });
+      const leave = () =>
+        gsap.to(cols, {
+          yPercent: 0,
+          duration: 0.45,
+          ease: "power3.out",
+          stagger: 0.03,
+          overwrite: true,
+        });
+      btn.addEventListener("mouseenter", enter);
+      btn.addEventListener("mouseleave", leave);
+      cleanups.push(() => {
+        btn.removeEventListener("mouseenter", enter);
+        btn.removeEventListener("mouseleave", leave);
+      });
+    });
+
+    return () => cleanups.forEach((fn) => fn());
+  }, []);
+
   useEffect(() => {
     const overlay = overlayRef.current;
     if (!overlay) return;
