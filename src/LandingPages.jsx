@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Flip, ScrollTrigger, gsap, prefersReducedMotion, useIsoLayoutEffect, useTitleReveal } from "./lib.jsx";
 import LandingPreview from "./LandingPreview.jsx";
 
@@ -10,10 +10,19 @@ const LP_ITEMS = [
   { preview: "minta", tag: "Fintech", title: "Minta" },
 ];
 
+// Cases reais entram na linha principal SÓ no desktop. No mobile eles não vão
+// pra linha principal — aparecem nas faixas satélites (ver STRIP_TOP/BOTTOM),
+// que estão deixando de ser placeholders pra virar sites reais mapeados.
+const LP_ITEMS_DESKTOP_EXTRA = [
+  { preview: "minas", tag: "Loja de tintas", title: "Minas Tintas" },
+];
+
 // Placeholders das faixas satélites (mobile) — cards leves, só CSS,
 // espelhando o tamanho/gap do carrossel central. Trocar pelos reais depois.
 const STRIP_TOP = [
-  { tag: "Arquitetura", title: "Studio Forma", theme: "dark" },
+  // Minas Tintas: site real. No desktop ele vive no carrossel central; no mobile
+  // migra pra cá exibindo o MESMO preview (não é placeholder de texto).
+  { preview: "minas", tag: "Loja de tintas", title: "Minas Tintas" },
   { tag: "Clínica", title: "Vitalis", theme: "light" },
   { tag: "Imobiliária", title: "Alta Vista", theme: "dark" },
   { tag: "Advocacia", title: "Priori", theme: "light" },
@@ -36,6 +45,21 @@ function StripCard({ item }) {
       { scale: 0.96, duration: 0.12, yoyo: true, repeat: 1, ease: "power2.inOut" }
     );
   };
+  // Card real: mesmo visual do carrossel central do desktop (preview + overlay).
+  // No mobile o site real sai da linha central e aparece aqui na faixa satélite.
+  if (item.preview) {
+    return (
+      <article className="lp__strip-card lp__strip-card--preview" onClick={onTap}>
+        <LandingPreview variant={item.preview} />
+        <div className="lp__preview-overlay">
+          <div>
+            <span>{item.tag}</span>
+            <strong>{item.title}</strong>
+          </div>
+        </div>
+      </article>
+    );
+  }
   return (
     <article className={`lp__strip-card lp__strip-card--${item.theme}`} onClick={onTap}>
       <span className="lp__strip-tag">{item.tag}</span>
@@ -76,6 +100,21 @@ function LandingPages() {
   const stripBottomRef = useRef(null);
   const stripTopTrackRef = useRef(null);
   const stripBottomTrackRef = useRef(null);
+
+  // Linha principal: no desktop inclui os cases reais (Minas etc.); no mobile
+  // fica só com os 5 demos — os reais migram pras faixas satélites. Estado
+  // reativo pra trocar a lista ao cruzar o breakpoint (o pin GSAP se refaz
+  // sozinho no resize, lendo os children ao vivo).
+  const [isMobileView, setIsMobileView] = useState(
+    () => typeof window !== "undefined" && window.matchMedia("(max-width: 767px)").matches
+  );
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 767px)");
+    const onChange = (e) => setIsMobileView(e.matches);
+    mq.addEventListener("change", onChange);
+    return () => mq.removeEventListener("change", onChange);
+  }, []);
+  const carouselItems = isMobileView ? LP_ITEMS : [...LP_ITEMS, ...LP_ITEMS_DESKTOP_EXTRA];
 
   // Mobile: gatilho mais tarde (70% da tela) — em 85% o título de 8 linhas
   // termina de animar antes do usuário chegar nele e o efeito passa batido.
@@ -405,8 +444,8 @@ function LandingPages() {
 
         <div className="lp__carousel-viewport" ref={carouselViewportRef}>
           <div className="lp__carousel-track" ref={carouselTrackRef}>
-            {LP_ITEMS.map((item, i) => (
-              <PreviewCard key={i} item={item} />
+            {carouselItems.map((item, i) => (
+              <PreviewCard key={item.preview} item={item} />
             ))}
           </div>
         </div>

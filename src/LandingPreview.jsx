@@ -21,6 +21,9 @@ import dinevoSignatureDish from "./preview-assets/dinevo-signature.jpg";
 import mintaHand from "./preview-assets/minta-hand.jpg";
 import mintaGrain from "./preview-assets/grain.png";
 
+import minasSwatches from "./preview-assets/minas-swatches.jpg";
+import minasLogo from "./preview-assets/minas-logo.png";
+
 const PREVIEW_CANVAS = {
   width: 1280,
   height: 720,
@@ -377,12 +380,84 @@ function MintaPreview() {
   );
 }
 
+function MinasPreview() {
+  return (
+    <PreviewShell className="lp-preview--minas" label="Hero preview inspirado em Minas Tintas">
+      <section className="minas-hero">
+        {/* Nav flutuante (como no site: absoluto, deslocado pro centro) */}
+        <nav className="minas-hero__nav" aria-label="Navegacao do preview">
+          <span className="is-active">Início</span>
+          <span>Tintas</span>
+          <span>Texturas</span>
+          <span>Sobre</span>
+          <span>Contato</span>
+        </nav>
+
+        {/* Painel esquerdo (creme) */}
+        <div className="minas-hero__left">
+          <div className="minas-hero__block">
+            <header className="minas-hero__logo">
+              <img src={minasLogo} alt="Minas Tintas" loading="lazy" />
+            </header>
+            <h1 className="minas-hero__title">
+              Tudo começa<br />
+              com a <span className="minas-hero__accent">cor</span> certa.
+            </h1>
+            <span className="minas-hero__divider" aria-hidden="true" />
+            <p className="minas-hero__copy">
+              Linha completa em tintas imobiliárias,<br />
+              automotivas, ferramentas e muito mais.<br />
+              Tudo que sua obra merece, em um só lugar.
+            </p>
+          </div>
+
+          <footer className="minas-hero__contact">
+            <span className="minas-hero__contact-item">
+              <svg className="minas-hero__ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+                <circle cx="12" cy="12" r="4" />
+                <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none" />
+              </svg>
+              @minastintas
+            </span>
+            <span className="minas-hero__contact-item">
+              <svg className="minas-hero__ico" viewBox="0 0 24 24" fill="currentColor" stroke="none" aria-hidden="true">
+                <path d="M17.5 14.4c-.3-.1-1.8-.9-2-1s-.5-.1-.7.2-.8 1-1 1.2c-.2.2-.4.2-.7.1-.3-.1-1.3-.5-2.4-1.5-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6.1-.1.3-.4.5-.5.1-.2.2-.3.3-.5.1-.2 0-.4 0-.5s-.7-1.7-1-2.3c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4s-1 1-1 2.5 1 2.9 1.2 3.1c.1.2 2 3.2 5 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.8-.7 2-1.4.3-.7.3-1.3.2-1.4s-.3-.2-.6-.3z" />
+                <path d="M20.5 3.5C18.3 1.2 15.3 0 12 0 5.4 0 0 5.4 0 12c0 2.1.6 4.2 1.6 6L0 24l6.2-1.6c1.7.9 3.7 1.4 5.7 1.4h.1c6.6 0 12-5.4 12-12 0-3.2-1.2-6.2-3.5-8.3zM12 21.9c-1.8 0-3.6-.5-5.1-1.4l-.4-.2-3.7 1 1-3.6-.2-.4c-1-1.6-1.6-3.4-1.6-5.3C2 6.6 6.5 2.1 12 2.1S22 6.6 22 12c0 5.4-4.5 9.9-10 9.9z" />
+              </svg>
+              (33) 9972-0025
+            </span>
+            <span className="minas-hero__contact-item">
+              <svg className="minas-hero__ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
+                <circle cx="12" cy="10" r="3" />
+              </svg>
+              Simonésia, MG
+            </span>
+          </footer>
+        </div>
+
+        {/* Painel direito: painel inset + 3 listras diagonais (preto/vermelho/creme) */}
+        <div className="minas-hero__media" aria-hidden="true">
+          <span className="minas-hero__stripe minas-hero__stripe--black" />
+          <span className="minas-hero__stripe minas-hero__stripe--red" />
+          <span className="minas-hero__stripe minas-hero__stripe--cream" />
+          <span className="minas-hero__photo">
+            <img src={minasSwatches} alt="" loading="lazy" />
+          </span>
+        </div>
+      </section>
+    </PreviewShell>
+  );
+}
+
 const PREVIEWS = {
   eco: EcoPreview,
   nexous: NexousPreview,
   roofora: RooforaPreview,
   dinevo: DinevoPreview,
   minta: MintaPreview,
+  minas: MinasPreview,
 };
 
 function LandingPreview({ variant }) {
