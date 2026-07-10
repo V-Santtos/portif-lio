@@ -118,11 +118,11 @@ function Hero({ ready }) {
 
         <div className="hero__meta">
           <div className="left" ref={metaLeftRef}>
-            Sistemas inteligentes para sua rotina,<br />
-            suas ideias e seu negocio.
+            Credibilidade e automação<br />
+            para sua rotina, suas ideias e seu negócio.
           </div>
           <div className="right" ref={metaRightRef}>
-            - Construa o caminho.
+            — Construa o caminho.
           </div>
         </div>
       </div>

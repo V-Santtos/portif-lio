@@ -197,7 +197,7 @@ function Bridge() {
           <LetterSwapLine sentence="1">O site</LetterSwapLine>
           <LetterSwapLine sentence="1" accent>captura.</LetterSwapLine>
           <LetterSwapLine sentence="2">O sistema</LetterSwapLine>
-          <LetterSwapLine sentence="2" accent>otimiza</LetterSwapLine>
+          <LetterSwapLine sentence="2" accent>otimiza.</LetterSwapLine>
         </h2>
 
         <span className="bridge__dash" aria-hidden="true" />

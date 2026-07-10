@@ -27,13 +27,13 @@ const STATIC = {
     path: "/",
     title: "Victor Cardoso — Páginas que convertem. Sistemas que escalam.",
     description:
-      "Páginas de captura e automações para negócios que querem crescer. Sistemas sob medida, entrega editorial, conversão como métrica única.",
+      "Páginas de captura e automações para negócios que querem crescer. Sites e sistemas sob medida, feitos para converter.",
   },
   projetos: {
     path: "/projetos",
     title: "Projetos — Victor Cardoso",
     description:
-      "Seleção de projetos sob medida — landing pages, e-commerce, PWAs e apps. Cada um pensado para converter e escalar.",
+      "Seleção de projetos sob medida — landing pages, e-commerce, sistemas e apps. Cada um pensado para converter e escalar.",
   },
   comecar: {
     path: "/comecar",

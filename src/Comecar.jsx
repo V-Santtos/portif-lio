@@ -6,7 +6,7 @@ import { getStaticSeo } from "./seo.js";
 
 const TIMELINES = ["Imediato", "Em 1 mês", "Em 2-3 meses", "Ainda não sei"];
 const BUDGETS = [
-  "Menos que R$ 1.000",
+  "Menos de R$ 1.000",
   "R$ 1.000 a R$ 2.500",
   "R$ 2.500 a R$ 5.000",
   "Acima de R$ 5.000",
@@ -247,7 +247,7 @@ function Comecar() {
           </div>
 
           <fieldset className="comecar__field comecar__field--radios" data-reveal>
-            <legend className="comecar__label">Prazo <span>*</span></legend>
+            <legend className="comecar__label">Quando quer começar? <span>*</span></legend>
             <div className="comecar__radios">
               {TIMELINES.map((t) => (
                 <label className="comecar__radio" key={t}>

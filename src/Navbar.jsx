@@ -18,7 +18,7 @@ const CloseIcon = () => (
   </svg>
 );
 
-// Botão COMEÇAR padrão (mesmo visual do nav do case). Destino definitivo: tarefa 4.
+// Botão COMEÇAR padrão (mesmo visual do nav do case). Destino: /comecar.
 const StartButton = ({ onClick }) => (
   <button type="button" onClick={onClick} className="hero__talk-btn" aria-label="Começar">
     <span className="hero__talk-avatar" aria-hidden="true">

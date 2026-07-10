@@ -1,8 +1,8 @@
 // Dados de cada case. Mesmo template para todos — só muda o conteúdo aqui.
-// Textos de minas-tintas, barbearia, flux-time e art-piso são PROVISÓRIOS.
+// Copy de todos os cases aprovada (vistoria de copy 2026-07).
 export const CASES = {
   "hawk-street": {
-    tags: ["E-COMMERCE", "LOJA", "2026"],
+    tags: ["E-COMMERCE", "STREETWEAR", "2026"],
     title: "HAWK",
     desc: "Loja de streetwear construída para converter. Uma experiência de compra que carrega a identidade da marca em cada detalhe.",
     challenge: "Levar a Hawk Street além do Instagram, hoje seu principal canal de vendas, para uma loja própria com mais credibilidade e alcance — atraindo mais tráfego e novos clientes, sem deixar de lado quem já acompanha a marca.",
@@ -54,9 +54,9 @@ export const CASES = {
   "minas-tintas": {
     tags: ["PWA", "FIDELIDADE", "2026"],
     title: "MINAS TINTAS",
-    desc: "Sistema (PWA) que organiza o relacionamento da Minas Tintas com seus pintores parceiros. Cada orçamento aprovado libera bônus em pontos, trocados por recompensas na lojinha.",
+    desc: "Sistema que organiza o relacionamento da Minas Tintas com seus pintores parceiros. Cada orçamento aprovado libera bônus em pontos, trocados por recompensas na lojinha.",
     challenge: "O controle de indicações, orçamentos e comissões dos pintores era manual e informal — sem rastreio do que cada pintor gerava, nem clareza na hora de liberar e distribuir o bônus.",
-    solution: "Um PWA com dois perfis: o pintor monta orçamentos no campo, mesmo offline, e a administração confirma os pagamentos. Ao aprovar, o sistema credita 1% ao pintor responsável e transforma pontos em resgates numa lojinha gerenciada pela loja.",
+    solution: "Um aplicativo com dois perfis: o pintor monta orçamentos no campo, mesmo sem internet, e a administração confirma os pagamentos. Ao aprovar, o sistema credita 1% ao pintor responsável e transforma pontos em resgates numa lojinha gerenciada pela loja.",
     results: "Todo o fluxo de indicação e bônus centralizado e rastreável num só lugar, com regras configuráveis (percentual e multiplicador) e uma base escalável para fidelizar e expandir a rede de pintores parceiros.",
     blocks: [
       {
@@ -79,7 +79,7 @@ export const CASES = {
       {
         type: "cta",
         title: "Curtiu esse projeto?\nBora criar o seu.",
-        body: "Se você precisa de uma aplicação como essa ou algo semelhante — é só me chamar.",
+        body: "Precisa de um sistema assim no seu negócio — ou de algo só seu? É só me chamar.",
         buttonLabel: "Bora!",
         buttonHref: "https://wa.me/5533984246770",
       },
@@ -99,9 +99,20 @@ export const CASES = {
     tags: ["APP", "FOCO", "2026"],
     title: "FLUX TIME",
     desc: "Aplicativo de foco e produtividade construído para concentração profunda. Um timer Pomodoro com display flip-clock, modo imersivo que apaga toda a interface e sons ambientes para o usuário entrar no fluxo.",
-    challenge: "Apps de produtividade costumam ser poluídos e cheios de distração — o oposto do que prometem. O desafio era criar uma ferramenta de foco bonita, calma e que saísse da frente na hora de concentrar.",
+    challenge: "Apps de produtividade costumam ser poluídos e cheios de distração — o oposto do que prometem. Eu precisava de uma ferramenta de foco bonita, calma e que saísse da frente na hora de concentrar. Como não encontrei, construí a minha.",
     solution: "Um timer Pomodoro configurável com display flip-clock e um modo foco imersivo que esconde tudo — controles, navbar e até o cursor — como um player de vídeo. Complementado por cronômetro, tarefas com alarmes, trilhas e frequências sonoras e temas claro/escuro, num PWA instalável.",
-    results: "Uma experiência de foco fluida e instalável, que leva à concentração com poucos cliques: interface limpa no uso e rica nos detalhes — animações em GSAP, som e tema sob medida.",
+    results: "Uma experiência de foco fluida e instalável, que leva à concentração com poucos cliques: interface limpa no uso e rica nos detalhes — animações suaves, som e tema sob medida. Hoje é a ferramenta que eu mesmo uso todos os dias — e está disponível para quem quiser.",
+    blocks: [
+      // CTA único: aqui o fechamento é TESTAR o produto (case de produto próprio).
+      // Sem bloco de contato — o "Contato" da nav cai no fallback /#contato.
+      {
+        type: "cta",
+        title: "Quer entrar no foco?\nTesta você mesmo.",
+        body: "O Flux Time está no ar — abre, dá o play e sente a diferença.",
+        buttonLabel: "Usar o Flux Time",
+        buttonHref: "https://rel-gio-taupe.vercel.app/",
+      },
+    ],
   },
 
   "art-piso": {

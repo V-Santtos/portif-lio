@@ -212,7 +212,9 @@ function Case() {
               <button onClick={goToCta} className="hero__nav-link-btn">Contato</button>
             </div>
 
-            <button type="button" onClick={goToCta} className="hero__talk-btn" aria-label="Começar">
+            {/* Começar padronizado com o resto do site: sempre leva pro /comecar
+                (o "Contato" ao lado segue com o goToCta — rolar pro BORA! é papel dele) */}
+            <button type="button" onClick={() => transitionTo("/comecar")} className="hero__talk-btn" aria-label="Começar">
               <span className="hero__talk-avatar" aria-hidden="true">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <rect x="5" y="5" width="14" height="16" rx="2" />
@@ -441,7 +443,10 @@ function Case() {
                           href={block.buttonHref}
                           target="_blank"
                           rel="noreferrer"
-                          ref={ctaBtnRef}
+                          // Glow do "Contato" da nav: só em botão de CONTATO (wa.me).
+                          // CTA de produto (ex.: Flux Time) não recebe o ref — sem
+                          // botão de contato no case, goToCta cai no /#contato.
+                          ref={block.buttonHref.includes("wa.me") ? ctaBtnRef : undefined}
                         >
                           {block.buttonLabel || "Falar"}
                         </a>

@@ -4,8 +4,8 @@ import LandingPreview from "./LandingPreview.jsx";
 
 const LP_ITEMS = [
   { preview: "eco", tag: "Jardinagem", title: "EcoScape" },
-  { preview: "nexous", tag: "Agencia", title: "Nexous" },
-  { preview: "roofora", tag: "Servicos", title: "Roofora" },
+  { preview: "nexous", tag: "Agência", title: "Nexous" },
+  { preview: "roofora", tag: "Serviços", title: "Roofora" },
   { preview: "dinevo", tag: "Restaurante", title: "Dinevo" },
   { preview: "minta", tag: "Fintech", title: "Minta" },
 ];

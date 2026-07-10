@@ -79,7 +79,7 @@ function Contact() {
       </div>
 
       <footer className="footer container-x">
-        <span>© 2026 Victor Cardoso - Todos os direitos reservados.</span>
+        <span>© 2026 Victor Cardoso — Todos os direitos reservados.</span>
         <span>Construa o caminho.</span>
       </footer>
 
