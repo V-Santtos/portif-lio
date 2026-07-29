@@ -4,15 +4,15 @@ import { gsap, useIsoLayoutEffect, prefersReducedMotion } from "./lib.jsx";
 const CARDS = [
   {
     title: "Atendimento",
-    desc: "Um atendente para você ou sua empresa que responde, tira dúvidas e qualifica seus leads. Disponível 24h por dia, sem depender de você.",
+    desc: "Um atendente que responde 24h e qualifica cada cliente que chega — o fechamento fica por conta do responsável ou do time, que já recebe todas as informações pra continuar o atendimento. Se o volume crescer, construo o CRM que organiza tudo.",
   },
   {
     title: "Processos",
-    desc: "Um fluxo inteligente para cada parte da sua rotina. Resumos diários da sua caixa de e-mail, agenda com marcações e notificações em tempo real.",
+    desc: "Um processo travado, uma tarefa manual, uma agenda bagunçada — em qualquer setor, eu construo o fluxo ou a ferramenta certa pra resolver aquele problema. Se a dor crescer, o fluxo vira sistema.",
   },
   {
     title: "Comunicação",
-    desc: "Mensagens automáticas via WhatsApp para sua base de leads. Follow-up, promoções e cobranças disparando no momento certo, para a pessoa certa. Sem mais dor de cabeça.",
+    desc: "Mensagens automáticas no WhatsApp pra sua lista de clientes. Lembrete, promoção e cobrança saindo na hora certa, pra pessoa certa. Sem dor de cabeça.",
   },
 ];
 
@@ -232,16 +232,11 @@ function Automation() {
           </span>
           </span></span>
         </h2>
-        {/* Quebras mobile controladas: sem viúvas ("existe automação." /
-            "pode fazer." soltos no fim de linha) */}
+        {/* Quebras mobile controladas: sem viúvas ("pode fazer." solto no fim de linha) */}
         <p className="auto__intro">
-          Processos, tarefas, ideias —{" "}
+          Construo a ferramenta certa pras suas ideias, seus processos e seu negócio{" "}
           <br className="auto__br--mobile" />
-          se existe padrão, existe automação.
-          <br />
-          Eu monto o sistema.{" "}
-          <br className="auto__br--mobile" />
-          Você foca no que só você pode fazer.
+          — e você foca no que só você pode fazer.
         </p>
       </div>
 
@@ -257,15 +252,13 @@ function Automation() {
 
         <div className="auto__cta">
           <p className="auto__cta-heading">Tem uma ideia diferente?</p>
-          {/* Quebras mobile controladas — sem "infinitas." viúvo */}
+          {/* Quebras mobile controladas — sem "no resto." viúvo */}
           <p className="auto__cta-copy">
-            A verdade é que{" "}
-            <br className="auto__br--mobile" />
-            as possibilidades são infinitas.
+            Esses são só três exemplos.
             <br />
-            Me conta o que você{" "}
+            Me conta o que te toma tempo —{" "}
             <br className="auto__br--mobile" />
-            gostaria de automatizar.
+            eu penso no resto.
           </p>
           <a
             href="https://wa.me/5533984246770?text=Oi%20Victor!%20Quero%20automatizar%20algo%20no%20meu%20neg%C3%B3cio."

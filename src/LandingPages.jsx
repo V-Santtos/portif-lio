@@ -381,28 +381,33 @@ function LandingPages() {
 
   const titleHtml = `
     <span class="lp__line">
-      <span class="word"><span>Sua</span></span>
-      <span class="word"><span>primeira</span></span>
-      <span class="word"><span>impressão</span></span>
-      <span class="word"><span>no</span></span>
+      <span class="word"><span>Sem</span></span>
+      <span class="word"><span>te</span></span>
+      <span class="word"><span>conhecer,</span></span>
+      <span class="word"><span>a</span></span>
     </span>
     <span class="lp__line">
-      <span class="word"><span>digital</span></span>
+      <span class="word"><span>primeira</span></span>
+      <span class="word"><span>impressão</span></span>
+      <span class="word"><span>do</span></span>
+      <span class="word"><span>seu</span></span>
+    </span>
+    <span class="lp__line">
+      <span class="word"><span>cliente</span></span>
       <span class="word"><span>define</span></span>
       <span class="word"><span>se</span></span>
-      <span class="word"><span>seu</span></span>
-      <span class="word"><span>cliente</span></span>
+      <span class="word"><span>ele</span></span>
     </span>
     <span class="lp__line">
       <span class="word"><span>confia</span></span>
-      <span class="word"><span>na</span></span>
-      <span class="word accent"><span>sua</span></span>
-      <span class="word accent"><span>solução</span></span>
+      <span class="word"><span>no</span></span>
+      <span class="word accent"><span>seu</span></span>
+      <span class="word accent"><span>serviço</span></span>
     </span>
     <span class="lp__line">
       <span class="word"><span>ou</span></span>
       <span class="word"><span>procura</span></span>
-      <span class="word"><span>outra.</span></span>
+      <span class="word"><span>outro.</span></span>
     </span>
   `;
 
@@ -419,7 +424,7 @@ function LandingPages() {
 
       <div className="lp__scaling-header">
         <div className="lp__note" ref={noteRef}>
-          <span>Veja como uma página<br />pode mudar a percepção</span>
+          <span>É isso que eu construo:<br />sites que vendem por você.</span>
           <svg xmlns="http://www.w3.org/2000/svg" width="100%" viewBox="0 0 64 36" fill="none" className="lp__note-arrow">
             <path d="M1 0.999889C7.40028 7.00632 22.5182 20.1881 27.8462 22.5774C29.1888 23.0085 30.4352 23.282 34.8153 24.8632C39.1954 26.4443 53.5563 24.8704 62.8187 26.9744M62.8187 26.9744C62.7852 27.7219 61.915 28.5968 60.2964 29.5075C52.8642 33.6892 47.1995 34.7166 46.2324 34.7258M62.8187 26.9744C61.937 25.4952 59.4141 24.7413 56.4519 22.746C55.0697 20.7506 53.9329 16.7598 52.7617 12.6481" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
           </svg>

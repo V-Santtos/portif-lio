@@ -104,7 +104,7 @@ function Hero({ ready }) {
         <div className="hero__main">
           <h1 className="hero__title" ref={titleRef}>
             <span className="hero__line">
-              <span className="word"><span>PÁGINAS</span></span>{" "}
+              <span className="word"><span>SITES</span></span>{" "}
               <span className="word"><span>QUE</span></span>{" "}
               <span className="word accent"><span>CONVERTEM.</span></span>
             </span>
@@ -118,7 +118,7 @@ function Hero({ ready }) {
 
         <div className="hero__meta">
           <div className="left" ref={metaLeftRef}>
-            Credibilidade e automação<br />
+            Construo a ferramenta certa<br />
             para sua rotina, suas ideias e seu negócio.
           </div>
           <div className="right" ref={metaRightRef}>
