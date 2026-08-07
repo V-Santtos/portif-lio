@@ -15,6 +15,10 @@ vite-dev.err.log
 uploads/
 gsap/
 
+# Artefatos do .verify-css.mjs (o script e versionado; estes sao gerados)
+.css-baseline.txt
+.styles-original.css
+
 # Dev probes / scratch scripts (local-only)
 .probe-*.mjs
 .render-og.mjs
