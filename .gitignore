@@ -18,6 +18,10 @@ gsap/
 # Dev probes / scratch scripts (local-only)
 .probe-*.mjs
 .render-og.mjs
+.make-*.mjs
+.shot-*.mjs
+.shots-*/
+.zoom-*.mjs
 
 # Editor / OS
 .vscode/*

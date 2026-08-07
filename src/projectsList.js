@@ -12,7 +12,7 @@ export const PROJECTS = [
   // { id: "barbearia",    name: "Barbearia",    video: "/videos/barbearia.mp4",  href: "/projetos/barbearia"    },
   { id: "hawk-street",  name: "Hawk Street",  video: "/hawk-street.mp4",       href: "/projetos/hawk-street"  },
   { id: "flux-time",    name: "Flux Time",    video: "/videos/flux.mp4",       href: "/projetos/flux-time"    },
-  // { id: "art-piso",     name: "Art Piso",     img: "/art-piso.jpg",            href: "/projetos/art-piso"     },
+  { id: "art-piso",     name: "Art Piso",     img: "/art-piso.png",            href: "/projetos/art-piso"     },
 ];
 
 // Próximo projeto na lista visível — cicla pro primeiro ao chegar no fim.

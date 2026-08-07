@@ -95,7 +95,7 @@ Tela escura `100vh`, frase curta, desliza pra cima revelando o Hero. **Abertura 
 ### Hero
 Composição editorial em fundo creme, título display gigante + nav + meta nos cantos.
 - **Título:** `PÁGINAS QUE CONVERTEM. / SISTEMAS QUE ESCALAM.` (CONVERTEM em accent, SplitText por palavra)
-- **Meta esquerda:** `Sistemas inteligentes para sua rotina, suas ideias e seu negócio.`
+- **Meta esquerda:** `Credibilidade e automação / para sua rotina, suas ideias e seu negócio.`
 - **Meta direita:** `— Construa o caminho.`
 - **Nav:** PROJETOS · AUTOMATIZE · CONTATO · botão **COMEÇAR**.
 
@@ -107,7 +107,7 @@ Serviço de páginas de captura, exibido via carrossel horizontal.
 
 ### Bridge (ponte)
 Respiro editorial entre os serviços; fundo creme, efeito **letter-swap** por caractere.
-- Copy: `O site captura. / O sistema otimiza` (eyebrow "A escada" + imagem `escada.png`).
+- Copy: `O site captura. / O sistema organiza.` (eyebrow "A escada" + imagem `escada.png`).
 
 ### Automation
 Único bloco **dark** entre as seções de baixo. Serviço de automação.
@@ -127,22 +127,24 @@ CTA final + rodapé.
 ## Projetos & Cases
 
 ### `/projetos` — Lista
-Lista à esquerda, frame de mídia à direita que trilha o item em hover. 5 cases: **Minas Tintas · Barbearia · Hawk Street · Flux Time · Art Piso**. Capas em vídeo/imagem; cada item abre o case.
+Lista à esquerda, frame de mídia à direita que trilha o item em hover. Hoje **4 visíveis**: **Minas Tintas · Hawk Street · Flux Time · Art Piso** (Barbearia existe mas está oculta). Ordem e visibilidade saem da fonte única `src/projectsList.js`. Capas em vídeo/imagem; cada item abre o case.
 
 ### `/projetos/:slug` — Case (template único)
-Template data-driven (`Case.jsx` + `casesData.js`): Hero pinado → **PROJETO VISÃO** (Desafio/Solução/Resultados) → andar de baixo opcional (blocos `shot` / `split` / `cta`) → área final. Editar conteúdo = editar só `casesData.js`. O bloco `cta` ("BORA!" → WhatsApp) é o template comum aos 5 cases.
+Template data-driven (`Case.jsx` + `casesData.js`): Hero pinado → **PROJETO VISÃO** (Desafio/Solução/Resultados) → andar de baixo opcional → área final (voltar ao topo + botão "Próximo projeto"). Editar conteúdo = editar só `casesData.js`.
+
+Tipos de bloco do andar de baixo: `shot` · `split` · `compare` (antes/depois arrastável) · `reveal` · `showcase` · `cta`. O `cta` ("BORA!" → WhatsApp) é o fechamento comum — a exceção é o Flux Time, produto próprio, onde o fechamento é testar o app.
 
 ---
 
 ## `/comecar` — Questionário/Contato
-Destino dos botões **COMEÇAR**. Título `VAMOS / CONVERSAR.` + formulário (Nome · E-mail-ou-telefone inteligente · Prazo · Orçamento · Mensagem). Botão **Bora!** — hoje **placeholder** (sem envio real ainda).
+Destino dos botões **COMEÇAR**. Título `VAMOS / CONVERSAR.` + formulário (Nome · E-mail-ou-telefone inteligente · Prazo · Orçamento · Mensagem). Botão **Bora!** — **envio real plugado** (webhook n8n). Ao enviar, o form dá lugar a uma tela de sucesso (✓ que se desenha + confete).
 
 ---
 
 ## Componentes globais
 
 - **Navbar / Menu overlay** (`Navbar.jsx`): barra flutuante que aparece ao rolar de volta (logo · MENU · COMEÇAR); overlay fullscreen accent com links Bebas (INÍCIO / PROJETOS / CONTATO).
-- **Transição de página** (`PageTransition.jsx`): painel escuro sobe, logo VC anima (draw stroke → fill), navega, painel sai pelo topo. Usada na troca entre rotas.
+- **Transição de página** (`PageTransition.jsx`): painel **creme** sobe, logo VC escura anima (draw stroke → fill), navega, painel sai pelo topo. Usada na troca entre rotas. (Creme e não escuro por decisão técnica — o Safari iOS amostrava o painel preto e prendia a status bar.)
 
 ---
 
@@ -176,8 +178,7 @@ Destino dos botões **COMEÇAR**. Título `VAMOS / CONVERSAR.` + formulário (No
 
 - [ ] **Foto/asset do Victor** — destrava o `AboutCard` (reativar `SHOW_ABOUT_SECTION`) e o avatar do botão "Começar".
 - [ ] **Links sociais reais** (LinkedIn, Instagram) — hoje `href="#"`.
-- [ ] **Envio real** do formulário `/comecar` (WhatsApp / n8n / serviço) — hoje placeholder.
-- [ ] **Replicar o andar de baixo** dos cases (blocos `shot`/`split`/`cta`) nos outros 4 projetos — falta capturar as imagens.
-- [ ] **Bloco "próximo projeto"** no fim de cada case.
+- [ ] **Andar de baixo** dos cases **Flux Time** e **Barbearia** — falta capturar as imagens. (Minas Tintas, Hawk Street e Art Piso ✅.)
 
-> Estado de trabalho detalhado e decisões em andamento: ver `CONTEXTO.md`.
+> Estado de trabalho detalhado, regras técnicas e decisões em andamento: ver `CONTEXTO.md`.
+> Voz da marca e fluxo de copy: ver `CONTEXTO-COPY.md`.

@@ -2680,7 +2680,7 @@ p { line-height: 1.6; }
 
 .auto__body {
   width: 100%;
-  padding: clamp(7rem, 12vh, 14rem) 0 clamp(6rem, 9vh, 9rem);
+  padding: clamp(7rem, 12vh, 14rem) 0 clamp(15rem, 25vh, 27rem);
 }
 
 .auto__cards {
@@ -2701,6 +2701,28 @@ p { line-height: 1.6; }
   flex-direction: column;
   justify-content: flex-start;
   text-align: center;
+  border: 2px solid transparent;
+}
+
+/* Card 3 (ideia diferente) — destacado dos outros dois: fundo laranja
+   sólido em vez de creme. Texto continua escuro (contraste testado contra
+   o laranja); a `desc` fica mais opaca que o padrão pra manter AA no
+   corpo de texto (a translucidez pensada pro creme fica fraca no laranja). */
+.auto__card--highlight {
+  background: var(--color-accent);
+  border-color: transparent;
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.35);
+}
+
+.auto__card--highlight .auto__card-desc {
+  color: rgba(20, 20, 20, 0.85);
+}
+
+/* Botão "Falar no WhatsApp" migrou da CTA solta pro card destacado — empurra
+   pro rodapé do card (margin-top: auto no flex column) e centraliza. */
+.auto__card--highlight .auto__cta-btn {
+  align-self: center;
+  margin-top: auto;
 }
 
 /* Quebra de linha do título: cada breakpoint usa só o seu <br> */
@@ -2753,7 +2775,7 @@ p { line-height: 1.6; }
   margin: 0 auto;
   padding-inline: clamp(2rem, 5vw, 5rem);
   text-align: center;
-  padding-top: clamp(11rem, 18vh, 18rem);
+  padding-top: clamp(14rem, 22vh, 22rem);
 }
 
 @media (max-width: 767px) {
@@ -2769,12 +2791,69 @@ p { line-height: 1.6; }
   font-family: var(--font-body);
 }
 
-.auto__cta-copy {
-  margin: 0 auto 2rem;
-  max-width: 46ch;
-  font-size: 15px;
-  line-height: 1.65;
-  color: rgba(254, 248, 232, 0.55);
+/* CTA final (leva pro /projetos) — título grande em dois tons: linha forte
+   + linha esmaecida, ecoando o par headline/botão circular de referência. */
+.auto__cta-heading--split {
+  margin: 0 0 2.75rem;
+  font-size: clamp(36px, 5vw, 64px);
+  line-height: 1.15;
+}
+
+.auto__cta-heading-strong {
+  display: block;
+  font-weight: 700;
+  color: var(--color-surface);
+}
+
+/* Máscara — o hover desliza a linha 8% pra cima "dentro" dela, fiel à
+   referência (overflow-hidden + translateY(-8%)). */
+.auto__cta-heading-mask {
+  display: block;
+  overflow: hidden;
+}
+
+.auto__cta-heading-muted-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(1.4rem, 3.2vw, 2.4rem);
+}
+
+.auto__cta-heading-muted {
+  display: block;
+  font-weight: 400;
+  color: rgba(254, 248, 232, 0.4);
+}
+
+/* Linhas decorativas que flanqueiam a 2ª linha — esticam (scaleX) e acendem
+   (opacity) junto do hover no grupo todo (título + botão). */
+.auto__cta-heading-line {
+  display: inline-block;
+  width: clamp(20px, 3vw, 40px);
+  height: 1px;
+  background: rgba(254, 248, 232, 1);
+  opacity: 0.5;
+}
+
+/* Estado base do círculo — todas as props animadas (scale/bg/border/color)
+   ficam por conta do GSAP no hover do grupo (`.auto__cta`), não de :hover
+   local, pra reagir junto quando o mouse passa só pelo título. */
+.auto__cta-circle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: clamp(64px, 7vw, 84px);
+  height: clamp(64px, 7vw, 84px);
+  border-radius: 50%;
+  border: 1px solid rgba(254, 248, 232, 0.35);
+  background: transparent;
+  color: var(--color-surface);
+  cursor: pointer;
+}
+
+.auto__cta-circle svg {
+  width: 28%;
+  height: 28%;
 }
 
 .auto__cta-btn {
@@ -3600,6 +3679,45 @@ p { line-height: 1.6; }
   width: 100%;
   height: auto;
 }
+/* Print retangular sem mockup (ex.: Art Piso). Só com `framed: true` no bloco:
+   o shot do Minas é um PNG recortado e ganharia uma caixa em volta.
+
+   A tela é quase preta e o fundo é creme quente (#FEF8E8), sem nenhum tom
+   entre os dois — por isso ela "cola" por cima da página. Duas peças resolvem:
+   a poça de luz difusa embaixo (::before) e a escada de sombras.
+   Ambas em MARROM QUENTE, não preto: sombra neutra sobre creme lê como
+   sujeira cinza; a quente lê como luz de verdade. */
+.case-shot__figure--framed {
+  position: relative;
+  isolation: isolate; /* prende o z-index:-1 do ::before dentro da figure */
+}
+.case-shot__figure--framed::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  left: -3%;
+  right: -3%;
+  bottom: -5%;
+  height: 45%;
+  background: radial-gradient(
+    58% 100% at 50% 100%,
+    rgba(72, 56, 31, 0.2),
+    rgba(72, 56, 31, 0) 72%
+  );
+  filter: blur(26px);
+  pointer-events: none;
+}
+.case-shot__img--framed {
+  border-radius: clamp(14px, 1.6vw, 22px);
+  /* Escada de 5 camadas: quanto mais longe da borda, mais difusa e mais fraca.
+     É o que separa sombra crível de borrão único. */
+  box-shadow:
+    0 1px 2px rgba(72, 56, 31, 0.1),
+    0 5px 8px -2px rgba(72, 56, 31, 0.1),
+    0 14px 22px -8px rgba(72, 56, 31, 0.13),
+    0 34px 52px -20px rgba(72, 56, 31, 0.18),
+    0 70px 100px -48px rgba(72, 56, 31, 0.32);
+}
 .case-shot__caption {
   display: block;
   margin: 1.6rem auto 0;
@@ -3821,6 +3939,72 @@ p { line-height: 1.6; }
 .case-split__img--rounded {
   border-radius: clamp(10px, 1.4vw, 16px);
   overflow: hidden;
+}
+
+/* ── Split variante FOTO (retângulo fotográfico, não PNG recortado) ──
+   A foto pesa muito mais que um mockup flutuando, então a coluna da imagem
+   é FIXA e a do texto tem SEMPRE a mesma largura nas duas orientações —
+   é isso que garante distância idêntica entre texto e foto nos dois blocos.
+   Texto centralizado, caixa esticada na coluna (justify-self: stretch),
+   senão ela encolhe no conteúdo e a distância vira refém do tamanho da frase.
+   Escopado em --photo: o split do Minas continua intacto. */
+.case-split--photo .case-split__grid {
+  grid-template-columns: minmax(0, 560px) minmax(0, var(--split-text-col));
+  justify-content: start;
+  align-items: center;
+  --split-text-col: 560px;
+}
+.case-split--photo .case-split__img {
+  max-width: 560px;
+  /* Mesma sombra quente do shot full-bleed — creme é quente, sombra preta
+     nele vira cinza sujo. Escala menor: a foto é menor que o full-bleed. */
+  box-shadow:
+    0 1px 2px rgba(72, 56, 31, 0.1),
+    0 4px 7px -2px rgba(72, 56, 31, 0.1),
+    0 12px 18px -8px rgba(72, 56, 31, 0.13),
+    0 26px 40px -18px rgba(72, 56, 31, 0.18),
+    0 50px 70px -40px rgba(72, 56, 31, 0.3);
+}
+.case-split--photo .case-split__text {
+  justify-self: stretch;
+  align-self: center;
+  padding-top: 0;
+  text-align: center;
+}
+.case-split--photo .case-split__title {
+  font-size: clamp(2.25rem, 3.9vw, 3.6rem);
+}
+.case-split--photo .case-split__body {
+  margin-inline: auto;
+  text-align: center;
+  font-size: 1.15rem;
+  max-width: 46ch;
+}
+
+/* Espelhado: mídia à direita, texto à esquerda — alterna o ritmo quando há
+   dois splits seguidos. A grade ancora no fim para a foto encostar na margem
+   direita da página, espelhando o bloco normal, que ancora no início. */
+.case-split--reverse .case-split__media { order: 2; }
+.case-split--reverse .case-split__text { order: 1; }
+.case-split--photo.case-split--reverse .case-split__grid {
+  /* ordem visual: texto | mídia */
+  grid-template-columns: minmax(0, var(--split-text-col)) minmax(0, 800px);
+  justify-content: end;
+}
+.case-split--photo.case-split--reverse .case-split__img {
+  max-width: 800px;
+}
+
+@media (max-width: 860px) {
+  .case-split--photo .case-split__grid,
+  .case-split--photo.case-split--reverse .case-split__grid {
+    grid-template-columns: 1fr;
+    justify-content: stretch;
+  }
+  /* No empilhado a imagem volta pra cima nos dois casos — o espelhamento
+     só faz sentido quando existem duas colunas. */
+  .case-split--reverse .case-split__media { order: 0; }
+  .case-split--reverse .case-split__text { order: 0; }
 }
 
 /* ── Bloco reveal: imagem larga cortada por máscara até sobrar o modal ── */

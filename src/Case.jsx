@@ -140,22 +140,129 @@ function Case() {
     if (!data || prefersReducedMotion()) return;
     const root = blocksRef.current;
     if (!root) return;
-    const media = root.querySelector('[data-entrance="media"]');
-    if (!media) return;
-    const textBox = root.querySelector('[data-entrance="text"]');
-    const textEls = textBox ? Array.from(textBox.children) : [];
 
-    gsap.set(media, { opacity: 0, scale: 1.08, xPercent: 6 });
-    gsap.set(textEls, { opacity: 0, y: 24 });
+    // ATENÇÃO: querySelectorAll, não querySelector. Com mais de um bloco
+    // `entrance` no mesmo case (Art Piso tem dois) o singular animava só o
+    // primeiro e os outros ficavam parados.
+    const limpezas = [];
+    let cancelado = false;
+    // SplitText mede o texto para montar as máscaras. Se rodar antes da Bebas
+    // carregar, mede a fonte de fallback e as janelas nascem com altura errada
+    // (palavra cortada). Esperar as fontes é o que evita isso.
+    const fontsProntas = document.fonts?.ready ?? Promise.resolve();
 
-    const tl = gsap.timeline({
-      defaults: { ease: "power3.out" },
-      scrollTrigger: { trigger: media, start: "top 78%", toggleActions: "play none none none" },
+    root.querySelectorAll('[data-entrance="media"]').forEach((media) => {
+      const section = media.closest("section");
+      const textBox = section?.querySelector('[data-entrance="text"]');
+      // Espelhado = foto à direita; ela deve nascer do lado DELA, não do miolo.
+      const reverse = section?.classList.contains("case-split--reverse");
+      const foto = section?.classList.contains("case-split--photo");
+
+      if (foto) {
+        // A foto ASSENTA (escala + fade + leve deslize) e, na sequência, o
+        // texto entra palavra a palavra. Mesmo assentamento dos blocos que já
+        // funcionam (showcase do Hawk) — NÃO usar clip-path: o GSAP não
+        // interpola inset() com `round`, então a varredura dava snap (sem
+        // assentamento). Os cantos arredondados vêm do border-radius da própria
+        // imagem, que sem clip-path fica intacto.
+        const img = media.querySelector("img") || media;
+        const titulo = textBox?.querySelector(".case-split__title");
+        const corpo = textBox?.querySelector(".case-split__body");
+
+        // A foto entra do lado DELA: normal desliza da esquerda, espelhado da direita.
+        const xDe = reverse ? -24 : 24;
+
+        // Estado inicial SÍNCRONO: nada pisca enquanto as fontes carregam.
+        gsap.set(img, { autoAlpha: 0, scale: 1.06, xPercent: xDe > 0 ? 4 : -4 });
+        if (titulo) gsap.set(titulo, { autoAlpha: 0 });
+        if (corpo) gsap.set(corpo, { opacity: 0, y: 18 });
+
+        let split = null;
+        let tl = null;
+        let observer = null;
+
+        // A timeline INTEIRA nasce depois das fontes. Montar antes e pendurar
+        // o título depois deixava o disparo acontecer sem ele — o título
+        // entrava solto, fora de ordem.
+        fontsProntas.then(() => {
+          if (cancelado) return;
+
+          if (titulo) {
+            split = SplitText.create(titulo, { type: "words", mask: "words" });
+            // A janela da máscara do SplitText tem a altura da LINHA. Com
+            // line-height 0.95 ela é menor que a letra e corta acento e ponto.
+            // Mesma receita do .auto__title da Automation: folga em cima e
+            // embaixo, compensada por margem negativa pra não mexer no layout.
+            split.words.forEach((palavra) => {
+              const janela = palavra.parentNode;
+              if (!janela) return;
+              janela.style.overflow = "hidden";
+              janela.style.paddingTop = "0.18em";
+              janela.style.marginTop = "-0.18em";
+              janela.style.paddingBottom = "0.1em";
+              janela.style.marginBottom = "-0.1em";
+            });
+            gsap.set(titulo, { autoAlpha: 1 });
+            gsap.set(split.words, { yPercent: 135 });
+          }
+
+          // Timeline PAUSADA — quem dispara é um IntersectionObserver (geometria
+          // ao vivo), NÃO um ScrollTrigger posicional. O spacer do Hero pinado
+          // desloca tudo abaixo dele; como esta timeline nasce dentro do
+          // fontsProntas.then() (depois do refresh global do pin), a posição
+          // cacheada do ScrollTrigger ficava stale e a foto não revelava — é a
+          // REGRA da região abaixo do carrossel (rect ao vivo, nunca posicional).
+          tl = gsap.timeline({ defaults: { ease: "power3.out" }, paused: true });
+          tl.to(img, { autoAlpha: 1, scale: 1, xPercent: 0, duration: 1.1 });
+          if (split) {
+            tl.to(split.words, { yPercent: 0, duration: 0.9, stagger: 0.07 }, "-=0.5");
+          }
+          if (corpo) {
+            tl.to(corpo, { opacity: 1, y: 0, duration: 0.7 }, "-=0.5");
+          }
+
+          // Dispara uma vez, quando o topo da mídia cruza ~78% da viewport
+          // (mesmo ponto do antigo start "top 78%"), lendo a geometria real.
+          observer = new IntersectionObserver(
+            (entries) => {
+              if (entries.some((e) => e.isIntersecting)) {
+                tl.play();
+                observer?.disconnect();
+                observer = null;
+              }
+            },
+            { rootMargin: "0px 0px -22% 0px" }
+          );
+          observer.observe(media);
+        });
+
+        limpezas.push(() => {
+          observer?.disconnect();
+          tl?.kill();
+          split?.revert();
+        });
+        return;
+      }
+
+      const tl = gsap.timeline({
+        defaults: { ease: "power3.out" },
+        scrollTrigger: { trigger: media, start: "top 78%", toggleActions: "play none none none" },
+      });
+
+      // Blocos antigos (showcase do Hawk): assentamento original, intocado.
+      const textEls = textBox ? Array.from(textBox.children) : [];
+      gsap.set(media, { opacity: 0, scale: 1.08, xPercent: 6 });
+      gsap.set(textEls, { opacity: 0, y: 24 });
+      tl.to(media, { opacity: 1, scale: 1, xPercent: 0, duration: 1.0 })
+        .to(textEls, { opacity: 1, y: 0, duration: 0.7, stagger: 0.12 }, "-=0.45");
+
+      limpezas.push(() => { tl.scrollTrigger?.kill(); tl.kill(); });
     });
-    tl.to(media, { opacity: 1, scale: 1, xPercent: 0, duration: 1.0 })
-      .to(textEls, { opacity: 1, y: 0, duration: 0.7, stagger: 0.12 }, "-=0.45");
 
-    return () => { tl.scrollTrigger?.kill(); tl.kill(); };
+    return () => {
+      cancelado = true;
+      limpezas.forEach((fn) => fn());
+    };
   }, [data]);
 
   // "Contato" do nav: rola até o CTA final deste case e dá um brilho no botão "Bora!"
@@ -322,10 +429,10 @@ function Case() {
                       {block.eyebrow && (
                         <p className="eyebrow case-shot__eyebrow" data-reveal>{block.eyebrow}</p>
                       )}
-                      <figure className="case-shot__figure" data-reveal>
+                      <figure className={`case-shot__figure${block.framed ? " case-shot__figure--framed" : ""}`} data-reveal>
                         {block.captionTop && caption}
                         <img
-                          className="case-shot__img"
+                          className={`case-shot__img${block.framed ? " case-shot__img--framed" : ""}`}
                           src={block.image}
                           alt={block.alt || ""}
                           style={block.ratio ? { aspectRatio: block.ratio } : undefined}
@@ -409,7 +516,10 @@ function Case() {
               const mediaAttr = block.entrance ? { "data-entrance": "media" } : { "data-reveal": true };
               const textAttr = block.entrance ? { "data-entrance": "text" } : { "data-reveal": true };
               return (
-                <section className="section case-split" key={i}>
+                <section
+                  className={`section case-split${block.variant === "photo" ? " case-split--photo" : ""}${block.reverse ? " case-split--reverse" : ""}`}
+                  key={i}
+                >
                   <div className="container-x">
                     <div className="case-split__grid">
                       <figure className="case-split__media" {...mediaAttr}>
