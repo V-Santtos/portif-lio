@@ -1,0 +1,663 @@
+/* Rota /meu-processo (inclui mobile do nav-overlay) — extraido do styles.css original, linhas 251-909.
+   A ORDEM importa: este arquivo entra na posicao indicada pelo numero do nome.
+   Nao reordenar regras nem separar os @media do bloco a que pertencem. */
+
+
+/* ------------------------------------------------------------------
+   Meu processo — rota /meu-processo
+   ------------------------------------------------------------------ */
+.process-page {
+  position: relative;
+  background: var(--color-surface);
+  color: var(--color-foreground);
+}
+
+.process-page .container-x {
+  max-width: 1280px;
+}
+
+.process-hero {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  height: 100svh;
+  min-height: 100svh;
+  isolation: isolate;
+  background: var(--color-surface);
+}
+
+.process-hero > .process-hero__inner {
+  width: 100%;
+  max-width: none;
+  height: 100%;
+  padding-inline: clamp(1.25rem, 2.4vw, 2.75rem);
+  display: flex;
+  flex-direction: column;
+  container-type: inline-size;
+}
+
+.process-hero__nav {
+  position: relative;
+  z-index: 5;
+  flex: none;
+}
+
+.process-hero__nav [aria-current="page"]::after {
+  transform: scaleX(1);
+}
+
+.process-hero__display {
+  position: relative;
+  z-index: 2;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  align-items: flex-start;
+  padding-top: clamp(1.5rem, 5vh, 4rem);
+}
+
+.process-hero__title {
+  position: relative;
+  width: 100%;
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 400;
+  /* "PROCESSO" em Bebas Neue mede 3,081em: 3,081 x 31cqi = 95,5% do container.
+     Acima de 32,46cqi a palavra passa da largura e o overflow:hidden da mascara
+     (necessario pra entrada vertical) decepa o ultimo O. */
+  font-size: clamp(10rem, 31cqi, 39rem);
+  line-height: 0.76;
+  letter-spacing: 0;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.process-hero__word-mask,
+.process-hero__accent-mask {
+  display: block;
+  overflow: hidden;
+  padding-top: 0.12em;
+  margin-top: -0.12em;
+  padding-bottom: 0.08em;
+  margin-bottom: -0.08em;
+}
+
+.process-hero__word-inner,
+.process-hero__accent-inner {
+  display: block;
+  will-change: transform, opacity;
+}
+
+.process-hero__accent-mask {
+  position: absolute;
+  z-index: 3;
+  top: 52%;
+  left: 0.25%;
+  width: max-content;
+  padding-inline: 0.08em;
+}
+
+.process-hero__accent-inner {
+  color: var(--color-accent);
+  font-family: "Birthstone", cursive;
+  font-size: clamp(6rem, 13.5cqi, 15rem);
+  line-height: 0.82;
+  text-transform: none;
+}
+
+.process-hero__image {
+  position: absolute;
+  z-index: 2;
+  left: 50%;
+  bottom: -1px;
+  width: min(42%, 46rem);
+  max-height: 78vh;
+  object-fit: contain;
+  object-position: center bottom;
+  transform: translateX(-50%);
+}
+
+.process-hero__meta {
+  position: relative;
+  z-index: 4;
+  flex: none;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  align-items: end;
+  padding: 1.25rem 0 2rem;
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: 1.45;
+}
+
+.process-hero__meta p {
+  margin: 0;
+}
+
+.process-hero__meta p:first-child {
+  max-width: 38ch;
+}
+
+.process-hero__meta p:last-child {
+  justify-self: end;
+  text-transform: uppercase;
+}
+
+.process-hero__wash {
+  position: absolute;
+  z-index: 1;
+  inset: auto 0 0;
+  height: 58%;
+  pointer-events: none;
+  background: linear-gradient(
+    to top,
+    #f05235 0%,
+    rgba(240, 82, 53, 0.9) 16%,
+    rgba(240, 82, 53, 0.56) 38%,
+    rgba(240, 82, 53, 0.22) 64%,
+    rgba(240, 82, 53, 0) 100%
+  );
+}
+
+.process-statement-scroller {
+  position: relative;
+  z-index: 2;
+  height: 300svh;
+  background: var(--color-surface);
+}
+
+.process-statement-scroller + .process-statement-scroller {
+  z-index: 3;
+  /* Encurta o vao de tela creme vazia entre as duas frases. O vao existe porque
+     o sticky de 100svh ainda precisa rolar 100svh pra sair depois que a saida
+     termina — reduzir a altura do scroller NAO resolve (a sobra e sempre 100svh,
+     so encurtaria o hold). Puxar o scroller seguinte pra cima resolve. Seguro:
+     ele tem z-index maior e fundo solido, e a frase 1 ja esta invisivel ali. */
+  margin-top: -23svh;
+}
+
+.process-statement {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background: var(--color-surface);
+}
+
+.process-statement__content {
+  width: 100%;
+  container-type: inline-size;
+}
+
+/* Solta o teto de 1280px do `.process-page .container-x` SO aqui: a 65% da
+   largura da tela a linha mais longa passa de 1200px e nao caberia no content
+   do container padrao — quebraria sozinha e estragaria as quebras intencionais
+   do array STATEMENTS. Especificidade 0,2,0 (igual a da base) + vir depois. */
+.process-page .process-statement__content {
+  max-width: none;
+  padding-inline: clamp(1.25rem, 2.4vw, 2.75rem);
+}
+
+.process-statement__title {
+  width: 100%;
+  margin: 0;
+  text-align: center;
+  font-family: var(--font-display);
+  /* Calibrado pela referencia do Victor: a linha mais longa ocupa ~65% da
+     largura da tela (antes eram 40%). O container agora e a largura cheia
+     menos o padding, entao o cqi mede sobre ~1832px em 1920. */
+  font-size: clamp(3.2rem, 6.5cqi, 8.5rem);
+  font-weight: 400;
+  line-height: 0.98;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.process-statement__title--mobile {
+  display: none;
+}
+
+.process-statement__line-mask {
+  display: block;
+  overflow: hidden;
+  padding-top: 0.12em;
+  margin-top: -0.12em;
+  padding-bottom: 0.13em;
+  margin-bottom: -0.13em;
+}
+
+.process-statement__line {
+  display: block;
+  will-change: transform, opacity;
+}
+
+.process-statement__accent {
+  display: inline-block;
+  color: var(--color-accent);
+  font-family: "Birthstone", cursive;
+  font-size: 1.18em;
+  line-height: 0.78;
+  text-transform: uppercase;
+}
+
+.process-content-section {
+  position: relative;
+  z-index: 4;
+  background: var(--color-surface);
+}
+
+.process-eyebrow {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 500;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+.process-system {
+  padding: 8rem 0 16rem;
+}
+
+.process-system__layout,
+.process-reality__layout {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 1rem;
+  container-type: inline-size;
+}
+
+.process-system__header {
+  grid-column: 1 / 5;
+}
+
+.process-system__title {
+  margin: 3rem 0 0;
+  font-family: var(--font-display);
+  font-size: clamp(5rem, 7cqi, 7.25rem);
+  font-weight: 400;
+  line-height: 0.82;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.process-system__title span {
+  display: block;
+  margin-bottom: 0.18em;
+  color: var(--color-accent);
+  font-family: "Birthstone", cursive;
+  font-size: 0.92em;
+  line-height: 0.7;
+  text-transform: none;
+}
+
+.process-system__items {
+  grid-column: 7 / -1;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 4rem 2rem;
+}
+
+.process-system__item,
+.process-reality__item {
+  border-top: 1px solid var(--color-foreground);
+  padding-top: 2rem;
+}
+
+.process-system__item h3,
+.process-results__item h3,
+.process-reality__item h3 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 3cqi, 2.55rem);
+  font-weight: 400;
+  line-height: 1.1;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.process-system__item p,
+.process-results__item p,
+.process-reality__item p {
+  margin: 1.5rem 0 0;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.process-results {
+  padding: 8rem 0 16rem;
+}
+
+.process-results__inner {
+  container-type: inline-size;
+}
+
+.process-results__title {
+  margin: 0;
+  text-align: center;
+  font-family: var(--font-display);
+  font-size: clamp(5rem, 7.5cqi, 7.5rem);
+  font-weight: 400;
+  line-height: 0.9;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.process-results__title span {
+  display: block;
+}
+
+.process-results__title span:last-child {
+  margin-top: 0.22em;
+  color: var(--color-accent);
+  font-family: "Birthstone", cursive;
+  font-size: 0.92em;
+  line-height: 0.78;
+  text-transform: none;
+}
+
+.process-results__list {
+  margin-top: 6rem;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 26rem));
+  justify-content: space-around;
+  gap: 5rem 7rem;
+}
+
+.process-results__item,
+.process-reality__item {
+  display: grid;
+  grid-template-columns: 2.7rem minmax(0, 1fr);
+  gap: 1rem;
+  align-items: start;
+}
+
+.process-number {
+  padding-top: 0.15rem;
+  color: var(--color-accent);
+  font-family: "Birthstone", cursive;
+  font-size: 1.2rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.process-reality {
+  padding: 8rem 0 16rem;
+}
+
+.process-reality__left {
+  grid-column: 1 / 5;
+  min-height: 64rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.process-reality__title {
+  position: relative;
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(5rem, 7cqi, 7.25rem);
+  font-weight: 400;
+  line-height: 0.82;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.process-reality__title span {
+  display: block;
+  margin: -0.1em 0 0 0.72em;
+  color: var(--color-accent);
+  font-family: "Birthstone", cursive;
+  font-size: 0.95em;
+  line-height: 0.72;
+  text-transform: none;
+}
+
+.process-reality__note {
+  position: relative;
+  max-width: 20rem;
+  margin-left: 2rem;
+  padding-bottom: 4.5rem;
+  font-family: "Birthstone", cursive;
+  font-size: 2rem;
+  line-height: 1.05;
+}
+
+.process-reality__note p,
+.process-reality__note strong {
+  display: block;
+  margin: 0;
+  font-weight: 400;
+}
+
+.process-reality__note strong {
+  margin-top: 0.3rem;
+  color: var(--color-accent);
+}
+
+.process-reality__note > span {
+  position: absolute;
+  right: 1rem;
+  bottom: 0;
+  font-family: var(--font-body);
+  font-size: 3.5rem;
+  font-weight: 400;
+  transform: rotate(8deg);
+}
+
+.process-reality__list {
+  grid-column: 7 / -1;
+  display: flex;
+  flex-direction: column;
+  gap: 4rem;
+}
+
+.process-reality__item {
+  padding-bottom: 1rem;
+}
+
+.process-page .contact {
+  position: relative;
+  z-index: 5;
+}
+
+/* Seis destinos no overlay: preserva o pôster tipográfico sem estourar a altura. */
+.nav-overlay__links {
+  container-type: inline-size;
+}
+
+.nav-overlay__link {
+  font-size: clamp(2.75rem, 7cqi, 6rem);
+}
+
+@media (min-width: 768px) and (max-width: 1180px) {
+  .hero__nav-links {
+    gap: 1rem;
+    font-size: 0.9rem;
+  }
+
+  .hero__talk-btn {
+    padding-right: 0.75rem;
+  }
+
+  .process-system__header,
+  .process-reality__left {
+    grid-column: 1 / 6;
+  }
+
+  .process-system__items,
+  .process-reality__list {
+    grid-column: 6 / -1;
+  }
+}
+
+@media (max-width: 767px) {
+  .process-hero {
+    height: 100svh;
+    min-height: 100svh;
+  }
+
+  .process-hero__display {
+    padding-top: 2.25rem;
+  }
+
+  .process-hero__title {
+    /* min baixo de proposito: 6.8rem travava o fit e o ultimo O era decepado
+       em telas <= 360px (70px de corte no 320). Quem manda e o cqi. */
+    font-size: clamp(5rem, 31cqi, 9.5rem);
+    line-height: 0.78;
+  }
+
+  .process-hero__accent-mask {
+    top: 47%;
+    left: 0;
+  }
+
+  .process-hero__accent-inner {
+    font-size: clamp(4.25rem, 19cqi, 6rem);
+  }
+
+  .process-hero__image {
+    width: 100%;
+    max-height: 72%;
+  }
+
+  .process-hero__meta {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    padding-bottom: max(1.5rem, env(safe-area-inset-bottom));
+    font-size: 0.9rem;
+  }
+
+  .process-hero__meta p:first-child {
+    max-width: 34ch;
+  }
+
+  .process-hero__meta p:last-child {
+    justify-self: start;
+    font-size: 0.75rem;
+  }
+
+  .process-statement__title--desktop {
+    display: none;
+  }
+
+  .process-statement__title--mobile {
+    display: block;
+    font-size: clamp(2.3rem, 10.5cqi, 3.25rem);
+    line-height: 1.02;
+  }
+
+  .process-statement__accent {
+    font-size: 1.26em;
+  }
+
+  .process-system,
+  .process-results,
+  .process-reality {
+    padding: 5rem 0 8rem;
+  }
+
+  .process-system__layout,
+  .process-reality__layout {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .process-system__header,
+  .process-system__items,
+  .process-reality__left,
+  .process-reality__list {
+    grid-column: 1;
+  }
+
+  .process-system__header {
+    margin-bottom: 4.5rem;
+  }
+
+  .process-system__title,
+  .process-reality__title {
+    font-size: clamp(4.5rem, 21cqi, 6rem);
+  }
+
+  .process-system__items {
+    grid-template-columns: 1fr;
+    gap: 3.5rem;
+  }
+
+  .process-system__item h3,
+  .process-results__item h3,
+  .process-reality__item h3 {
+    font-size: 2rem;
+  }
+
+  .process-system__item p,
+  .process-results__item p,
+  .process-reality__item p {
+    margin-top: 1.25rem;
+    font-size: 0.96rem;
+  }
+
+  .process-results__title {
+    font-size: clamp(4rem, 18cqi, 5.5rem);
+    line-height: 0.9;
+  }
+
+  .process-results__title span:last-child {
+    margin-top: 0.34em;
+    font-size: 0.78em;
+    line-height: 0.85;
+  }
+
+  .process-results__list {
+    margin-top: 5rem;
+    grid-template-columns: 1fr;
+    gap: 4.5rem;
+  }
+
+  .process-results__item,
+  .process-reality__item {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .process-reality__left {
+    min-height: 0;
+    margin-bottom: 5rem;
+  }
+
+  .process-reality__note {
+    margin: 4.5rem 0 0;
+    max-width: 18rem;
+  }
+
+  .process-reality__list {
+    gap: 3.5rem;
+  }
+
+  .nav-overlay__link {
+    font-size: clamp(2.55rem, 13cqi, 4rem);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .process-statement-scroller {
+    height: auto;
+  }
+
+  .process-statement {
+    position: relative;
+    min-height: 100svh;
+  }
+
+  .process-hero__word-inner,
+  .process-hero__accent-inner,
+  .process-statement__line,
+  .process-page [data-process-reveal] {
+    opacity: 1;
+    transform: none;
+  }
+}

@@ -1,0 +1,185 @@
+/* Hero da home — extraido do styles.css original, linhas 946-1126.
+   A ORDEM importa: este arquivo entra na posicao indicada pelo numero do nome.
+   Nao reordenar regras nem separar os @media do bloco a que pertencem. */
+
+
+/* ──────────────────────────────────────────────────────────────── */
+/* Hero                                                              */
+/* ──────────────────────────────────────────────────────────────── */
+.hero {
+  min-height: 100vh;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+/* Hero usa largura FULL (sem max-width 1280px) — logo encosta perto da
+   borda esquerda e o título tem mais largura útil pra respirar. */
+.hero > .container-x {
+  max-width: none;
+  padding-inline: clamp(1.25rem, 2.4vw, 2.75rem);
+}
+.hero__nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.5rem 0;
+}
+.hero__logo {
+  font-family: var(--font-display);
+  font-size: 28px;
+  letter-spacing: 0.04em;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.hero__logo-mark {
+  height: 32px;
+  width: auto;
+  display: block;
+  color: var(--color-foreground); /* SVG usa currentColor */
+}
+.hero__logo .dot {
+  width: 8px; height: 8px; border-radius: 999px;
+  background: var(--gradient-accent);
+}
+.hero__nav-links {
+  display: none;
+  gap: 2rem;
+  font-size: 18px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-weight: 400;
+}
+@media (min-width: 768px) { .hero__nav-links { display: flex; } }
+.hero__nav-links a,
+.hero__nav-links .hero__nav-link-btn { position: relative; padding-bottom: 4px; }
+.hero__nav-links a::after,
+.hero__nav-links .hero__nav-link-btn::after {
+  content: ""; position: absolute; left: 0; bottom: 0;
+  width: 100%; height: 1px; background: currentColor;
+  transform-origin: left; transform: scaleX(0);
+  transition: transform 300ms ease;
+}
+.hero__nav-links a:hover::after,
+.hero__nav-links .hero__nav-link-btn:hover::after { transform: scaleX(1); }
+
+.hero__main {
+  flex: 1;
+  display: flex;
+  align-items: flex-start; /* título anchora no topo — libera espaço pro wash sem invadir */
+  position: relative;
+  padding: 2.5rem 0 2rem;
+  min-height: 0; /* permite encolher se o título for grande demais */
+}
+.hero__title {
+  font-family: var(--font-display);
+  font-size: clamp(56px, 11vw, 200px);
+  line-height: 0.84;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+}
+.hero__line {
+  display: block;
+  white-space: nowrap; /* impede quebras dentro da linha — força a 3-line cadência */
+}
+/* padding-top + margin-top negativo: cria respiro pros acentos (Á, Õ, etc.)
+   sem afetar o layout. overflow:hidden clipa na padding edge, então a máscara
+   da animação continua funcionando para a entrada vinda de baixo. */
+.hero__title .word {
+  display: inline-block;
+  overflow: hidden;
+  padding-right: 0.06em;
+  padding-top: 0.18em;
+  margin-top: -0.18em;
+}
+.hero__title .word > span { display: inline-block; transform: translateY(160%); }
+.hero__title .accent { color: var(--color-accent); }
+
+.hero__meta {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  padding-bottom: 2.5rem;
+  padding-top: 1rem;
+  font-size: 15px;
+  font-weight: 500; /* peso uma família acima do default 400 */
+  line-height: 1.45;
+  color: var(--color-foreground);
+  flex-shrink: 0; /* não esmaga em viewport curto */
+}
+.hero__meta .left { max-width: 38ch; }
+.hero__meta .right { text-align: right; max-width: 28ch; justify-self: end; align-self: end; }
+
+.hero__cta-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 2.5rem;
+  flex-wrap: wrap;
+}
+
+/* hero wash bottom — gradiente accent forte (estilo Bogdan)
+   Cor: #f05235 (definida pelo cliente).
+   A faixa visível de cor PARA logo abaixo da 2ª linha do título — nunca invade. */
+.hero__wash {
+  pointer-events: none;
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 58vh;
+  background:
+    linear-gradient(
+      to top,
+      #f05235 0%,
+      rgba(240, 82, 53, 0.86) 18%,
+      rgba(240, 82, 53, 0.55) 38%,
+      rgba(240, 82, 53, 0.28) 58%,
+      rgba(240, 82, 53, 0.10) 80%,
+      rgba(240, 82, 53, 0) 100%
+    );
+  z-index: 0;
+}
+/* Garante que o conteúdo (nav, título, meta) fique sobre o wash */
+.hero > .container-x {
+  position: relative;
+  z-index: 1;
+}
+
+/* index pill */
+.hero__index {
+  position: absolute;
+  top: 1.5rem;
+  right: 0;
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-muted-foreground);
+}
+
+/* ── Hero mobile — mesmo poster, cadência em 4 linhas ─────────── */
+@media (max-width: 767px) {
+  /* svh: altura estável com a barra de URL do navegador mobile */
+  .hero { min-height: 100svh; }
+  .hero__nav { padding: 1.1rem 0; }
+  .hero__logo-mark { height: 26px; }
+  .hero__main { padding: 1.75rem 0 1.5rem; }
+  /* Poster: as linhas quebram por palavra (os .word são inline-block,
+     a máscara da animação continua funcionando linha a linha) */
+  .hero__line { white-space: normal; }
+  .hero__title {
+    font-size: clamp(52px, 18vw, 88px);
+    line-height: 0.92;
+  }
+  .hero__meta {
+    grid-template-columns: 1fr;
+    gap: 1.1rem;
+    padding-bottom: 2rem;
+  }
+  .hero__meta .right {
+    text-align: left;
+    justify-self: start;
+    align-self: auto;
+  }
+}
+

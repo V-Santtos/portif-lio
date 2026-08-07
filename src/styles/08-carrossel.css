@@ -1,0 +1,497 @@
+/* Carrossel LandingPages — extraido do styles.css original, linhas 1158-1650.
+   A ORDEM importa: este arquivo entra na posicao indicada pelo numero do nome.
+   Nao reordenar regras nem separar os @media do bloco a que pertencem. */
+
+/* ──────────────────────────────────────────────────────────────── */
+/* Landing Pages — carrossel                                        */
+/* ──────────────────────────────────────────────────────────────── */
+.lp { padding: 18rem 0 0; }
+.lp__intro {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2.5rem;
+  margin-bottom: 5rem;
+}
+@media (min-width: 1024px) {
+  .lp__intro { grid-template-columns: 1.2fr 1fr; align-items: end; }
+}
+.lp__title--main {
+  text-align: center;
+  font-size: clamp(60px, 9vw, 128px);
+  line-height: 0.82;
+  margin-bottom: 2.5rem;
+}
+.lp__line { display: block; }
+.lp__copy { max-width: 48ch; }
+.lp__copy p { font-size: 16px; }
+
+/* Variante centrada */
+.lp__intro--centered {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0;
+  margin-bottom: 6rem;
+}
+.lp__title--centered {
+  text-align: center;
+}
+.lp__copy--centered {
+  max-width: 52ch;
+  margin-top: 3.5rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+.lp__copy--centered p {
+  font-size: 17px;
+  line-height: 1.75;
+  color: var(--color-foreground);
+}
+
+.carousel {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+}
+.carousel__track {
+  display: flex;
+  gap: 1.5rem;
+  width: max-content;
+  will-change: transform;
+  cursor: grab;
+}
+.carousel__track:active { cursor: grabbing; }
+.carousel__card {
+  flex: 0 0 auto;
+  width: clamp(280px, 32vw, 520px);
+  aspect-ratio: 4 / 3;
+  position: relative;
+  background: #fff;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  overflow: hidden;
+  transition: transform 280ms ease;
+}
+.carousel__card-thumb {
+  position: absolute; inset: 0;
+  background-size: cover;
+  background-position: center;
+}
+.carousel__card-overlay {
+  position: absolute; inset: 0;
+  display: flex; align-items: flex-end;
+  padding: 1.25rem 1.5rem;
+  background: linear-gradient(to top, rgba(22,22,22,0.7), transparent 50%);
+  color: #fff;
+  opacity: 0;
+  transition: opacity 240ms ease;
+}
+.carousel__card:hover .carousel__card-overlay { opacity: 1; }
+.carousel__card-title {
+  font-family: var(--font-display);
+  font-size: 28px;
+  line-height: 1;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+}
+.carousel__card-tag {
+  display: block;
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  opacity: 0.85;
+  margin-bottom: 0.4rem;
+}
+
+
+.lp__card-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* ── Stage — horizontal scroll via ScrollTrigger ────────────── */
+.lp__stage {
+  position: relative;
+  height: 100vh;
+  overflow: hidden;
+  background: var(--color-surface);
+  transform: translateZ(0);
+}
+
+.lp__thumb-start,
+.lp__thumb-end {
+  position: absolute;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  aspect-ratio: 16 / 9;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.lp__thumb-start {
+  top: 38%;
+  width: clamp(200px, 22vw, 340px);
+}
+
+.lp__thumb-end {
+  top: 50%;
+  width: 72vw;
+}
+
+.lp__h-track {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  padding: 0;
+  gap: 2rem;
+  will-change: transform;
+}
+
+.lp__h-card {
+  flex: 0 0 auto;
+  width: 72vw;
+  aspect-ratio: 16 / 9;
+  position: relative;
+  will-change: transform;
+}
+
+.lp__h-card-inner {
+  width: 100%;
+  height: 100%;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+  background: #fff;
+  box-shadow: 0 12px 48px rgba(0,0,0,0.10);
+  position: relative;
+}
+
+.lp__stage-count {
+  position: absolute;
+  top: 2.5rem;
+  right: 2.5rem;
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-muted-foreground);
+}
+
+.lp__scroll-hint {
+  position: absolute;
+  bottom: 2.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-muted-foreground);
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+/* Section 2 validation: isolated thumbnail expansion */
+.lp__eyebrow {
+  display: block;
+  text-align: center;
+  margin-bottom: 2rem;
+  font-size: 18px;
+  letter-spacing: 0.04em;
+  color: var(--color-foreground);
+}
+
+.lp__scaling-header {
+  width: 100%;
+  padding: 7rem 5vw 20vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3rem;
+  position: relative;
+}
+
+.lp__note {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.9rem;
+  text-align: center;
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.45;
+  color: var(--color-foreground);
+  pointer-events: none;
+}
+
+.lp__note-arrow {
+  width: 4rem;
+  transform: rotate(42deg);
+}
+
+.lp__scaling-video {
+  width: 100%;
+  min-height: 100vh;
+  padding: 0 5vw;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.lp__thumb-box {
+  position: relative;
+}
+
+.lp__thumb-box--small {
+  width: clamp(220px, 24vw, 370px);
+}
+
+.lp__thumb-box--large {
+  width: min(82vw, 1280px);
+}
+
+.lp__ratio {
+  padding-top: 56.25%;
+}
+
+.lp__thumb-wrapper {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.lp__thumb-target {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  border: 1px solid rgba(0,0,0,0.16);
+  border-radius: var(--lp-card-radius);
+  background: var(--color-dark);
+  box-shadow: 0 12px 48px rgba(0,0,0,0.12);
+  isolation: isolate;
+  z-index: 3;
+  will-change: transform;
+  transform: translate(0) rotate(0.001deg);
+}
+
+.lp__thumb-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.lp__thumb-pill {
+  position: absolute;
+  left: 50%;
+  bottom: 1rem;
+  transform: translateX(-50%);
+  z-index: 2;
+  border-radius: 999px;
+  padding: 0.55rem 1rem;
+  background: rgba(0,0,0,0.55);
+  color: #fff;
+  font-family: var(--font-body);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  backdrop-filter: blur(4px);
+  white-space: nowrap;
+}
+
+.lp__carousel-viewport {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 2;
+  will-change: clip-path;
+}
+
+.lp__carousel-track {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  width: max-content;
+  will-change: transform;
+}
+
+.lp__preview-card {
+  flex: 0 0 auto;
+  width: min(82vw, 1280px);
+  aspect-ratio: 16 / 9;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(0,0,0,0.16);
+  border-radius: var(--lp-card-radius);
+  background: var(--color-dark);
+  box-shadow: 0 12px 48px rgba(0,0,0,0.12);
+}
+
+.lp__preview-overlay {
+  position: absolute;
+  inset: auto 0 0 0;
+  z-index: 2;
+  padding: 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 1rem;
+  color: #fff;
+  background: linear-gradient(to top, rgba(0,0,0,0.62), transparent);
+  opacity: 0;
+  transition: opacity 240ms ease;
+}
+
+.lp__preview-card:hover .lp__preview-overlay {
+  opacity: 1;
+}
+
+.lp__preview-overlay span {
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.lp__preview-overlay strong {
+  font-family: var(--font-display);
+  font-size: 32px;
+  line-height: 0.95;
+  text-transform: uppercase;
+  font-weight: 400;
+}
+
+/* ── Carrossel mobile — cards maiores, expansão com mais contraste ── */
+@media (max-width: 767px) {
+  .lp { padding-top: 7rem; }
+  .lp__scaling-header { padding: 3.5rem 5vw 10vh; }
+  /* 100vh do desktop deixa ~340px de creme sobrando abaixo do card 16:9;
+     aqui o card fica só com uma folga curta (fundo creme segue contínuo) */
+  .lp__scaling-video { min-height: 0; padding-block: 3.5rem; }
+  /* thumb inicial menor → o Flip até o card grande ganha impacto */
+  .lp__thumb-box--small { width: min(46vw, 210px); }
+  .lp__thumb-box--large { width: 88vw; }
+  .lp__preview-card { width: 88vw; }
+  .lp__carousel-track { gap: 1.25rem; }
+  .lp__thumb-pill { padding: 0.4rem 0.75rem; font-size: 10px; }
+  /* overlay sempre visível no touch — tipografia menor pra não cobrir o preview */
+  .lp__preview-overlay { padding: 0.9rem 1rem; }
+  .lp__preview-overlay span { font-size: 9px; }
+  .lp__preview-overlay strong { font-size: 18px; }
+}
+/* Touch não tem hover: tag+título dos previews sempre visíveis */
+@media (hover: none) {
+  .lp__preview-overlay { opacity: 1; }
+}
+
+/* ── Faixas satélites do carrossel — placeholders (só mobile) ──── */
+.lp__strip { display: none; }
+
+@media (max-width: 767px) {
+  /* as faixas vivem fora da caixa do carrossel — libera o clip vertical
+     (o track principal continua clipado pelo próprio carousel-viewport) */
+  .lp__scaling-video { overflow: visible; }
+
+  .lp__strip {
+    display: block;
+    position: absolute;
+    left: 0;
+    right: 0;
+    overflow: hidden; /* a faixa é uma "janela": deslizá-la esconde/revela os cards */
+    pointer-events: none; /* a faixa não intercepta gesto de scroll... */
+  }
+  .lp__strip-card {
+    pointer-events: auto; /* ...mas o card aceita o tap certeiro (click) */
+    cursor: pointer;
+  }
+  /* offset vertical = altura do card central (88vw × 9/16 = 49.5vw) + gap.
+     A janela fica parada; quem entra/sai/roda é o TREM de cards (track). */
+  .lp__strip--top { top: calc(50% - 74.25vw - 1.25rem); }
+  .lp__strip--bottom { top: calc(50% + 24.75vw + 1.25rem); }
+
+  .lp__strip-track {
+    display: flex;
+    gap: 1.25rem;
+    width: max-content;
+    will-change: transform;
+  }
+  /* estado inicial (antes do JS): trens fora da tela, janela vazia */
+  .lp__strip--top .lp__strip-track { transform: translateX(120vw); }
+  .lp__strip--bottom .lp__strip-track { transform: translateX(-800vw); }
+
+  .lp__strip-card {
+    flex: 0 0 auto;
+    width: 88vw;
+    aspect-ratio: 16 / 9;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border: 1px solid rgba(0, 0, 0, 0.16);
+    border-radius: var(--lp-card-radius);
+    /* sem sombra: em sequência elas marcavam o vão entre os cards */
+    overflow: hidden;
+  }
+  /* card real (site em produção): o preview preenche por position:absolute e o
+     overlay tag/título fica por cima — mesmo tratamento do carrossel central */
+  .lp__strip-card--preview {
+    position: relative;
+    background: var(--color-dark);
+  }
+  .lp__strip-card--dark {
+    background: linear-gradient(160deg, #2a2723, #161513);
+    color: #f1ede0;
+  }
+  .lp__strip-card--light {
+    background: linear-gradient(160deg, #ffffff, #efe8d6);
+    color: var(--color-foreground);
+  }
+  .lp__strip-tag {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    opacity: 0.55;
+  }
+  .lp__strip-title {
+    font-family: var(--font-display);
+    font-size: 36px;
+    font-weight: 400;
+    line-height: 1;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+  }
+}
+
+.lp__meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 2.5rem;
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-muted-foreground);
+}
+

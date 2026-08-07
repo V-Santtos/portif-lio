@@ -1,0 +1,153 @@
+/* Reset, tipografia base, container, section, btn — extraido do styles.css original, linhas 33-181.
+   A ORDEM importa: este arquivo entra na posicao indicada pelo numero do nome.
+   Nao reordenar regras nem separar os @media do bloco a que pertencem. */
+
+/* ──────────────────────────────────────────────────────────────── */
+/* Reset leve                                                       */
+/* ──────────────────────────────────────────────────────────────── */
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+html { scrollbar-gutter: stable; }
+html.is-opening-screen {
+  scrollbar-gutter: stable;
+  overflow: hidden;
+  background: var(--color-dark);
+}
+html.is-opening-screen body {
+  overflow: hidden;
+  background: var(--color-dark);
+}
+html.is-scroll-locked,
+html.is-scroll-locked body { overscroll-behavior: none; }
+/* Overlay do fadeJump — cross-fade suave no teleporte de Contato */
+.scroll-fade {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: var(--color-surface);
+  opacity: 0;
+  pointer-events: none;
+}
+body {
+  font-family: var(--font-body);
+  color: var(--color-foreground);
+  background: var(--color-surface);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  font-feature-settings: "kern", "liga", "calt";
+  overflow-x: hidden;
+}
+
+img, svg { display: block; max-width: 100%; }
+
+button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; padding: 0; }
+a { color: inherit; text-decoration: none; }
+
+/* ──────────────────────────────────────────────────────────────── */
+/* Tipografia base                                                  */
+/* ──────────────────────────────────────────────────────────────── */
+.font-display { font-family: var(--font-display); font-weight: 400; letter-spacing: -0.005em; line-height: 0.86; }
+.font-body { font-family: var(--font-body); }
+.label {
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+p { line-height: 1.6; }
+
+/* Container                                                         */
+.container-x {
+  width: 100%;
+  max-width: var(--container-max);
+  margin-inline: auto;
+  padding-inline: var(--gutter-x);
+}
+
+/* ──────────────────────────────────────────────────────────────── */
+/* Seções — section overlap base                                    */
+/* ──────────────────────────────────────────────────────────────── */
+.section {
+  position: relative;
+  background: var(--color-surface);
+  color: var(--color-foreground);
+  width: 100%;
+}
+.section--dark {
+  background: var(--color-dark);
+  color: #f1ede0;
+}
+.section--dark .muted { color: rgba(241, 237, 224, 0.55); }
+
+.muted { color: var(--color-muted-foreground); }
+
+/* Divisor sutil */
+.hairline { border-top: 1px solid var(--color-border); }
+.hairline--dark { border-top: 1px solid rgba(255, 255, 255, 0.08); }
+
+/* ──────────────────────────────────────────────────────────────── */
+/* Botão CTA com gradiente accent                                   */
+/* ──────────────────────────────────────────────────────────────── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.95rem 1.3rem;
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  border-radius: 4px;
+  transition: transform 200ms ease, box-shadow 200ms ease, background 200ms ease;
+  will-change: transform;
+}
+.btn--accent {
+  color: #fff;
+  background: var(--gradient-accent);
+  box-shadow: 0 1px 0 rgba(0,0,0,0.04);
+}
+.btn--accent:hover { transform: translateY(-1px); }
+.btn--ghost {
+  color: var(--color-foreground);
+  border: 1px solid var(--color-border);
+  background: transparent;
+}
+.btn--ghost:hover { background: rgba(0,0,0,0.03); }
+.btn--ghost-light {
+  color: #f1ede0;
+  border: 1px solid rgba(255,255,255,0.14);
+}
+.btn--ghost-light:hover { background: rgba(255,255,255,0.04); }
+
+/* Arrow icon */
+.arrow {
+  display: inline-block;
+  transition: transform 200ms ease;
+}
+.btn:hover .arrow { transform: translateX(3px); }
+
+/* Variante compacta para a nav */
+.btn--sm {
+  padding: 0.6rem 1.1rem;
+  font-size: 13px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  border-radius: 999px; /* pill — destaca como CTA mas leve */
+}
+.hero__nav-cta { gap: 0.55rem; }
+.dot-accent {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--gradient-accent);
+  display: inline-block;
+  box-shadow: 0 0 0 3px rgba(244, 74, 34, 0.10);
+  transition: transform 220ms ease, box-shadow 220ms ease;
+}
+.hero__nav-cta:hover .dot-accent {
+  transform: scale(1.15);
+  box-shadow: 0 0 0 4px rgba(244, 74, 34, 0.16);
+}
+

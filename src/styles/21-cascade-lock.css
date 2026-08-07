@@ -1,0 +1,26 @@
+/* CASCADE LOCK do /meu-processo — TEM que ser o ultimo — extraido do styles.css original, linhas 5550-5571.
+   A ORDEM importa: este arquivo entra na posicao indicada pelo numero do nome.
+   Nao reordenar regras nem separar os @media do bloco a que pertencem. */
+
+/* Cascade lock da rota /meu-processo: vem depois das bases compartilhadas. */
+.process-hero {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  height: 100svh;
+  min-height: 100svh;
+}
+
+.process-hero > .process-hero__inner {
+  z-index: 2;
+}
+
+.nav-overlay__link {
+  font-size: clamp(2.75rem, 7cqi, 6rem);
+}
+
+@media (max-width: 767px) {
+  .nav-overlay__link {
+    font-size: clamp(2.55rem, 13cqi, 4rem);
+  }
+}

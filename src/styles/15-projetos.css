@@ -1,0 +1,204 @@
+/* Rota /projetos — extraido do styles.css original, linhas 3961-4160.
+   A ORDEM importa: este arquivo entra na posicao indicada pelo numero do nome.
+   Nao reordenar regras nem separar os @media do bloco a que pertencem. */
+
+/* ──────────────────────────────────────────────────────────────── */
+/* Projetos — Hover Slideshow                                        */
+/* ──────────────────────────────────────────────────────────────── */
+.projetos {
+  min-height: 100vh;
+  padding-block: 7rem 9rem;
+}
+
+.projetos__heading {
+  margin: 0 0 4rem;
+}
+
+.projetos__inner {
+  display: grid;
+  grid-template-columns: 1fr 1.6fr;
+  gap: 4rem;
+  align-items: stretch;
+}
+
+.projetos__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.projetos__item {
+  display: flex;
+  align-items: baseline;
+  gap: 1.5rem;
+  padding-block: 2.5rem;
+  border-top: 1px solid var(--color-border);
+  cursor: default;
+}
+
+.projetos__item:last-child {
+  border-bottom: 1px solid var(--color-border);
+}
+
+.projetos__num {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-muted-foreground);
+  flex-shrink: 0;
+}
+
+.projetos__name {
+  font-family: var(--font-display);
+  font-size: clamp(2.6rem, 5vw, 4.8rem);
+  line-height: 0.9;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+/* Máscara char-a-char para o hover */
+.proj-char {
+  display: inline-block;
+  overflow: hidden;
+  line-height: 1.05;
+}
+
+.proj-char-inner {
+  display: inline-block;
+  will-change: transform;
+}
+
+/* Trilha — coluna inteira (altura da lista); serve de referência ao frame */
+.projetos__media {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+/* Frame — caixa 16:9 que desliza verticalmente acompanhando o item ativo */
+.projetos__frame {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  /* Proporção exata dos assets fornecidos (1920x954) — preenche sem faixa/corte */
+  aspect-ratio: 1920 / 954;
+  border-radius: var(--lp-card-radius);
+  overflow: hidden;
+  outline: 1.5px solid rgba(0, 0, 0, 0.15);
+  will-change: transform;
+  background: #0a0a0a;
+}
+
+.projetos__img-wrap {
+  position: absolute;
+  inset: 0;
+  will-change: clip-path;
+}
+
+.projetos__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  /* Camada própria estável: evita o re-snap do frame ao iniciar o play */
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+.projetos__placeholder {
+  width: 100%;
+  height: 100%;
+  background: var(--color-border);
+  display: flex;
+  align-items: flex-end;
+  padding: 1.25rem 1.5rem;
+}
+
+.projetos__placeholder-label {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-muted-foreground);
+}
+
+/* ── Projetos mobile — sem hover: cada item empilha a própria mídia ── */
+@media (max-width: 767px) {
+  .projetos { padding-block: 6.5rem 4rem; }
+  .projetos__heading { margin-bottom: 2.5rem; }
+  .projetos__inner {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+  .projetos__item {
+    flex-wrap: wrap;
+    row-gap: 1.1rem;
+    padding-block: 1.9rem;
+  }
+  /* sem numeração no mobile — título flush à esquerda, na margem do card */
+  .projetos__num { display: none; }
+  .projetos__item-media {
+    display: block;
+    width: 100%;
+    aspect-ratio: 1920 / 954;
+    border-radius: var(--lp-card-radius);
+    overflow: hidden;
+    outline: 1.5px solid rgba(0, 0, 0, 0.15);
+    background: #0a0a0a;
+  }
+}
+
+/* ──────────────────────────────────────────────────────────────── */
+/* Projetos — Back button                                           */
+/* ──────────────────────────────────────────────────────────────── */
+.projetos {
+  position: relative;
+}
+
+.projetos__back {
+  position: absolute;
+  top: 2.5rem;
+  left: var(--gutter-x);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  text-decoration: none;
+  color: var(--color-foreground);
+  opacity: 1;
+  transition: gap 0.2s ease;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0;
+}
+
+.projetos__back:hover {
+  gap: 1rem;
+}
+
+.projetos__back-arrow {
+  font-size: 1.6rem;
+  line-height: 1;
+  font-family: var(--font-body);
+}
+
+.projetos__back-logo {
+  width: 54px;
+  height: auto;
+  fill: currentColor;
+  display: block;
+}
+
+/* Botão de nav no Hero que usa transitionTo */
+.hero__nav-link-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+}

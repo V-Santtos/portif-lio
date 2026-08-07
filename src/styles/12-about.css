@@ -1,0 +1,158 @@
+/* About (oculta) — extraido do styles.css original, linhas 3546-3699.
+   A ORDEM importa: este arquivo entra na posicao indicada pelo numero do nome.
+   Nao reordenar regras nem separar os @media do bloco a que pertencem. */
+
+
+/* About */
+.about {
+  padding: 0 0 9rem;
+  margin-top: -19rem;
+  background: var(--color-surface);
+  color: var(--color-foreground);
+}
+.about__inner {
+  text-align: center;
+}
+.about__eyebrow {
+  display: inline-flex;
+  margin-bottom: 1.5rem;
+}
+.about__title {
+  text-align: center;
+  font-size: clamp(140px, 28vw, 520px);
+  line-height: 0.9;
+}
+.about__title .word > span {
+  transform: none;
+}
+
+.about-card {
+  position: relative;
+  width: 100%;
+  max-width: clamp(520px, 52vw, 700px);
+  aspect-ratio: 1 / 1;
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.18);
+  transform-style: preserve-3d;
+  cursor: default;
+  margin: 0 auto;
+  background: var(--color-dark);
+}
+
+.about-card__img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 24px;
+  transform: translateZ(-20px) scale(1.1);
+}
+
+.about-card--image-only {
+  border-radius: 28px;
+  box-shadow: 0 28px 82px rgba(20, 20, 20, 0.18);
+}
+
+.about-card--image-only .about-card__img {
+  border-radius: 28px;
+  transform: none;
+}
+
+.about-card__overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.65), rgba(0,0,0,0.18), transparent);
+  border-radius: 24px;
+}
+
+.about-card__content {
+  position: absolute;
+  inset: 0;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  transform: translateZ(40px);
+}
+
+.about-card__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.06);
+  padding: 16px;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.about-card__title {
+  margin: 0 0 4px;
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 900;
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
+}
+
+.about-card__desc {
+  margin: 0;
+  font-size: 12px;
+  color: rgba(255,255,255,0.65);
+  line-height: 1.4;
+}
+
+.about-card__tag {
+  position: absolute;
+  top: 108px;
+  left: 20px;
+  border-radius: 999px;
+  background: rgba(0,0,0,0.45);
+  padding: 6px 16px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #fff;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.about__columns {
+  display: grid;
+  grid-template-columns: 1fr clamp(520px, 52vw, 700px) 1fr;
+  align-items: stretch;
+  gap: 3rem;
+  margin-top: -22rem;
+}
+
+.about__col-left,
+.about__col-right {
+  font-size: clamp(15px, 1.25vw, 20px);
+  line-height: 1.75;
+  color: var(--color-foreground);
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  display: flex;
+}
+
+.about__col-left {
+  text-align: right;
+  align-items: flex-start;
+  justify-content: flex-end;
+}
+
+.about__col-right {
+  text-align: left;
+  align-items: flex-end;
+}
+
+.about__col-left p,
+.about__col-right p {
+  margin: 0;
+}
+
+/* ──────────────────────────────────────────────────────────────── */

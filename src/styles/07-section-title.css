@@ -1,0 +1,35 @@
+/* Eyebrow e section-title — extraido do styles.css original, linhas 1127-1157.
+   A ORDEM importa: este arquivo entra na posicao indicada pelo numero do nome.
+   Nao reordenar regras nem separar os @media do bloco a que pertencem. */
+
+/* ──────────────────────────────────────────────────────────────── */
+/* Section common heading                                           */
+/* ──────────────────────────────────────────────────────────────── */
+.eyebrow {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  font-family: var(--font-body); font-weight: 500;
+  font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--color-muted-foreground);
+}
+.eyebrow .num { color: var(--color-accent); }
+
+.section-title {
+  font-family: var(--font-display);
+  font-size: clamp(56px, 9vw, 140px);
+  line-height: 0.9;
+  letter-spacing: -0.005em;
+  text-transform: uppercase;
+}
+.section-title .word {
+  display: inline-block;
+  overflow: hidden;
+  padding-right: 0.06em;
+  padding-top: 0.18em;
+  margin-top: -0.18em;
+  /* folga embaixo pro cedilha (Ç de SOLUÇÃO) — line-height 0.9 corta o descender */
+  padding-bottom: 0.15em;
+  margin-bottom: -0.15em;
+}
+.section-title .word > span { display: inline-block; transform: translateY(160%); }
+.section-title .accent { color: var(--color-accent); }
+

@@ -1,0 +1,127 @@
+/* Bridge — extraido do styles.css original, linhas 3120-3242.
+   A ORDEM importa: este arquivo entra na posicao indicada pelo numero do nome.
+   Nao reordenar regras nem separar os @media do bloco a que pertencem. */
+
+/* ──────────────────────────────────────────────────────────────── */
+/* Bridge                                                            */
+/* ──────────────────────────────────────────────────────────────── */
+.bridge-shell {
+  position: relative;
+  background: var(--color-surface);
+}
+
+.bridge__approach {
+  height: clamp(10rem, 32vh, 20rem);
+}
+
+.bridge-stage {
+  height: 100vh;
+  min-height: 100vh;
+  padding: clamp(5rem, 10vh, 7rem) 5vw 6rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow: hidden;
+  background: var(--color-surface);
+}
+
+.bridge__kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin-bottom: clamp(3.6rem, 7vh, 5.8rem);
+}
+
+.bridge__kicker .eyebrow {
+  color: var(--color-foreground);
+}
+
+.bridge__stair {
+  width: auto;
+  height: 32px;
+  flex: 0 0 auto;
+  object-fit: contain;
+  filter: drop-shadow(0 5px 10px rgba(22, 22, 22, 0.12));
+}
+
+.bridge__phrase {
+  margin: 0;
+  text-align: center;
+  font-family: var(--font-display);
+  font-size: clamp(72px, 9vw, 150px);
+  font-weight: 900;
+  line-height: 0.84;
+  text-transform: uppercase;
+}
+
+.bridge__line {
+  display: block;
+  white-space: nowrap;
+}
+
+.bridge__line--accent {
+  color: var(--color-accent);
+}
+
+.bridge__letter-wrap {
+  display: inline-block;
+  position: relative;
+  overflow: hidden;
+  vertical-align: baseline;
+  height: 0.82em;
+  line-height: 0.84;
+  contain: paint;
+}
+
+.bridge__letter {
+  display: inline-block;
+  position: relative;
+  height: 1.68em;
+  line-height: 0.84;
+  will-change: transform;
+}
+
+.bridge__letter-face {
+  display: block;
+  height: 0.84em;
+  line-height: 0.84;
+}
+
+.bridge__letter-face--next {
+  position: static;
+}
+
+.bridge__letter-space {
+  display: inline-block;
+  width: 0.28em;
+}
+
+.bridge__dash {
+  position: absolute;
+  left: 50%;
+  bottom: 2.5rem;
+  transform: translateX(-50%);
+  width: 44px;
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(20, 20, 20, 0.42);
+}
+
+/* ── Bridge mobile — sem lock: seção mais curta, respiros menores ── */
+@media (max-width: 767px) {
+  /* Respiro moderado e SIMÉTRICO em volta da frase — isola a mensagem
+     sem colar no carrossel (em cima) nem na Automation (embaixo) */
+  /* topo espelha o respiro de baixo: 3.5 (folga do card) + 6 + 3.5 = 13rem */
+  .bridge__approach { height: 6rem; }
+  .bridge-stage {
+    height: auto;
+    min-height: 62svh;
+    /* respiro generoso embaixo — área clara isola a frase antes da dark */
+    padding: 3.5rem 5vw 13rem;
+    justify-content: center;
+  }
+  .bridge__kicker { margin-bottom: 2.5rem; }
+  /* tracinho decorativo removido no mobile (pedido do Victor) */
+  .bridge__dash { display: none; }
+}
+

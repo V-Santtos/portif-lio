@@ -1,0 +1,36 @@
+/* Tokens e variaveis do briefing — extraido do styles.css original, linhas 1-32.
+   A ORDEM importa: este arquivo entra na posicao indicada pelo numero do nome.
+   Nao reordenar regras nem separar os @media do bloco a que pertencem. */
+
+/* ──────────────────────────────────────────────────────────────────
+   globals.css — Tokens do BRIEFING + base editorial
+   Tailwind v4 @theme syntax usado quando rodando em Next.js;
+   neste protótipo HTML os tokens vivem como custom properties.
+   ────────────────────────────────────────────────────────────────── */
+
+:root {
+  /* Cores — exatas do briefing */
+  --color-surface: #FEF8E8;
+  --color-dark: #1b1a18;
+  --color-foreground: #161616;
+  --color-muted-foreground: #A8AAAC;
+  --color-border: #E4E2E3;
+  --color-accent: #F44A22;
+  --color-accent-to: #FF6B35;
+
+  --gradient-accent: linear-gradient(135deg, #F44A22, #FF6B35);
+
+  /* Tipografia */
+  --font-display: "Bebas Neue", "Anton", sans-serif;
+  --font-body: "Inter", system-ui, sans-serif;
+
+  /* Grid */
+  --container-max: 1280px;
+  --gutter-x: 1.5rem;
+  --lp-card-radius: 8px;
+}
+
+@media (min-width: 1024px) {
+  :root { --gutter-x: 2rem; }
+}
+

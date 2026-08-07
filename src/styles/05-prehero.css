@@ -1,0 +1,40 @@
+/* Pre-hero — extraido do styles.css original, linhas 910-945.
+   A ORDEM importa: este arquivo entra na posicao indicada pelo numero do nome.
+   Nao reordenar regras nem separar os @media do bloco a que pertencem. */
+
+
+.pre-hero {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: var(--color-dark);
+  color: #f1ede0;
+  display: grid;
+  place-items: center;
+  will-change: transform;
+}
+.pre-hero__phrase {
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: clamp(28px, 5vw, 56px);
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+}
+.pre-hero__phrase .word {
+  display: inline-block;
+  overflow: hidden;
+  padding: 0.18em 0.02em 0;
+  margin-top: -0.18em;
+}
+.pre-hero__phrase .word > span { display: inline-block; transform: translateY(110%); }
+
+.pre-hero__dot {
+  display: inline-block;
+  width: 0.32em;
+  height: 0.32em;
+  background: var(--color-accent);
+  border-radius: 999px;
+  margin-left: 0.2em;
+  vertical-align: 0.05em;
+  transform: scale(0);
+}

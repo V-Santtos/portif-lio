@@ -1,0 +1,56 @@
+/* Page transition, data-reveal, reduced-motion global — extraido do styles.css original, linhas 4161-4212.
+   A ORDEM importa: este arquivo entra na posicao indicada pelo numero do nome.
+   Nao reordenar regras nem separar os @media do bloco a que pertencem. */
+
+
+/* ──────────────────────────────────────────────────────────────── */
+/* Page Transition Overlay                                          */
+/* ──────────────────────────────────────────────────────────────── */
+.page-transition {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  /* Creme (não escuro): o Safari iOS amostra a tela em momentos imprevisíveis
+     (troca de rota inclusa) pra colorir a status bar — painel escuro deixava
+     a tarja preta grudada na página seguinte. */
+  background: var(--color-surface);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform: translateY(100%);
+  will-change: transform;
+  pointer-events: none;
+}
+
+.page-transition__logo {
+  width: 120px;
+  height: auto;
+  display: block;
+}
+
+/* ──────────────────────────────────────────────────────────────── */
+/* Reveal default — usado por elementos com data-reveal             */
+/* ──────────────────────────────────────────────────────────────── */
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(28px);
+}
+
+/* ──────────────────────────────────────────────────────────────── */
+/* prefers-reduced-motion                                            */
+/* ──────────────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+  [data-reveal] { opacity: 1 !important; transform: none !important; }
+  .hero__title .word > span,
+  .section-title .word > span,
+  .contact__title .word > span,
+  .pre-hero__phrase .word > span { transform: none !important; }
+  .bridge__letter { transform: none !important; }
+  .pre-hero { transform: translateY(-100vh) !important; }
+}
+

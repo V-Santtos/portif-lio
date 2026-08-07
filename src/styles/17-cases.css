@@ -1,0 +1,796 @@
+/* Cases /projetos/:slug — extraido do styles.css original, linhas 4213-5004.
+   A ORDEM importa: este arquivo entra na posicao indicada pelo numero do nome.
+   Nao reordenar regras nem separar os @media do bloco a que pertencem. */
+
+/* ──────────────────────────────────────────────────────────────── */
+/* Case — Hawk Street                                               */
+/* ──────────────────────────────────────────────────────────────── */
+
+/* ── Seção 1: Hero ─────────────────────────────────────────────── */
+.case-hawk__hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-surface);
+}
+/* Mobile: mesma altura svh da home (a base é 100vh). Sem isso o hero do case
+   é mais alto que a viewport visível e joga a base SÓLIDA do wash pra baixo da
+   dobra — o laranja que chega na barra fica "ralo". Com svh, o laranja sólido
+   assenta na borda visível e casa com a barra, igual à home. */
+@media (max-width: 767px) {
+  .case-hawk__hero { min-height: 100svh; }
+}
+
+/* Navbar do case full-bleed igual à home: estoura só a nav pra largura
+   total da viewport (logo na lateral esquerda, COMEÇAR na direita) com o
+   mesmo gutter da home. O conteúdo (tags/título/desc) segue no container
+   constrangido — título não muda de escala. */
+.case-hawk__hero .hero__nav {
+  margin-inline: calc(50% - 50vw);
+  padding-inline: clamp(1.25rem, 2.4vw, 2.75rem);
+}
+
+.case-hawk__hero-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  z-index: 1;
+}
+
+.case-hawk__hero-center {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 4rem 0 2rem;
+  /* referência para o título escalar e caber em qualquer nome */
+  container-type: inline-size;
+}
+
+.case-hawk__tags {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+}
+
+.case-hawk__tag-outer {
+  overflow: hidden;
+  display: inline-flex;
+}
+
+.case-hawk__tag {
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  border: 1px solid var(--color-foreground);
+  border-radius: 6px;
+  padding: 0.45rem 1.25rem;
+  color: var(--color-foreground);
+  display: inline-block;
+}
+
+.case-hawk__title {
+  font-family: var(--font-display);
+  /* escala pelo nº de caracteres (--title-len) p/ não estourar nomes longos */
+  font-size: clamp(3rem, calc(100cqi / var(--title-len, 4) * 1.4), 18rem);
+  font-weight: 400;
+  line-height: 0.86;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+  color: var(--color-foreground);
+  margin: 0;
+  /* espaço acima para o overshoot do back.out não ser cortado */
+  clip-path: inset(-0.25em 0% 0% 0%);
+}
+
+.case-hawk__desc {
+  font-size: clamp(0.9rem, 1.2vw, 1rem);
+  line-height: 1.6;
+  color: var(--color-foreground);
+  text-align: center;
+  max-width: 52ch;
+  margin: 0 auto;
+  padding-bottom: 3.5rem;
+  position: relative;
+  z-index: 1;
+}
+
+/* ── Seção 2: Visão Geral ──────────────────────────────────────── */
+.case-hawk__overview {
+  min-height: 100vh;
+  background: var(--color-surface);
+  display: flex;
+  align-items: center;
+}
+
+/* ── Blocos de conteúdo do case (andar de baixo) ─────────────── */
+.case-shot {
+  position: relative;
+  z-index: 2;
+  background: var(--color-surface);
+  padding-block: clamp(4rem, 11vw, 10rem);
+}
+.case-shot__inner {
+  max-width: 1180px;
+  margin: 0 auto;
+}
+.case-shot__eyebrow {
+  margin-bottom: 2.25rem;
+}
+.case-shot__figure {
+  margin: 0;
+}
+.case-shot__img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+/* Print retangular sem mockup (ex.: Art Piso). Só com `framed: true` no bloco:
+   o shot do Minas é um PNG recortado e ganharia uma caixa em volta.
+
+   A tela é quase preta e o fundo é creme quente (#FEF8E8), sem nenhum tom
+   entre os dois — por isso ela "cola" por cima da página. Duas peças resolvem:
+   a poça de luz difusa embaixo (::before) e a escada de sombras.
+   Ambas em MARROM QUENTE, não preto: sombra neutra sobre creme lê como
+   sujeira cinza; a quente lê como luz de verdade. */
+.case-shot__figure--framed {
+  position: relative;
+  isolation: isolate; /* prende o z-index:-1 do ::before dentro da figure */
+}
+.case-shot__figure--framed::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  left: -3%;
+  right: -3%;
+  bottom: -5%;
+  height: 45%;
+  background: radial-gradient(
+    58% 100% at 50% 100%,
+    rgba(72, 56, 31, 0.2),
+    rgba(72, 56, 31, 0) 72%
+  );
+  filter: blur(26px);
+  pointer-events: none;
+}
+.case-shot__img--framed {
+  border-radius: clamp(14px, 1.6vw, 22px);
+  /* Escada de 5 camadas: quanto mais longe da borda, mais difusa e mais fraca.
+     É o que separa sombra crível de borrão único. */
+  box-shadow:
+    0 1px 2px rgba(72, 56, 31, 0.1),
+    0 5px 8px -2px rgba(72, 56, 31, 0.1),
+    0 14px 22px -8px rgba(72, 56, 31, 0.13),
+    0 34px 52px -20px rgba(72, 56, 31, 0.18),
+    0 70px 100px -48px rgba(72, 56, 31, 0.32);
+}
+.case-shot__caption {
+  display: block;
+  margin: 1.6rem auto 0;
+  text-align: center;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: var(--color-muted-foreground);
+}
+.case-shot__caption--top {
+  margin: 0 auto 1.6rem;
+}
+.case-shot__caption-label {
+  color: var(--color-foreground);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 0.8rem;
+}
+
+/* ── Bloco compare: comparador antes/depois arrastável ─────────── */
+.case-compare-section {
+  position: relative;
+  z-index: 2;
+  background: var(--color-surface);
+  padding-block: clamp(4rem, 11vw, 10rem);
+}
+.case-compare__wrap {
+  max-width: 1180px;
+  margin: 0 auto;
+}
+.case-compare {
+  border-radius: clamp(10px, 1.4vw, 16px);
+  overflow: hidden;
+  background: #0e0e0e;
+  box-shadow: 0 30px 80px -34px rgba(0, 0, 0, 0.55);
+}
+/* Barra de navegador falsa — vende que é um site de verdade */
+.case-compare__bar {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  padding: 0.7rem 1rem;
+  background: #1c1c1c;
+}
+.case-compare__dots {
+  display: inline-flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+.case-compare__dots i {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #3a3a3a;
+}
+.case-compare__dots i:nth-child(1) { background: #ff5f57; }
+.case-compare__dots i:nth-child(2) { background: #febc2e; }
+.case-compare__dots i:nth-child(3) { background: #28c840; }
+.case-compare__url {
+  font-family: var(--font-body);
+  font-size: 12.5px;
+  color: rgba(255, 255, 255, 0.45);
+  background: #2a2a2a;
+  padding: 0.32rem 0.95rem;
+  border-radius: 6px;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 60%;
+}
+.case-compare__frame {
+  --pos: 50%;
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  background: #111;
+  cursor: ew-resize;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+/* Moldura de mockup (ex: notebook): a comparação vive posicionada por %
+   dentro do recorte da tela; o próprio mockup (com o vão transparente)
+   entra por cima e faz o papel de moldura — sem barra de navegador falsa. */
+.case-compare--mockup {
+  background: transparent;
+  box-shadow: none;
+  border-radius: 0;
+  overflow: visible;
+}
+.case-compare__mockup {
+  position: relative;
+  width: 100%;
+}
+.case-compare--mockup .case-compare__frame {
+  position: absolute;
+  width: auto;
+  height: auto;
+}
+.case-compare__mockup-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 3;
+  pointer-events: none;
+}
+.case-compare__img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  pointer-events: none;
+}
+/* camada "antes" recortada da esquerda até a divisória */
+.case-compare__before {
+  position: absolute;
+  inset: 0;
+  clip-path: inset(0 calc(100% - var(--pos)) 0 0);
+}
+.case-compare__label {
+  position: absolute;
+  top: 14px;
+  z-index: 3;
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.5);
+  color: #fff;
+  backdrop-filter: blur(4px);
+  pointer-events: none;
+}
+.case-compare__label--before { left: 14px; }
+.case-compare__label--after { right: 14px; }
+/* divisória vertical + botão redondo */
+.case-compare__handle {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: var(--pos);
+  width: 2px;
+  transform: translateX(-50%);
+  background: rgba(255, 255, 255, 0.9);
+  z-index: 4;
+  cursor: ew-resize;
+  /* emenda de tom duplo, acompanha a barra:
+     - glow branco → aparece sobre o lado escuro (o "antes")
+     - sombra neutra → aparece sobre o lado claro (o "depois"), onde o branco some
+     assim a divisória fica legível nos dois fundos, sem virar neon */
+  box-shadow:
+    0 0 14px 3px rgba(255, 255, 255, 0.95),
+    0 0 40px 8px rgba(255, 255, 255, 0.7),
+    0 0 18px 3px rgba(0, 0, 0, 0.3),
+    0 0 0 1px rgba(0, 0, 0, 0.14);
+}
+.case-compare__knob {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: #fff;
+  color: #141414;
+  display: grid;
+  place-items: center;
+  /* halo branco costura o knob à faixa de luz da divisória */
+  box-shadow: 0 0 20px 3px rgba(255, 255, 255, 0.6), 0 4px 16px rgba(0, 0, 0, 0.32);
+}
+.case-compare__knob svg {
+  width: 22px;
+  height: 22px;
+}
+.case-compare__handle:focus-visible {
+  outline: none;
+}
+.case-compare__handle:focus-visible .case-compare__knob {
+  box-shadow: 0 0 0 3px var(--color-accent), 0 4px 16px rgba(0, 0, 0, 0.32);
+}
+
+/* ── Bloco split: foto vertical à esquerda + texto centralizado ── */
+.case-split {
+  position: relative;
+  z-index: 2;
+  background: var(--color-surface);
+  padding-top: clamp(4rem, 11vw, 10rem);
+  padding-bottom: clamp(2rem, 5vw, 4rem);
+}
+/* próximo da margem da "PROJETO VISÃO", mas um pouco mais pra dentro */
+.case-split > .container-x {
+  max-width: none;
+  padding-inline: clamp(3rem, 7vw, 9rem);
+}
+.case-split__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 700px) minmax(0, 520px);
+  justify-content: start;
+  gap: clamp(1.5rem, 4vw, 4.5rem);
+  align-items: center;
+}
+.case-split__media {
+  justify-self: start;
+  width: 100%;
+}
+.case-split__img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-width: 700px;
+  margin: 0;
+}
+.case-split__img--rounded {
+  border-radius: clamp(10px, 1.4vw, 16px);
+  overflow: hidden;
+}
+
+/* ── Split variante FOTO (retângulo fotográfico, não PNG recortado) ──
+   A foto pesa muito mais que um mockup flutuando, então a coluna da imagem
+   é FIXA e a do texto tem SEMPRE a mesma largura nas duas orientações —
+   é isso que garante distância idêntica entre texto e foto nos dois blocos.
+   Texto centralizado, caixa esticada na coluna (justify-self: stretch),
+   senão ela encolhe no conteúdo e a distância vira refém do tamanho da frase.
+   Escopado em --photo: o split do Minas continua intacto. */
+.case-split--photo .case-split__grid {
+  grid-template-columns: minmax(0, 560px) minmax(0, var(--split-text-col));
+  justify-content: start;
+  align-items: center;
+  --split-text-col: 560px;
+}
+.case-split--photo .case-split__img {
+  max-width: 560px;
+  /* Mesma sombra quente do shot full-bleed — creme é quente, sombra preta
+     nele vira cinza sujo. Escala menor: a foto é menor que o full-bleed. */
+  box-shadow:
+    0 1px 2px rgba(72, 56, 31, 0.1),
+    0 4px 7px -2px rgba(72, 56, 31, 0.1),
+    0 12px 18px -8px rgba(72, 56, 31, 0.13),
+    0 26px 40px -18px rgba(72, 56, 31, 0.18),
+    0 50px 70px -40px rgba(72, 56, 31, 0.3);
+}
+.case-split--photo .case-split__text {
+  justify-self: stretch;
+  align-self: center;
+  padding-top: 0;
+  text-align: center;
+}
+.case-split--photo .case-split__title {
+  font-size: clamp(2.25rem, 3.9vw, 3.6rem);
+}
+.case-split--photo .case-split__body {
+  margin-inline: auto;
+  text-align: center;
+  font-size: 1.15rem;
+  max-width: 46ch;
+}
+
+/* Espelhado: mídia à direita, texto à esquerda — alterna o ritmo quando há
+   dois splits seguidos. A grade ancora no fim para a foto encostar na margem
+   direita da página, espelhando o bloco normal, que ancora no início. */
+.case-split--reverse .case-split__media { order: 2; }
+.case-split--reverse .case-split__text { order: 1; }
+.case-split--photo.case-split--reverse .case-split__grid {
+  /* ordem visual: texto | mídia */
+  grid-template-columns: minmax(0, var(--split-text-col)) minmax(0, 800px);
+  justify-content: end;
+}
+.case-split--photo.case-split--reverse .case-split__img {
+  max-width: 800px;
+}
+
+@media (max-width: 860px) {
+  .case-split--photo .case-split__grid,
+  .case-split--photo.case-split--reverse .case-split__grid {
+    grid-template-columns: 1fr;
+    justify-content: stretch;
+  }
+  /* No empilhado a imagem volta pra cima nos dois casos — o espelhamento
+     só faz sentido quando existem duas colunas. */
+  .case-split--reverse .case-split__media { order: 0; }
+  .case-split--reverse .case-split__text { order: 0; }
+}
+
+/* ── Bloco reveal: imagem larga cortada por máscara até sobrar o modal ── */
+.case-reveal {
+  position: relative;
+  z-index: 2;
+  background: var(--color-surface);
+  padding-block: clamp(4rem, 11vw, 10rem);
+}
+/* full-bleed: a imagem cresce e cola perto da borda direita */
+.case-reveal > .container-x {
+  max-width: none;
+  padding-inline: clamp(1.25rem, 3.5vw, 3.5rem);
+}
+.case-reveal__stage {
+  position: relative;
+  width: 100%;
+}
+.case-reveal__media {
+  --mask: 0%;
+  position: relative;
+  width: min(1360px, 76vw);
+  margin: 0 0 0 auto; /* ancora à direita */
+  aspect-ratio: var(--ar, 1665 / 947);
+  clip-path: inset(0 0 0 var(--mask) round clamp(10px, 1.4vw, 16px));
+}
+.case-reveal__img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  border-radius: clamp(10px, 1.4vw, 16px);
+}
+.case-reveal__img--portrait { display: none; }
+.case-reveal__text {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 8%;
+  right: 36%;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 2rem clamp(1rem, 2vw, 2rem);
+}
+.case-reveal__title {
+  font-family: var(--font-display);
+  font-size: clamp(2.25rem, 4vw, 3.75rem);
+  line-height: 0.95;
+  letter-spacing: -0.005em;
+  text-transform: uppercase;
+}
+.case-reveal__body {
+  margin: 1.5rem auto 0;
+  max-width: 42ch;
+  font-size: 1.05rem;
+  line-height: 1.6;
+  color: var(--color-muted-foreground);
+}
+
+@media (max-width: 860px) {
+  /* segura o transiente do assentamento (scale/shift) sem criar scroll lateral
+     — mesmo motivo do overflow-x:clip no .case-showcase. Só no mobile. */
+  .case-reveal { overflow-x: clip; }
+  .case-reveal__stage { display: flex; flex-direction: column; }
+  .case-reveal__media {
+    width: 100%;
+    max-width: 460px;
+    margin-inline: auto;
+    aspect-ratio: var(--ar-m, 813 / 947);
+    clip-path: none;
+    order: 1;
+  }
+  .case-reveal__img--wide { display: none; }
+  .case-reveal__img--portrait { display: block; }
+  .case-reveal__text {
+    position: static;
+    left: auto;
+    right: auto;
+    width: 100%;
+    order: 2;
+    padding: clamp(1.5rem, 6vw, 2.5rem) 0 0;
+  }
+}
+
+/* ── Bloco showcase: catálogo à esquerda, texto à direita, com assentamento ── */
+.case-showcase {
+  position: relative;
+  z-index: 2;
+  background: var(--color-surface);
+  padding-block: clamp(4rem, 11vw, 10rem);
+  overflow-x: clip; /* segura o transiente do settle (scale/shift) sem criar scroll */
+}
+.case-showcase > .container-x {
+  max-width: none;
+  padding-inline: clamp(1.5rem, 4vw, 4rem);
+}
+.case-showcase__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
+  align-items: center;
+  gap: clamp(2rem, 5vw, 5.5rem);
+}
+.case-showcase__media {
+  justify-self: start;
+  width: 100%;
+  margin: 0;
+}
+.case-showcase__img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 1.5px solid rgba(0, 0, 0, 0.1); /* hairline: separa o branco do print do fundo creme */
+  border-radius: clamp(10px, 1.4vw, 16px);
+  box-shadow: 0 30px 60px -30px rgba(0, 0, 0, 0.35);
+}
+.case-showcase__text {
+  justify-self: center;
+  text-align: center;
+}
+.case-showcase__title {
+  font-family: var(--font-display);
+  font-size: clamp(2.25rem, 4vw, 3.75rem);
+  line-height: 0.95;
+  letter-spacing: -0.005em;
+  text-transform: uppercase;
+}
+.case-showcase__body {
+  margin: 1.5rem auto 0;
+  max-width: 42ch;
+  font-size: 1.05rem;
+  line-height: 1.6;
+  color: var(--color-muted-foreground);
+}
+@media (max-width: 860px) {
+  .case-showcase__grid {
+    grid-template-columns: 1fr;
+    gap: clamp(2rem, 8vw, 3rem);
+  }
+  .case-showcase__text {
+    justify-self: stretch;
+  }
+}
+
+/* Cabeçalho da comparação: título + subtítulo em cima (parte de baixo livre) */
+.case-compare__head {
+  max-width: 760px;
+  margin: 0 auto clamp(2rem, 4vw, 3.5rem);
+  text-align: center;
+}
+.case-compare__title {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 4.2vw, 3.5rem);
+  line-height: 0.98;
+  letter-spacing: -0.005em;
+  text-transform: uppercase;
+}
+.case-compare__desc {
+  margin: 1.15rem auto 0;
+  max-width: 58ch;
+  font-size: 1.12rem;
+  line-height: 1.68;
+  color: var(--color-muted-foreground);
+}
+.case-compare__hint {
+  display: block;
+  margin: clamp(1.1rem, 2.2vw, 1.6rem) auto 0;
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-muted-foreground);
+}
+.case-split__text {
+  justify-self: start;
+  align-self: start;
+  text-align: left;
+  padding-top: clamp(5rem, 17vw, 16rem);
+}
+.case-split__title {
+  font-family: var(--font-display);
+  font-size: clamp(2.25rem, 4vw, 3.75rem);
+  line-height: 0.95;
+  letter-spacing: -0.005em;
+  text-transform: uppercase;
+}
+.case-split__body {
+  margin: 1.5rem auto 0;
+  max-width: 42ch;
+  text-align: center;
+  font-size: 1.05rem;
+  line-height: 1.6;
+  color: var(--color-muted-foreground);
+}
+@media (max-width: 860px) {
+  .case-split__grid {
+    grid-template-columns: 1fr;
+    gap: clamp(2rem, 8vw, 3.5rem);
+  }
+  .case-split__media,
+  .case-split__text {
+    justify-self: center;
+  }
+  .case-split__img {
+    margin: 0 auto;
+  }
+  .case-split__text {
+    text-align: center;
+    align-self: auto;
+    padding-top: 0;
+  }
+  .case-split__body {
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+/* ── Bloco CTA escuro ──────────────────────────────────────── */
+.case-cta {
+  position: relative;
+  z-index: 2;
+  background: var(--color-surface);
+  padding-top: clamp(1.5rem, 3vw, 2.5rem);
+  padding-bottom: clamp(2rem, 4vw, 3.5rem);
+}
+/* card largo, aproveitando mais a tela (margens pequenas) */
+.case-cta > .container-x {
+  max-width: none;
+  padding-inline: clamp(2rem, 5vw, 6rem);
+}
+.case-cta__card {
+  background: var(--color-dark);
+  color: #f1ede0;
+  border-radius: clamp(16px, 2vw, 28px);
+  padding: clamp(5rem, 13vw, 11rem) clamp(1.5rem, 5vw, 4rem);
+  text-align: center;
+}
+.case-cta__title {
+  font-family: var(--font-display);
+  font-size: clamp(2.5rem, 6vw, 5.5rem);
+  line-height: 0.98;
+  letter-spacing: -0.005em;
+  text-transform: uppercase;
+  white-space: pre-line;
+  max-width: 24ch;
+  margin: 0 auto;
+}
+.case-cta__body {
+  margin: 1.5rem auto 2.75rem;
+  max-width: 46ch;
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: var(--color-muted-foreground);
+}
+.case-cta__btn {
+  padding: 1.5rem 3.75rem 1.1rem;
+  font-family: var(--font-display);
+  font-size: 2.6rem;
+  letter-spacing: 0.02em;
+  line-height: 1;
+  text-transform: uppercase;
+  border-radius: 6px;
+}
+
+/* Área final do case — botão voltar ao topo centralizado */
+.case-foot {
+  position: relative;
+  z-index: 2;
+  background: var(--color-surface);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-top: 0;
+  padding-bottom: clamp(2rem, 4vw, 3rem);
+}
+.case-foot .footer__back-top {
+  position: static;
+}
+
+/* Botão "próximo projeto" — canto inferior direito da área final do case */
+.case-next {
+  position: absolute;
+  right: 4rem;
+  bottom: clamp(2rem, 4vw, 3rem);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  text-align: center;
+  color: var(--color-foreground);
+}
+.case-next__label {
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-muted-foreground);
+  transition: color 220ms ease;
+}
+.case-next__name {
+  position: relative;
+  display: inline-flex;
+  align-items: baseline;
+  font-family: var(--font-display);
+  font-size: clamp(24px, 3vw, 40px);
+  line-height: 1;
+  text-transform: uppercase;
+  letter-spacing: -0.005em;
+}
+/* seta fora do fluxo: não conta na largura, então o eyebrow centra sobre a PALAVRA */
+.case-next__arrow {
+  position: absolute;
+  left: 100%;
+  bottom: 0.06em;
+  margin-left: 0.35rem;
+  font-family: var(--font-body);
+  font-size: 0.6em;
+  transition: transform 260ms ease;
+}
+.case-next:hover .case-next__label { color: var(--color-accent); }
+.case-next:hover .case-next__arrow { transform: translateX(6px); }
+
+@media (max-width: 767px) {
+  /* empilha: "próximo projeto" acima do voltar-ao-topo, tudo centralizado */
+  .case-foot {
+    flex-direction: column-reverse;
+    gap: 2rem;
+  }
+  .case-next { position: static; }
+  .case-next__name { font-size: 28px; }
+}
+
+/* Botão "vamos conversar" do nav do case (estilo Bogdan, avatar placeholder) */

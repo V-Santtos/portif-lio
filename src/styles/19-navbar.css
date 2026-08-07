@@ -1,0 +1,182 @@
+/* Navbar flutuante e overlay — extraido do styles.css original, linhas 5136-5313.
+   A ORDEM importa: este arquivo entra na posicao indicada pelo numero do nome.
+   Nao reordenar regras nem separar os @media do bloco a que pertencem. */
+
+.floating-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 500;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.875rem var(--gutter-x);
+  transform: translateY(-100%);
+  transition: transform 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+}
+
+.floating-nav--visible {
+  transform: translateY(0);
+  pointer-events: all;
+}
+
+.floating-nav__logo-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 52px;
+  padding: 0 10px;
+  background: var(--color-foreground);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.floating-nav__logo-box img {
+  height: 32px;
+  width: auto;
+  filter: invert(1);
+  display: block;
+}
+
+.floating-nav__menu-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0 1.25rem;
+  height: 52px;
+  background: var(--color-foreground);
+  color: #fff;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.floating-nav__cta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 1.5rem;
+  height: 52px;
+  background: var(--color-foreground);
+  color: #fff;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  border-radius: 8px;
+  user-select: none;
+}
+
+/* ── Menu Overlay ──────────────────────────────────────────────── */
+.nav-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 800;
+  background: var(--color-accent);
+  clip-path: inset(0 0 100% 0);
+  display: flex;
+  flex-direction: column;
+}
+
+.nav-overlay__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.875rem var(--gutter-x);
+  flex-shrink: 0;
+}
+
+.nav-overlay__links {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.nav-overlay__link {
+  font-family: var(--font-display);
+  font-size: clamp(3.5rem, 10vw, 9rem);
+  color: var(--color-foreground);
+  background: none;
+  border: none;
+  cursor: pointer;
+  line-height: 0.95;
+  letter-spacing: 0.01em;
+  padding: 0.05em 0;
+  transition: opacity 0.2s ease;
+}
+
+/* Fallback (reduced-motion ou antes do roll montar): só troca a cor */
+.nav-overlay__link:not(.nav-overlay__link--roll):hover {
+  color: var(--color-surface);
+}
+
+/* Roll-swap por caractere (hover) — cada letra rola e uma cópia creme sobe.
+   Cada cell é uma janela de 1 linha; a coluna guarda [preto / creme]
+   empilhados e sobe metade da própria altura no hover. */
+.nav-roll__char {
+  display: inline-block;
+  overflow: hidden;
+  height: 1.15em;
+  line-height: 1.15;
+  vertical-align: top;
+  pointer-events: none;
+}
+.nav-roll__col {
+  display: block;
+  will-change: transform;
+}
+.nav-roll__layer {
+  display: block;
+  height: 1.15em;
+  line-height: 1.15;
+}
+.nav-roll__top {
+  color: var(--color-foreground);
+}
+.nav-roll__bot {
+  color: var(--color-surface);
+}
+
+/* Hambúrguer do hero — só existe no mobile */
+.hero__menu-btn {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 44px;
+  background: var(--color-foreground);
+  color: #fff;
+  border-radius: 8px;
+}
+
+/* COMEÇAR dentro da lista do overlay — só no mobile */
+.nav-overlay__link--comecar {
+  display: none;
+  color: var(--color-surface);
+}
+
+@media (max-width: 767px) {
+  /* Hero da home E dos cases: hambúrguer no lugar do COMEÇAR (menu comporta
+     todas as opções; nos cases a conversão fica com o BORA! do fim). */
+  .hero .hero__talk-btn,
+  .case-hawk .hero__talk-btn { display: none; }
+  .hero__menu-btn { display: inline-flex; }
+  /* COMEÇAR sai das barras (flutuante e do overlay) e vira link do menu */
+  .floating-nav > .hero__talk-btn,
+  .nav-overlay__bar > .hero__talk-btn { display: none; }
+  .nav-overlay__link--comecar { display: block; }
+}
+
+/* ── Página /comecar — questionário/contato ───────────────────────── */
