@@ -6,6 +6,7 @@ import App from "./App.jsx";
 import Projetos from "./Projetos.jsx";
 import Case from "./Case.jsx";
 import Comecar from "./Comecar.jsx";
+import Processo from "./Processo.jsx";
 import { PageTransitionProvider } from "./PageTransition.jsx";
 import Navbar from "./Navbar.jsx";
 import "../styles.css";
@@ -31,6 +32,7 @@ createRoot(document.getElementById("root")).render(
             <Route path="/"                        element={<App />} />
             <Route path="/projetos"                element={<Projetos />} />
             <Route path="/projetos/:slug"          element={<Case />} />
+            <Route path="/meu-processo"            element={<Processo />} />
             <Route path="/comecar"                 element={<Comecar />} />
           </Routes>
         </PageTransitionProvider>

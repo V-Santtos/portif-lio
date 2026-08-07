@@ -35,6 +35,12 @@ const STATIC = {
     description:
       "Seleção de projetos sob medida — landing pages, e-commerce, sistemas e apps. Cada um pensado para converter e escalar.",
   },
+  processo: {
+    path: "/meu-processo",
+    title: "Meu processo — Victor Cardoso",
+    description:
+      "Conheça o processo por trás de sites e sistemas sob medida — da estratégia e da mensagem ao lançamento e ao suporte.",
+  },
   comecar: {
     path: "/comecar",
     title: "Vamos conversar — Victor Cardoso",

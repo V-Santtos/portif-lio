@@ -4,15 +4,15 @@ import { usePageTransition } from "./PageTransition.jsx";
 
 const CARDS = [
   {
-    title: "Atendimento",
-    desc: "Um atendente que responde 24h e qualifica cada cliente que chega — o fechamento fica por conta do responsável ou do time, que já recebe todas as informações pra continuar o atendimento. Se o volume crescer, construo o CRM que organiza tudo.",
+    title: "Rotina",
+    desc: "Uma atendente qualifica cada cliente e faz o pré-atendimento. Seu time recebe as informações certas pra continuar de forma inteligente. Se o volume crescer, construo o CRM capaz de organizar tudo.",
   },
   {
     title: "Processos",
-    desc: "Um processo travado, uma tarefa manual, uma agenda bagunçada — em qualquer setor, eu construo o fluxo ou a ferramenta certa pra resolver aquele problema. Se a dor crescer, o fluxo vira sistema.",
+    desc: "Uma tarefa manual que ocupa horas do seu dia, uma agenda bagunçada, um processo travado — seja em qualquer setor, eu construo e otimizo uma ferramenta da maneira certa pra resolver o problema.",
   },
   {
-    title: "Criando do zero",
+    title: "Sua ideia💡",
     desc: "Tem uma ideia diferente dessas? Podemos construir juntos algo sob medida. Você me conta a ideia e tiramos ela do papel.",
   },
 ];
@@ -280,9 +280,7 @@ function Automation() {
         </h2>
         {/* Quebras mobile controladas: sem viúvas ("pode fazer." solto no fim de linha) */}
         <p className="auto__intro">
-          Construo a ferramenta certa pras suas ideias, seus processos e seu negócio{" "}
-          <br className="auto__br--mobile" />
-          — e você foca no que só você pode fazer.
+          Construo a ferramenta certa para dar vida às suas ideias, melhorar seus processos e otimizar seu negócio.
         </p>
       </div>
 
@@ -319,7 +317,7 @@ function Automation() {
         <div className="auto__cta" onMouseEnter={handleCtaEnter} onMouseLeave={handleCtaLeave}>
           <p className="auto__cta-heading auto__cta-heading--split">
             <span className="auto__cta-heading-mask">
-              <span className="auto__cta-heading-strong" ref={ctaLine1Ref}>Prefere ver</span>
+              <span className="auto__cta-heading-strong" ref={ctaLine1Ref}>Quer ver</span>
             </span>
             <span className="auto__cta-heading-muted-row">
               <span className="auto__cta-heading-line" ref={ctaLineLeftRef} aria-hidden="true" />

@@ -316,6 +316,7 @@ function Case() {
             <div className="hero__nav-links">
               <button onClick={() => transitionTo("/")} className="hero__nav-link-btn">Início</button>
               <button onClick={() => transitionTo("/projetos")} className="hero__nav-link-btn">Projetos</button>
+              <button onClick={() => transitionTo("/meu-processo")} className="hero__nav-link-btn">Meu processo</button>
               <button onClick={goToCta} className="hero__nav-link-btn">Contato</button>
             </div>
 

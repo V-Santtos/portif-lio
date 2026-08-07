@@ -195,9 +195,9 @@ function Bridge() {
 
         <h2 className="bridge__phrase" ref={phraseRef}>
           <LetterSwapLine sentence="1">O site</LetterSwapLine>
-          <LetterSwapLine sentence="1" accent>converte.</LetterSwapLine>
+          <LetterSwapLine sentence="1" accent>comunica.</LetterSwapLine>
           <LetterSwapLine sentence="2">O sistema</LetterSwapLine>
-          <LetterSwapLine sentence="2" accent>organiza.</LetterSwapLine>
+          <LetterSwapLine sentence="2" accent>otimiza.</LetterSwapLine>
         </h2>
 
         <span className="bridge__dash" aria-hidden="true" />

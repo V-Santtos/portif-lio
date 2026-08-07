@@ -71,7 +71,8 @@ function Hero({ ready }) {
           </a>
           <div className="hero__nav-links">
             <button onClick={() => transitionTo("/projetos")} className="hero__nav-link-btn">Projetos</button>
-            <button onClick={() => scrollToId("auto")} className="hero__nav-link-btn">Automatize</button>
+            <button onClick={() => transitionTo("/meu-processo")} className="hero__nav-link-btn">Meu processo</button>
+            <button onClick={() => scrollToId("auto")} className="hero__nav-link-btn">Sistemas</button>
             <button onClick={goToContact} className="hero__nav-link-btn">Contato</button>
           </div>
           <button type="button" onClick={() => transitionTo("/comecar")} className="hero__talk-btn" aria-label="Começar">
@@ -104,22 +105,21 @@ function Hero({ ready }) {
         <div className="hero__main">
           <h1 className="hero__title" ref={titleRef}>
             <span className="hero__line">
-              <span className="word"><span>SITES</span></span>{" "}
-              <span className="word"><span>QUE</span></span>{" "}
-              <span className="word accent"><span>CONVERTEM.</span></span>
+              <span className="word"><span>SISTEMAS</span></span>{" "}
+              <span className="word"><span>SOB</span></span>{" "}
+              <span className="word accent"><span>MEDIDA.</span></span>
             </span>
             <span className="hero__line">
-              <span className="word"><span>SISTEMAS</span></span>{" "}
+              <span className="word"><span>SITES</span></span>{" "}
               <span className="word"><span>QUE</span></span>{" "}
-              <span className="word"><span>ESCALAM.</span></span>
+              <span className="word"><span>CONVERTEM.</span></span>
             </span>
           </h1>
         </div>
 
         <div className="hero__meta">
           <div className="left" ref={metaLeftRef}>
-            Construo a ferramenta certa<br />
-            para sua rotina, suas ideias e seu negócio.
+            Construo a ferramenta certa para sua rotina, suas ideias e seu negócio. E também sites personalizados pensados do zero.
           </div>
           <div className="right" ref={metaRightRef}>
             — Construa o caminho.

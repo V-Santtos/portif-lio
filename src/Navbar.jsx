@@ -181,13 +181,20 @@ function Navbar() {
     setMenuOpen(false);
     setTimeout(() => {
       if (path === "#contato") {
-        if (location.pathname === "/") {
+        const localContact = document.getElementById("contato");
+        if (localContact) {
           fadeJump(() => {
-            document.getElementById("contato")?.scrollIntoView();
+            localContact.scrollIntoView();
             window.dispatchEvent(new CustomEvent("contact:highlight"));
           });
         } else {
           window.location.href = "/#contato";
+        }
+      } else if (path === "#auto") {
+        if (location.pathname === "/") {
+          fadeJump(() => document.getElementById("auto")?.scrollIntoView());
+        } else {
+          window.location.href = "/#auto";
         }
       } else {
         transitionTo(path);
@@ -245,6 +252,8 @@ function Navbar() {
         <nav className="nav-overlay__links" ref={linksRef}>
           <button onClick={() => handleLink("/")} className="nav-overlay__link">INÍCIO</button>
           <button onClick={() => handleLink("/projetos")} className="nav-overlay__link">PROJETOS</button>
+          <button onClick={() => handleLink("/meu-processo")} className="nav-overlay__link">MEU PROCESSO</button>
+          <button onClick={() => handleLink("#auto")} className="nav-overlay__link">SISTEMAS</button>
           <button onClick={() => handleLink("#contato")} className="nav-overlay__link">CONTATO</button>
           {/* Mobile: COMEÇAR entra na lista (a barra esconde o botão) */}
           <button onClick={() => handleLink("/comecar")} className="nav-overlay__link nav-overlay__link--comecar">COMEÇAR</button>
