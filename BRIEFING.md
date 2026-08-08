@@ -94,10 +94,10 @@ Tela escura `100vh`, frase curta, desliza pra cima revelando o Hero. **Abertura 
 
 ### Hero
 Composição editorial em fundo creme, título display gigante + nav + meta nos cantos.
-- **Título:** `PÁGINAS QUE CONVERTEM. / SISTEMAS QUE ESCALAM.` (CONVERTEM em accent, SplitText por palavra)
-- **Meta esquerda:** `Credibilidade e automação / para sua rotina, suas ideias e seu negócio.`
+- **Título:** `SISTEMAS SOB MEDIDA. / SITES QUE CONVERTEM.` (MEDIDA. em accent, SplitText por palavra)
+- **Meta esquerda:** `Construo a ferramenta certa para sua rotina, suas ideias e seu negócio. E também sites personalizados pensados do zero.`
 - **Meta direita:** `— Construa o caminho.`
-- **Nav:** PROJETOS · AUTOMATIZE · CONTATO · botão **COMEÇAR**.
+- **Nav:** Projetos · Meu processo · Sistemas · Contato · botão **Começar**.
 
 ### LandingPages (carrossel)
 Serviço de páginas de captura, exibido via carrossel horizontal.
@@ -107,12 +107,13 @@ Serviço de páginas de captura, exibido via carrossel horizontal.
 
 ### Bridge (ponte)
 Respiro editorial entre os serviços; fundo creme, efeito **letter-swap** por caractere.
-- Copy: `O site captura. / O sistema organiza.` (eyebrow "A escada" + imagem `escada.png`).
+- Copy: `O site comunica. / O sistema otimiza.` (eyebrow "A escada" + imagem `escada.png`).
 
 ### Automation
 Único bloco **dark** entre as seções de baixo. Serviço de automação.
-- **Título:** `TUDO O QUE SEGUE / UM PADRÃO PODE / SER [caixa laranja] MELHORADO → AUTOMATIZADO.` (word-swap por evento).
-- **3 cards:** Atendimento · Processos · Comunicação.
+- **Título:** `Tudo o que segue / um padrão pode / ser [caixa laranja] melhorado → automatizado.` (word-swap por evento).
+- **Intro:** `Construo a ferramenta certa para dar vida às suas ideias, melhorar seus processos e otimizar seu negócio.`
+- **3 cards:** Rotina · Processos · Sua ideia💡 (o último é destacado — "conte sua ideia, construímos juntos").
 - CTA: **Falar no WhatsApp** (ganha halo accent no fluxo de contato).
 
 ### Contact
@@ -181,4 +182,4 @@ Destino dos botões **COMEÇAR**. Título `VAMOS / CONVERSAR.` + formulário (No
 - [ ] **Andar de baixo** dos cases **Flux Time** e **Barbearia** — falta capturar as imagens. (Minas Tintas, Hawk Street e Art Piso ✅.)
 
 > Estado de trabalho detalhado, regras técnicas e decisões em andamento: ver `CONTEXTO.md`.
-> Voz da marca e fluxo de copy: ver `CONTEXTO-COPY.md`.
+> Voz da marca e fluxo de copy: ver `Regras/06-copy.md`.
