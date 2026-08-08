@@ -16,6 +16,17 @@
   max-width: 1280px;
 }
 
+/* Teto do sticky do hero: sem isto, o container de referencia e o <main>
+   inteiro (vai ate o Contato), entao o hero fica "gruda-vel" ate quase o fim
+   da pagina — Sistema/Resultados/Papo reto escapam por terem z-index proprio
+   (.process-content-section), mas o Contact (componente global, sem esse
+   z-index) nao, e o hero vaza atras dele. Este wrapper prende o sticky
+   exatamente na janela hero + os 2 manifestos, como o .process-statement-scroller
+   ja faz para a frase sticky la dentro. */
+.process-hero-stage {
+  position: relative;
+}
+
 .process-hero {
   position: sticky;
   top: 0;

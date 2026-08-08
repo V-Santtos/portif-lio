@@ -284,6 +284,7 @@ function Processo() {
     <>
       <Seo {...getStaticSeo("processo")} />
       <main className="process-page" ref={pageRef}>
+        <div className="process-hero-stage">
         <section className="section hero process-hero" id="processo" data-screen-label="Meu processo">
           <div className="container-x process-hero__inner">
             <nav className="hero__nav process-hero__nav" aria-label="Navegação principal">
@@ -336,6 +337,7 @@ function Processo() {
         {STATEMENTS.map((statement, index) => (
           <ProcessStatement statement={statement} index={index} key={statement.desktop[0].text} />
         ))}
+        </div>
 
         <section className="process-system process-content-section" aria-labelledby="process-system-title">
           <div className="container-x process-system__layout">
@@ -400,6 +402,18 @@ function Processo() {
                   </div>
                 </article>
               ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="section case-cta">
+          <div className="container-x">
+            <div className="case-cta__card" data-process-reveal>
+              <h3 className="case-cta__title">Pronto pra começar?{"\n"}Bora construir o seu.</h3>
+              <p className="case-cta__body">Site ou sistema, o processo é o mesmo. Me conta o que você precisa e a gente parte pra prática.</p>
+              <a className="btn btn--accent case-cta__btn" href="https://wa.me/5533984246770" target="_blank" rel="noreferrer">
+                Bora!
+              </a>
             </div>
           </div>
         </section>
