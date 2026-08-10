@@ -1,7 +1,7 @@
 import { useRef } from "react";
 import Contact from "./Contact.jsx";
 import Seo from "./Seo.jsx";
-import { fadeJump, gsap, prefersReducedMotion, ScrollTrigger, useIsoLayoutEffect } from "./lib.jsx";
+import { fadeJump, gsap, prefersReducedMotion, scrollPageTo, ScrollTrigger, useIsoLayoutEffect } from "./lib.jsx";
 import { usePageTransition } from "./PageTransition.jsx";
 import { getStaticSeo } from "./seo.js";
 
@@ -293,7 +293,7 @@ function Processo() {
               </button>
               <div className="hero__nav-links">
                 <button onClick={() => transitionTo("/projetos")} className="hero__nav-link-btn">Projetos</button>
-                <button onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="hero__nav-link-btn" aria-current="page">Meu processo</button>
+                <button onClick={() => scrollPageTo(0)} className="hero__nav-link-btn" aria-current="page">Meu processo</button>
                 <button onClick={() => goToHomeSection("auto")} className="hero__nav-link-btn">Sistemas</button>
                 <button onClick={goToContact} className="hero__nav-link-btn">Contato</button>
               </div>

@@ -1,5 +1,5 @@
 import { useRef } from "react";
-import { gsap, prefersReducedMotion, useIsoLayoutEffect, useTitleReveal } from "./lib.jsx";
+import { gsap, prefersReducedMotion, scrollPageTo, useIsoLayoutEffect, useTitleReveal } from "./lib.jsx";
 
 function Contact() {
   const sectionRef = useRef(null);
@@ -87,7 +87,7 @@ function Contact() {
         className="footer__back-top"
         href="#"
         aria-label="Voltar ao topo"
-        onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: "smooth" }); }}
+        onClick={(e) => { e.preventDefault(); scrollPageTo(0); }}
       >
         ↑
       </a>

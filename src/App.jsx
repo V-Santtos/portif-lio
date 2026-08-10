@@ -1,5 +1,6 @@
 import { useCallback, useRef, useState } from "react";
-import { ScrollTrigger, prefersReducedMotion, useIsoLayoutEffect } from "./lib.jsx";
+import { createPortal } from "react-dom";
+import { gsap, ScrollTrigger, ScrollSmoother, prefersReducedMotion, useIsoLayoutEffect } from "./lib.jsx";
 import InitialLoader, { INITIAL_LOADER_KEY } from "./InitialLoader.jsx";
 import PreHero from "./PreHero.jsx";
 import Hero from "./Hero.jsx";
@@ -104,18 +105,29 @@ function App() {
 
     const progress = progressRef.current;
     if (progress) {
+      // Com o ScrollSmoother, window.scrollY é o scroll ALVO — o conteúdo
+      // chega nele com atraso. Ler o progress do smoother mantém a barra
+      // colada no que está na tela em vez de correr na frente. A busca é feita
+      // a cada frame, não aqui: este efeito roda ANTES do pai que cria o
+      // smoother (efeito de filho vem primeiro no React).
       const update = () => {
-        const max = document.documentElement.scrollHeight - window.innerHeight;
-        const pct = Math.max(0, Math.min(1, window.scrollY / max));
-        progress.style.width = `${(pct * 100).toFixed(2)}%`;
+        const smoother = ScrollSmoother.get();
+        const pct = smoother
+          ? smoother.progress
+          : window.scrollY / (document.documentElement.scrollHeight - window.innerHeight);
+        progress.style.width = `${(Math.max(0, Math.min(1, pct)) * 100).toFixed(2)}%`;
       };
 
       update();
       window.addEventListener("scroll", update, { passive: true });
       window.addEventListener("resize", update);
+      // O smoother move o conteúdo por transform entre eventos de scroll;
+      // o ticker cobre esses frames intermediários.
+      gsap.ticker.add(update);
       cleanupProgress = () => {
         window.removeEventListener("scroll", update);
         window.removeEventListener("resize", update);
+        gsap.ticker.remove(update);
       };
     }
 
@@ -133,18 +145,26 @@ function App() {
   return (
     <>
       <Seo {...getStaticSeo("home")} />
-      <div className="scroll-progress" ref={progressRef} aria-hidden="true"></div>
-      {loaderState.showInitialLoader && (
-        <InitialLoader
-          onDone={handleInitialLoaderDone}
-        />
-      )}
-      {preHeroVisible && (
-        <PreHero
-          active={loaderState.introUnlocked}
-          onDone={handlePreHeroDone}
-          onHidden={handlePreHeroHidden}
-        />
+      {/* Estes três são position:fixed. O #smooth-content do ScrollSmoother
+          tem transform, o que faria eles ficarem fixos ao conteúdo em vez da
+          viewport — por isso vão pro body via portal. */}
+      {createPortal(
+        <>
+          <div className="scroll-progress" ref={progressRef} aria-hidden="true"></div>
+          {loaderState.showInitialLoader && (
+            <InitialLoader
+              onDone={handleInitialLoaderDone}
+            />
+          )}
+          {preHeroVisible && (
+            <PreHero
+              active={loaderState.introUnlocked}
+              onDone={handlePreHeroDone}
+              onHidden={handlePreHeroHidden}
+            />
+          )}
+        </>,
+        document.body
       )}
       <Hero ready={heroReady} />
       <LandingPages />

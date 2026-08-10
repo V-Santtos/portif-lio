@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import { Flip, ScrollTrigger, gsap, prefersReducedMotion, useIsoLayoutEffect, useTitleReveal } from "./lib.jsx";
+import { createPortal } from "react-dom";
+import { Flip, ScrollTrigger, gsap, prefersReducedMotion, scrollPageTo, useIsoLayoutEffect, useTitleReveal } from "./lib.jsx";
 import LandingPreview from "./LandingPreview.jsx";
 
 const LP_ITEMS = [
@@ -91,7 +92,9 @@ function LandingPages() {
   const titleRef = useRef(null);
   const startWrapperRef = useRef(null);
   const endWrapperRef = useRef(null);
+  const settleAnchorRef = useRef(null);
   const targetRef = useRef(null);
+  const settleTargetRef = useRef(null);
   const noteRef = useRef(null);
   const carouselViewportRef = useRef(null);
   const carouselTrackRef = useRef(null);
@@ -131,12 +134,14 @@ function LandingPages() {
 
     const section = sectionRef.current;
     const target = targetRef.current;
+    const settleTarget = settleTargetRef.current;
     const startWrapper = startWrapperRef.current;
     const endWrapper = endWrapperRef.current;
+    const settleAnchor = settleAnchorRef.current;
     const carouselViewport = carouselViewportRef.current;
     const carouselTrack = carouselTrackRef.current;
 
-    if (!section || !target || !startWrapper || !endWrapper || !carouselViewport || !carouselTrack) return;
+    if (!section || !target || !settleTarget || !startWrapper || !endWrapper || !settleAnchor || !carouselViewport || !carouselTrack) return;
 
     let scrollTl;
     let carouselTl;
@@ -148,6 +153,7 @@ function LandingPages() {
       if (carouselTl) { carouselTl.scrollTrigger?.kill(); carouselTl.kill(); }
 
       gsap.set(target, { clearProps: "all" });
+      gsap.set(settleTarget, { clearProps: "transform,borderRadius" });
       gsap.set(carouselViewport, { opacity: 0, pointerEvents: "none" });
 
       // Mobile: gesto de touch percorre muito mais pixels que a roda do mouse
@@ -165,7 +171,21 @@ function LandingPages() {
           invalidateOnRefresh: true,
         },
       });
-      scrollTl.add(Flip.fit(target, endWrapper, { duration: 1, ease: "none", scale: true }));
+      // Stop just short of the final card geometry. The pinned landing then
+      // completes the remaining 2% in the same direction, with no recoil.
+      const LANDING_START_SCALE = 0.98;
+      scrollTl.add(Flip.fit(target, settleAnchor, { duration: 1, ease: "none", scale: true }));
+
+      // Keep the original scale-based motion while compensating only the CSS
+      // radius, so its apparent 8px value does not grow with the transform.
+      const baseRadius = parseFloat(getComputedStyle(settleTarget).borderTopLeftRadius) || 0;
+      const setRadius = gsap.quickSetter(settleTarget, "borderRadius", "px");
+      const syncVisualState = () => {
+        const carrierScale = Number(gsap.getProperty(target, "scaleX")) || 1;
+        const settleScale = Number(gsap.getProperty(settleTarget, "scaleX")) || 1;
+        setRadius(baseRadius / (carrierScale * settleScale));
+      };
+      scrollTl.eventCallback("onUpdate", syncVisualState);
 
       const cards = carouselTrack.children;
       const cardCount = cards.length;
@@ -176,6 +196,10 @@ function LandingPages() {
       const initialX = (vpW - cardW) / 2;
       const totalMove = (cardCount - 1) * (cardW + gapPx);
       const scrollDist = totalMove * (isMobile ? 2.4 : 1.5);
+      // Complete the final 2% while pinned. Numeric scrub gives this short
+      // monotonic movement enough time to remain visible even on a fast wheel.
+      const SETTLE_VH = isMobile ? 0.24 : 0.18;
+      const settleDist = Math.round(window.innerHeight * SETTLE_VH);
 
       // Pista de desaceleração na SAÍDA (só mobile): um trecho de scroll no fim
       // do pin onde tudo já terminou e está parado. Num flick forte o momentum
@@ -185,9 +209,7 @@ function LandingPages() {
       // maior = freia mais (mais dedo pra sair); menor = freia menos.
       const EXIT_RUNWAY_VH = 0.7;
       const runway = isMobile ? Math.round(window.innerHeight * EXIT_RUNWAY_VH) : 0;
-      const endDist = scrollDist + runway;
-      // Fração do pin em que cards/faixas realmente animam; o resto é a pista.
-      const activeFrac = endDist > 0 ? scrollDist / endDist : 1;
+      const endDist = settleDist + scrollDist + runway;
 
       gsap.set(carouselTrack, { x: initialX });
 
@@ -282,12 +304,9 @@ function LandingPages() {
           const st = carouselTl && carouselTl.scrollTrigger;
           if (!st || !st.isActive) return;
           const dt = Math.min(deltaTime, 100) / 1000;
-          // progresso da TIMELINE = valor amortecido pelo scrub (não o cru da
-          // ScrollTrigger) — é o que segura o flick sem pop. Reescalado pela
-          // fração ativa: as faixas completam a saída junto com os cards e ficam
-          // paradas (p=1) durante a pista de desaceleração.
-          const pRaw = carouselTl.progress();
-          const p = activeFrac < 1 ? Math.min(1, pRaw / activeFrac) : pRaw;
+          // Ignore the landing and exit runways: strips only move with cards.
+          const motionTime = Math.max(0, carouselTl.time() - settleDist);
+          const p = scrollDist > 0 ? Math.min(1, motionTime / scrollDist) : 1;
           strips.forEach((s) => s.update(p, dt));
         };
         gsap.ticker.add(onTick);
@@ -301,13 +320,15 @@ function LandingPages() {
           end: `+=${endDist}`,
           scrub: isMobile ? 1 : 0.6,
           // Snap por card no touch: o flick "aterrissa" no card mais próximo.
-          // Pontos reescalados pela fração ativa (a pista de saída empurrou os
-          // cards pra [0, activeFrac]); o ponto final (1) faz a pista "assentar"
-          // na borda da Bridge se o usuário parar nela.
+          // Pontos reescalados pelas pistas de entrada/saída.
           snap: isMobile
             ? {
                 snapTo: [
-                  ...Array.from({ length: cardCount }, (_, i) => (i / (cardCount - 1)) * activeFrac),
+                  0,
+                  ...Array.from(
+                    { length: cardCount },
+                    (_, i) => (settleDist + (i / (cardCount - 1)) * scrollDist) / endDist
+                  ),
                   1,
                 ],
                 duration: { min: 0.25, max: 0.6 },
@@ -321,8 +342,8 @@ function LandingPages() {
           anticipatePin: 1,
           invalidateOnRefresh: true,
           onEnter() {
-            gsap.set(target, { opacity: 0 });
-            gsap.set(carouselViewport, { opacity: 1, pointerEvents: "auto" });
+            gsap.set(target, { opacity: 1 });
+            gsap.set(carouselViewport, { opacity: 0, pointerEvents: "none" });
           },
           onLeave() {
             // passou do último template descendo → some
@@ -343,7 +364,20 @@ function LandingPages() {
         },
       });
 
+      carouselTl.fromTo(
+        settleTarget,
+        { scale: 1 },
+        {
+          scale: 1 / LANDING_START_SCALE,
+          duration: settleDist,
+          ease: "power3.out",
+          immediateRender: false,
+        }
+      );
+      carouselTl.set(target, { opacity: 0 });
+      carouselTl.set(carouselViewport, { opacity: 1, pointerEvents: "auto" }, "<");
       carouselTl.to(carouselTrack, { x: initialX - totalMove, ease: "none", duration: scrollDist });
+      carouselTl.eventCallback("onUpdate", syncVisualState);
       // Cauda parada = a pista de desaceleração. Com scrub, o que importa é a
       // razão das durações (scrollDist : runway), então o momentum de um flick
       // forte tem onde morrer antes do pin soltar pra Bridge.
@@ -375,6 +409,8 @@ function LandingPages() {
       if (carouselTl) { carouselTl.scrollTrigger?.kill(); carouselTl.kill(); }
       stripMarquees.forEach((s) => s.destroy());
       gsap.set(target, { clearProps: "all" });
+      gsap.set(settleTarget, { clearProps: "transform,borderRadius" });
+      gsap.set(carouselViewport, { clearProps: "opacity,visibility,pointerEvents" });
       backTopRef.current?.classList.remove("is-visible");
     };
   }, []);
@@ -433,10 +469,13 @@ function LandingPages() {
         <div className="lp__thumb-box lp__thumb-box--small">
           <div className="lp__ratio"></div>
           <div className="lp__thumb-wrapper" ref={startWrapperRef}>
-            <article className="lp__thumb-target" ref={targetRef}>
-              <LandingPreview variant="eco" />
-              <span className="lp__thumb-pill">Preview</span>
-            </article>
+            <div className="lp__thumb-carrier" ref={targetRef}>
+              <div className="lp__thumb-approach">
+                <article className="lp__thumb-target" ref={settleTargetRef}>
+                  <LandingPreview variant="eco" />
+                </article>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -444,7 +483,9 @@ function LandingPages() {
       <div className="lp__scaling-video">
         <div className="lp__thumb-box lp__thumb-box--large">
           <div className="lp__ratio"></div>
-          <div className="lp__thumb-wrapper" ref={endWrapperRef}></div>
+          <div className="lp__thumb-wrapper" ref={endWrapperRef}>
+            <div className="lp__settle-anchor" ref={settleAnchorRef}></div>
+          </div>
         </div>
 
         <div className="lp__carousel-viewport" ref={carouselViewportRef}>
@@ -473,15 +514,20 @@ function LandingPages() {
         </div>
       </div>
 
-      <button
-        type="button"
-        className="lp__back-top"
-        aria-label="Voltar ao topo"
-        ref={backTopRef}
-        onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-      >
-        ↑
-      </button>
+      {/* position:fixed → vai pro body: dentro do #smooth-content (que tem
+          transform) ele ficaria fixo ao conteúdo, não à viewport. */}
+      {createPortal(
+        <button
+          type="button"
+          className="lp__back-top"
+          aria-label="Voltar ao topo"
+          ref={backTopRef}
+          onClick={() => scrollPageTo(0)}
+        >
+          ↑
+        </button>,
+        document.body
+      )}
     </section>
   );
 }

@@ -18,7 +18,7 @@ Referência de estilo: **Bogdan Kolomiyets** (bogdankolomiyets.com) — fundo cr
 | Build | **Vite 6** |
 | UI | **React 18** |
 | Roteamento | **react-router-dom v7** (`BrowserRouter + Routes`) — site multi-rotas |
-| Animação scroll | **GSAP + ScrollTrigger** |
+| Animação scroll | **GSAP + ScrollTrigger + ScrollSmoother** (site inteiro rola suavizado, `main.jsx`) |
 | Layout/transform | **GSAP Flip** (expansão do carrossel) |
 | Efeitos de texto | **GSAP SplitText** |
 | Estilização | **CSS puro** (`styles.css` com tokens em `:root`) |
@@ -153,6 +153,7 @@ Destino dos botões **COMEÇAR**. Título `VAMOS / CONVERSAR.` + formulário (No
 
 | Efeito | Onde |
 |---|---|
+| **ScrollSmoother** | Site inteiro — scroll suavizado (`main.jsx`); ler posição via `currentScrollY()`, nunca `window.scrollY` cru |
 | ScrollTrigger + stagger | Entrada de elementos em todas as seções |
 | Pin (`.hero`) | Só o Hero pina globalmente |
 | Pin interno + Flip | Carrossel de LandingPages |

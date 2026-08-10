@@ -1,6 +1,6 @@
 import { useRef } from "react";
 import { useParams, Navigate } from "react-router-dom";
-import { gsap, ScrollTrigger, SplitText, useIsoLayoutEffect, prefersReducedMotion } from "./lib.jsx";
+import { gsap, ScrollTrigger, SplitText, scrollPageTo, useIsoLayoutEffect, prefersReducedMotion } from "./lib.jsx";
 import { usePageTransition } from "./PageTransition.jsx";
 import { CASES } from "./casesData.js";
 import { nextProject } from "./projectsList.js";
@@ -274,7 +274,7 @@ function Case() {
       transitionTo("/#contato");
       return;
     }
-    btn.scrollIntoView({ behavior: "smooth", block: "center" });
+    scrollPageTo(btn);
     if (prefersReducedMotion()) return;
     window.setTimeout(() => {
       // halo difuso (blur alto, spread baixo) que pulsa suave — sem anel duro
@@ -577,7 +577,7 @@ function Case() {
           className="footer__back-top"
           href="#"
           aria-label="Voltar ao topo"
-          onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: "smooth" }); }}
+          onClick={(e) => { e.preventDefault(); scrollPageTo(0); }}
         >
           ↑
         </a>

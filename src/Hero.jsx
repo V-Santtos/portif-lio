@@ -1,5 +1,5 @@
 import { useRef } from "react";
-import { gsap, prefersReducedMotion, useIsoLayoutEffect, fadeJump } from "./lib.jsx";
+import { gsap, prefersReducedMotion, scrollPageTo, useIsoLayoutEffect, fadeJump } from "./lib.jsx";
 import { usePageTransition } from "./PageTransition.jsx";
 
 function Hero({ ready }) {
@@ -7,7 +7,8 @@ function Hero({ ready }) {
 
   // Links da navbar como âncoras de seção (Projetos continua sendo rota).
   const scrollToId = (id) => {
-    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+    const el = document.getElementById(id);
+    if (el) scrollPageTo(el);
   };
   // Contato: salto até o final suavizado por um fade (não atravessa o scrub do
   // carrossel, que dá impressão de travamento) e sinaliza o destino no WhatsApp.

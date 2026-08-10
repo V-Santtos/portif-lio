@@ -1,4 +1,5 @@
 import { useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { gsap, prefersReducedMotion, useIsoLayoutEffect, SplitText, fireConfetti } from "./lib.jsx";
 import { usePageTransition } from "./PageTransition.jsx";
 import Seo from "./Seo.jsx";
@@ -292,16 +293,21 @@ function Comecar() {
         </form>
       </div>
 
-      <div className="comecar__success" ref={successRef} role="status" aria-live="polite">
-        <svg className="comecar__check" viewBox="0 0 52 52" aria-hidden="true">
-          <circle cx="26" cy="26" r="24" />
-          <path d="M15 27 l7.5 7.5 L38 19" />
-        </svg>
-        <p className="comecar__success-msg" ref={successMsgRef}>Enviado! Em breve entro em contato com você.</p>
-        <button className="comecar__success-back" onClick={() => transitionTo("/")}>
-          <span className="comecar__success-arrow" aria-hidden="true">←</span> Voltar ao início
-        </button>
-      </div>
+      {/* position:fixed → body: dentro do #smooth-content (transform) o
+          takeover ficaria preso ao conteúdo em vez de cobrir a viewport. */}
+      {createPortal(
+        <div className="comecar__success" ref={successRef} role="status" aria-live="polite">
+          <svg className="comecar__check" viewBox="0 0 52 52" aria-hidden="true">
+            <circle cx="26" cy="26" r="24" />
+            <path d="M15 27 l7.5 7.5 L38 19" />
+          </svg>
+          <p className="comecar__success-msg" ref={successMsgRef}>Enviado! Em breve entro em contato com você.</p>
+          <button className="comecar__success-back" onClick={() => transitionTo("/")}>
+            <span className="comecar__success-arrow" aria-hidden="true">←</span> Voltar ao início
+          </button>
+        </div>,
+        document.body
+      )}
     </section>
   );
 }

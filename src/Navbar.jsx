@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { gsap, fadeJump } from "./lib.jsx";
+import { gsap, fadeJump, currentScrollY } from "./lib.jsx";
 import { usePageTransition } from "./PageTransition.jsx";
 import { useLocation } from "react-router-dom";
 
@@ -45,10 +45,15 @@ function Navbar() {
   const hasOpenedRef = useRef(false);
 
   useEffect(() => {
-    lastScrollY.current = window.scrollY;
+    lastScrollY.current = currentScrollY();
 
+    // Lê a posição VISUAL, não window.scrollY. Com o ScrollSmoother, o lock da
+    // Bridge sincroniza o scroll nativo com o visual e isso derruba o
+    // window.scrollY de uma vez — delta negativo que a barra lia como "o
+    // usuário está voltando" e aparecia sozinha no meio da Escada. O visual não
+    // dá esse salto.
     const handleScroll = () => {
-      const currentY = window.scrollY;
+      const currentY = currentScrollY();
       const atTop = currentY < window.innerHeight * 0.9;
       const delta = currentY - lastScrollY.current;
 
@@ -65,7 +70,13 @@ function Navbar() {
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
+    // O conteúdo continua deslizando depois que os eventos de scroll param;
+    // sem o ticker a barra só reagiria no próximo evento.
+    gsap.ticker.add(handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      gsap.ticker.remove(handleScroll);
+    };
   }, []);
 
   // Hero mobile abre o overlay pelo hambúrguer (sem COMEÇAR na barra)

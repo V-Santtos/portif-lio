@@ -1,12 +1,13 @@
 import { useEffect, useLayoutEffect } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { ScrollSmoother } from "gsap/ScrollSmoother";
 import { Flip } from "gsap/Flip";
 import { SplitText } from "gsap/SplitText";
 import { DrawSVGPlugin } from "gsap/DrawSVGPlugin";
 import { Physics2DPlugin } from "gsap/Physics2DPlugin";
 
-gsap.registerPlugin(ScrollTrigger, Flip, SplitText, DrawSVGPlugin, Physics2DPlugin);
+gsap.registerPlugin(ScrollTrigger, ScrollSmoother, Flip, SplitText, DrawSVGPlugin, Physics2DPlugin);
 
 export const useIsoLayoutEffect =
   typeof window !== "undefined" ? useLayoutEffect : useEffect;
@@ -74,6 +75,34 @@ export function fireConfetti(opts = {}) {
   });
   // Limpa a camada quando o último cair.
   gsap.delayedCall(2.7, () => layer.remove());
+}
+
+// Posição de scroll VISUAL — a que o usuário enxerga. Com o ScrollSmoother,
+// `window.scrollY` é o alvo nativo e o conteúdo chega nele depois; pior, ao
+// pausar o smoother ele sincroniza o nativo com o visual, o que faz o
+// `window.scrollY` SALTAR PRA TRÁS sem o usuário ter rolado pra cima. Quem
+// decide algo por direção de scroll tem que ler daqui, não do window.
+export function currentScrollY() {
+  return ScrollSmoother.get()?.scrollTop() ?? window.scrollY;
+}
+
+// Rolagem programática (botões "voltar ao topo", âncoras de seção). Passa pelo
+// ScrollSmoother quando ele existe — window.scrollTo mexeria só no scroll
+// nativo e o conteúdo, movido por transform, chegaria depois, com dois easings
+// somados. `target` aceita px ou elemento/seletor.
+export function scrollPageTo(target, { smooth = true } = {}) {
+  const smoother = ScrollSmoother.get();
+  if (smoother) {
+    smoother.scrollTo(target, smooth && !prefersReducedMotion());
+    return;
+  }
+  const behavior = smooth && !prefersReducedMotion() ? "smooth" : "auto";
+  if (typeof target === "number") {
+    window.scrollTo({ top: target, behavior });
+    return;
+  }
+  const el = typeof target === "string" ? document.querySelector(target) : target;
+  el?.scrollIntoView({ behavior });
 }
 
 // Salto de página suavizado: um fade rápido cobre a tela, o jump acontece
@@ -197,4 +226,4 @@ export function useTitleReveal(ref, { trigger, start = "top 80%", delay = 0, sta
   }, []);
 }
 
-export { gsap, ScrollTrigger, Flip, SplitText, DrawSVGPlugin, Physics2DPlugin };
+export { gsap, ScrollTrigger, ScrollSmoother, Flip, SplitText, DrawSVGPlugin, Physics2DPlugin };

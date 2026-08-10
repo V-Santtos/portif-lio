@@ -273,6 +273,27 @@
   height: 100%;
 }
 
+.lp__settle-anchor {
+  position: absolute;
+  inset: 1%;
+  pointer-events: none;
+}
+
+.lp__thumb-carrier {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  will-change: transform;
+  transform: translate(0) rotate(0.001deg);
+}
+
+.lp__thumb-approach {
+  position: absolute;
+  inset: 0;
+  will-change: transform;
+  transform-origin: center center;
+}
+
 .lp__thumb-target {
   position: absolute;
   inset: 0;
@@ -285,9 +306,10 @@
   background: var(--color-dark);
   box-shadow: 0 12px 48px rgba(0,0,0,0.12);
   isolation: isolate;
-  z-index: 3;
+  z-index: 1;
   will-change: transform;
-  transform: translate(0) rotate(0.001deg);
+  transform: translate(0);
+  transform-origin: center center;
 }
 
 .lp__thumb-img {
@@ -494,4 +516,3 @@
   text-transform: uppercase;
   color: var(--color-muted-foreground);
 }
-

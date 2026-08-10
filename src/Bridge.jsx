@@ -1,5 +1,5 @@
 ﻿import { useRef } from "react";
-import { gsap, ScrollTrigger, useIsoLayoutEffect, prefersReducedMotion } from "./lib.jsx";
+import { gsap, ScrollTrigger, ScrollSmoother, useIsoLayoutEffect, prefersReducedMotion } from "./lib.jsx";
 
 function LetterSwapLine({ children, accent = false, sentence }) {
   const chars = Array.from(children);
@@ -39,11 +39,16 @@ function Bridge() {
     let locked = false;
     let hasPlayed = false;
     let lockY = 0;
-    let automationTop = 0;
     const savedStyles = {};
 
     const firstLetters = phrase.querySelectorAll('[data-sentence="1"] .bridge__letter');
     const secondLetters = phrase.querySelectorAll('[data-sentence="2"] .bridge__letter');
+
+    // Com o ScrollSmoother ativo, a posição de scroll que importa é a DELE
+    // (a visual). window.scrollY é o alvo nativo e o conteúdo chega nele
+    // depois, então medir por ali erraria o handoff.
+    const smoother = () => ScrollSmoother.get();
+    const getScroll = () => smoother()?.scrollTop() ?? window.scrollY;
 
     function preventScroll(e) {
       if (locked) e.preventDefault();
@@ -63,8 +68,15 @@ function Bridge() {
 
     const lockScroll = () => {
       locked = true;
-      lockY = window.scrollY;
+      lockY = getScroll();
       document.documentElement.classList.add("is-scroll-locked");
+      // O smoother tem trava própria (bloqueia wheel/touch/scroll por dentro).
+      // Duplicar com listeners crus faria os dois brigarem pelo mesmo evento.
+      const s = smoother();
+      if (s) {
+        s.paused(true);
+        return;
+      }
       window.addEventListener("wheel", preventScroll, { passive: false });
       window.addEventListener("touchmove", preventScroll, { passive: false });
       window.addEventListener("keydown", preventScrollKeys);
@@ -75,6 +87,12 @@ function Bridge() {
       if (!locked) return;
       locked = false;
       document.documentElement.classList.remove("is-scroll-locked");
+      const s = smoother();
+      if (s) {
+        s.paused(false);
+        s.scrollTop(targetY);
+        return;
+      }
       window.removeEventListener("wheel", preventScroll);
       window.removeEventListener("touchmove", preventScroll);
       window.removeEventListener("keydown", preventScrollKeys);
@@ -84,14 +102,29 @@ function Bridge() {
 
     const setAutomationLayer = (automation) => {
       savedStyles.position = automation.style.position;
-      savedStyles.inset = automation.style.inset;
+      savedStyles.top = automation.style.top;
+      savedStyles.left = automation.style.left;
+      savedStyles.right = automation.style.right;
+      savedStyles.bottom = automation.style.bottom;
       savedStyles.width = automation.style.width;
       savedStyles.height = automation.style.height;
       savedStyles.zIndex = automation.style.zIndex;
       automation.classList.add("automation--handoff");
+      // position:fixed se ancora no ancestral TRANSFORMADO mais próximo. Com o
+      // ScrollSmoother esse ancestral é o #smooth-content, cujo topo fica em
+      // -scroll na tela — então top:0 cairia fora da viewport. Compensar com o
+      // scroll atual devolve o elemento ao topo da tela. Constante durante o
+      // efeito, porque o scroll está travado aqui.
+      // NÃO usar o atalho `inset`: o GSAP aplica as propriedades numa ordem
+      // interna própria, e `inset:0` pisava por cima do `top` compensado —
+      // o elemento renderizava a milhares de px da tela real. `top`/`left`
+      // como longhands soltos não têm esse conflito.
+      const offsetTop = smoother() ? getScroll() : 0;
       gsap.set(automation, {
         position: "fixed",
-        inset: 0,
+        top: offsetTop,
+        left: 0,
+        right: 0,
         width: "100%",
         height: "100vh",
         zIndex: 20,
@@ -103,7 +136,10 @@ function Bridge() {
       if (!automation.classList.contains("automation--handoff")) return;
       automation.classList.remove("automation--handoff");
       automation.style.position = savedStyles.position || "";
-      automation.style.inset = savedStyles.inset || "";
+      automation.style.top = savedStyles.top || "";
+      automation.style.left = savedStyles.left || "";
+      automation.style.right = savedStyles.right || "";
+      automation.style.bottom = savedStyles.bottom || "";
       automation.style.width = savedStyles.width || "";
       automation.style.height = savedStyles.height || "";
       automation.style.zIndex = savedStyles.zIndex || "";
@@ -121,6 +157,7 @@ function Bridge() {
 
       hasPlayed = true;
       window.removeEventListener("scroll", checkTrigger);
+      gsap.ticker.remove(checkTrigger);
 
       // Mobile: sem scroll-lock nem handoff — touch briga com lock (momentum
       // do iOS). Só roda o letter-swap; a Automation entra rolando normal e
@@ -139,9 +176,6 @@ function Bridge() {
       }
 
       const automation = document.querySelector(".automation");
-      if (automation) {
-        automationTop = automation.getBoundingClientRect().top + window.scrollY;
-      }
 
       lockScroll();
 
@@ -158,9 +192,16 @@ function Bridge() {
             duration: 1,
             ease: "power3.inOut",
             onComplete: () => {
+              // A ORDEM aqui é o que evita o "pulo de volta". A posição de
+              // pouso precisa ser medida DEPOIS de (1) a Automation voltar pro
+              // fluxo normal e (2) o refresh recalcular os pins da página.
+              // Medir antes — como era — entregava uma foto de ~3s atrás
+              // (o letter-swap + o slide levam esse tempo): o scroll pousava
+              // deslocado e a seção dark saltava pra "corrigir".
               restoreAutomationLayer(automation);
-              unlockScroll(automationTop);
               ScrollTrigger.refresh();
+              const alvo = automation.getBoundingClientRect().top + getScroll();
+              unlockScroll(alvo);
               window.dispatchEvent(new CustomEvent("automation:word-swap"));
             },
           });
@@ -172,10 +213,18 @@ function Bridge() {
     };
 
     window.addEventListener("scroll", checkTrigger, { passive: true });
+    // O smoother move o conteúdo por transform DEPOIS que os eventos de scroll
+    // já pararam: o evento silencia mas a frase continua subindo. Sem o ticker
+    // o trigger dormiria até o próximo scroll — e o efeito nunca dispararia se
+    // o usuário parasse exatamente aqui. Sempre adicionado (não dá pra checar o
+    // smoother agora: efeito de filho roda antes do pai que o cria). Sai sozinho
+    // no primeiro disparo.
+    gsap.ticker.add(checkTrigger);
     checkTrigger();
 
     return () => {
       window.removeEventListener("scroll", checkTrigger);
+      gsap.ticker.remove(checkTrigger);
       if (tl) { tl.kill(); tl = null; }
       unlockScroll();
       const automation = document.querySelector(".automation");
