@@ -1,7 +1,7 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import Contact from "./Contact.jsx";
 import Seo from "./Seo.jsx";
-import { fadeJump, gsap, prefersReducedMotion, scrollPageTo, ScrollTrigger, useIsoLayoutEffect } from "./lib.jsx";
+import { currentScrollY, fadeJump, gsap, prefersReducedMotion, scrollPageTo, ScrollTrigger, useIsoLayoutEffect } from "./lib.jsx";
 import { usePageTransition } from "./PageTransition.jsx";
 import { getStaticSeo } from "./seo.js";
 
@@ -78,26 +78,32 @@ const REALITY_ITEMS = [
 const STATEMENTS = [
   {
     desktop: [
-      { text: "A maioria dos sites começa pelo" },
-      { accent: "design." },
+      { text: "Antes de construir qualquer coisa," },
+      { text: "eu entendo o que o seu" },
+      { accent: "negócio precisa." },
     ],
     mobile: [
-      { text: "A maioria dos sites" },
-      { text: "começa pelo", accent: " design." },
-    ],
-  },
-  {
-    desktop: [
-      { text: "O meu começa entendendo" },
-      { accent: "o seu negócio." },
-    ],
-    mobile: [
-      { text: "O meu começa" },
-      { text: "entendendo o seu" },
-      { accent: "negócio." },
+      { text: "Antes de construir" },
+      { text: "qualquer coisa," },
+      { text: "eu entendo o que o seu" },
+      { accent: "negócio precisa." },
     ],
   },
 ];
+
+const PROCESS_ITEMS_BY_TYPE = {
+  sites: SYSTEM_ITEMS.map((item) => ({ ...item })),
+  sistemas: SYSTEM_ITEMS.map((item) => ({ ...item })),
+};
+
+const PROCESS_TYPES = [
+  { id: "sites", label: "Sites" },
+  { id: "sistemas", label: "Sistemas" },
+];
+
+// A frase começa quando 85% da próxima tela já entrou na viewport:
+// o topo do scroller ainda está a 15% do topo. O pin continua em top/top.
+const STATEMENT_ANIMATION_START = "top 15%";
 
 function StartButton({ onClick }) {
   return (
@@ -122,7 +128,9 @@ function ProcessStatement({ statement, index }) {
   useIsoLayoutEffect(() => {
     const root = scrollerRef.current;
     if (!root) return;
+    const statement = root.querySelector(".process-statement");
     const lineElements = root.querySelectorAll(".process-statement__line");
+    if (!statement || !lineElements.length) return;
 
     if (prefersReducedMotion()) {
       gsap.set(lineElements, { yPercent: 0, opacity: 1, clearProps: "transform" });
@@ -132,11 +140,22 @@ function ProcessStatement({ statement, index }) {
     const context = gsap.context(() => {
       gsap.set(lineElements, { yPercent: 135, opacity: 0 });
 
+      // Pin e animação têm inícios diferentes. Manter os dois no mesmo
+      // ScrollTrigger faria a seção pinada parar a 15% do topo.
+      ScrollTrigger.create({
+        trigger: root,
+        start: "top top",
+        end: "bottom bottom",
+        pin: statement,
+        pinSpacing: false,
+        invalidateOnRefresh: true,
+      });
+
       gsap
         .timeline({
           scrollTrigger: {
             trigger: root,
-            start: "top top",
+            start: STATEMENT_ANIMATION_START,
             // "bottom bottom" e nao "bottom top": o curso do trigger passa a ser
             // (altura do scroller - altura da viewport), que e EXATAMENTE a janela
             // em que o .process-statement fica grudado. Com "bottom top" o curso
@@ -196,6 +215,130 @@ function ProcessStatement({ statement, index }) {
   );
 }
 
+function ProcessSystemSection() {
+  const [selectedType, setSelectedType] = useState("sites");
+  const [contentType, setContentType] = useState("sites");
+  const itemsRef = useRef(null);
+  const exitTweenRef = useRef(null);
+  const hasRenderedRef = useRef(false);
+
+  useIsoLayoutEffect(() => {
+    if (!hasRenderedRef.current) {
+      hasRenderedRef.current = true;
+      return undefined;
+    }
+
+    const items = itemsRef.current?.querySelectorAll(".process-system__item-content");
+    if (!items?.length) {
+      return undefined;
+    }
+
+    if (prefersReducedMotion()) {
+      gsap.set(items, { clearProps: "transform,opacity" });
+      ScrollTrigger.refresh();
+      return undefined;
+    }
+
+    const enterTween = gsap.fromTo(
+      items,
+      { y: 30, opacity: 0 },
+      {
+        y: 0,
+        opacity: 1,
+        duration: 0.58,
+        stagger: 0.045,
+        ease: "power3.out",
+        overwrite: true,
+        onComplete: () => {
+          gsap.set(items, { clearProps: "transform,opacity" });
+          ScrollTrigger.refresh();
+        },
+      }
+    );
+
+    return () => enterTween.kill();
+  }, [contentType]);
+
+  useIsoLayoutEffect(
+    () => () => {
+      exitTweenRef.current?.kill();
+    },
+    []
+  );
+
+  const selectProcessType = (nextType) => {
+    if (nextType === selectedType) return;
+
+    setSelectedType(nextType);
+
+    const items = itemsRef.current?.querySelectorAll(".process-system__item-content");
+    if (prefersReducedMotion() || !items?.length) {
+      setContentType(nextType);
+      return;
+    }
+
+    exitTweenRef.current?.kill();
+    exitTweenRef.current = gsap.to(items, {
+      y: -24,
+      opacity: 0,
+      duration: 0.3,
+      stagger: 0.025,
+      ease: "power2.in",
+      overwrite: true,
+      onComplete: () => setContentType(nextType),
+    });
+  };
+
+  const items = PROCESS_ITEMS_BY_TYPE[contentType];
+
+  return (
+    <section className="process-system process-content-section" aria-labelledby="process-system-title">
+      <div className="container-x process-system__layout">
+        <header className="process-system__header" data-process-reveal>
+          <h2 className="process-system__title" id="process-system-title">
+            <span>Meu</span>
+            Método
+          </h2>
+          <div
+            className="process-system__switch"
+            data-active={selectedType}
+            role="group"
+            aria-label="Escolha o tipo de projeto"
+          >
+            {PROCESS_TYPES.map((type) => (
+              <button
+                className="process-system__switch-button"
+                type="button"
+                aria-pressed={selectedType === type.id}
+                onClick={() => selectProcessType(type.id)}
+                key={type.id}
+              >
+                {type.label}
+              </button>
+            ))}
+          </div>
+        </header>
+
+        <div
+          className="process-system__items"
+          data-process-type={contentType}
+          aria-label={`Etapas para ${contentType}`}
+          ref={itemsRef}
+        >
+          {items.map((item, index) => (
+            <article className="process-system__item" data-process-reveal key={index}>
+              <div className="process-system__item-content">
+                <h3>{item.title}</h3>
+                <p>{item.body}</p>
+              </div>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function Processo() {
   const pageRef = useRef(null);
   const { transitionTo } = usePageTransition();
@@ -217,11 +360,13 @@ function Processo() {
     if (!root) return;
 
     const reduce = prefersReducedMotion();
+    const processNav = root.querySelector(".process-hero__nav");
     const context = gsap.context(() => {
       const heroWord = root.querySelector(".process-hero__word-inner");
       const heroAccent = root.querySelector(".process-hero__accent-inner");
       const heroMeta = root.querySelectorAll(".process-hero__meta > *");
       const revealElements = root.querySelectorAll("[data-process-reveal]");
+      const hero = root.querySelector(".process-hero");
 
       if (reduce) {
         gsap.set([heroWord, heroAccent, ...heroMeta, ...revealElements], {
@@ -231,6 +376,20 @@ function Processo() {
           clearProps: "transform",
         });
         return;
+      }
+
+      // Mesmo overlap da abertura da home: enquanto a primeira frase entra,
+      // o hero continua na viewport e a proxima secao o cobre. Sem spacing
+      // extra, porque a hero ja ocupa uma viewport no fluxo normal.
+      if (hero) {
+        ScrollTrigger.create({
+          trigger: hero,
+          start: "top top",
+          end: "bottom top",
+          pin: true,
+          pinSpacing: false,
+          refreshPriority: -1,
+        });
       }
 
       gsap
@@ -258,6 +417,44 @@ function Processo() {
       });
     }, root);
 
+    // O nav acompanha a direcao VISUAL do ScrollSmoother: desce o scroll,
+    // o conjunto inteiro sobe e sai; volta o scroll, ele reaparece. O ticker
+    // cobre os frames em que o smoother continua se movendo entre eventos.
+    let navTween = null;
+    let navHidden = false;
+    let lastNavY = currentScrollY();
+
+    const setNavHidden = (hidden) => {
+      if (!processNav || hidden === navHidden) return;
+      navHidden = hidden;
+      navTween?.kill();
+      navTween = gsap.to(processNav, {
+        yPercent: hidden ? -140 : 0,
+        opacity: hidden ? 0 : 1,
+        duration: reduce ? 0 : 0.42,
+        ease: hidden ? "power3.in" : "power3.out",
+        overwrite: true,
+      });
+    };
+
+    const updateProcessNav = () => {
+      const currentY = currentScrollY();
+      const delta = currentY - lastNavY;
+
+      if (currentY <= 2) {
+        setNavHidden(false);
+      } else if (delta > 0.5) {
+        setNavHidden(true);
+      } else if (delta < -0.5) {
+        setNavHidden(false);
+      }
+
+      lastNavY = currentY;
+    };
+
+    window.addEventListener("scroll", updateProcessNav, { passive: true });
+    gsap.ticker.add(updateProcessNav);
+
     let cancelled = false;
     document.fonts?.ready.then(() => {
       if (!cancelled) ScrollTrigger.refresh();
@@ -265,6 +462,10 @@ function Processo() {
 
     return () => {
       cancelled = true;
+      window.removeEventListener("scroll", updateProcessNav);
+      gsap.ticker.remove(updateProcessNav);
+      navTween?.kill();
+      if (processNav) gsap.set(processNav, { clearProps: "transform,opacity" });
       context.revert();
     };
   }, []);
@@ -339,25 +540,7 @@ function Processo() {
         ))}
         </div>
 
-        <section className="process-system process-content-section" aria-labelledby="process-system-title">
-          <div className="container-x process-system__layout">
-            <header className="process-system__header" data-process-reveal>
-              <p className="process-eyebrow">Como eu trabalho</p>
-              <h2 className="process-system__title" id="process-system-title">
-                <span>Meu</span>
-                Sistema
-              </h2>
-            </header>
-            <div className="process-system__items">
-              {SYSTEM_ITEMS.map((item) => (
-                <article className="process-system__item" data-process-reveal key={item.title}>
-                  <h3>{item.title}</h3>
-                  <p>{item.body}</p>
-                </article>
-              ))}
-            </div>
-          </div>
-        </section>
+        <ProcessSystemSection />
 
         <section className="process-results process-content-section" aria-labelledby="process-results-title">
           <div className="container-x process-results__inner">

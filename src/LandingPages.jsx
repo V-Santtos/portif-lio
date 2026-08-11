@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { Flip, ScrollTrigger, gsap, prefersReducedMotion, scrollPageTo, useIsoLayoutEffect, useTitleReveal } from "./lib.jsx";
+import { Flip, ScrollTrigger, currentScrollY, gsap, prefersReducedMotion, scrollPageTo, useIsoLayoutEffect, useTitleReveal } from "./lib.jsx";
 import LandingPreview from "./LandingPreview.jsx";
 
 const LP_ITEMS = [
@@ -98,7 +98,8 @@ function LandingPages() {
   const noteRef = useRef(null);
   const carouselViewportRef = useRef(null);
   const carouselTrackRef = useRef(null);
-  const backTopRef = useRef(null);
+  const carouselSkipRef = useRef(null);
+  const carouselSkipActionRef = useRef(null);
   const stripTopRef = useRef(null);
   const stripBottomRef = useRef(null);
   const stripTopTrackRef = useRef(null);
@@ -145,8 +146,49 @@ function LandingPages() {
 
     let scrollTl;
     let carouselTl;
+    let skipTween;
     let resizeTimer;
     let stripMarquees = [];
+
+    const setSkipButton = (direction, visible) => {
+      const button = carouselSkipRef.current;
+      if (!button) return;
+      const pointsLeft = direction === "left";
+      button.dataset.direction = direction;
+      button.setAttribute(
+        "aria-label",
+        pointsLeft ? "Voltar ao início" : "Ir ao último projeto"
+      );
+      button.classList.toggle("is-left", pointsLeft);
+      button.classList.toggle("is-visible", visible);
+    };
+
+    const stopSkipTween = () => {
+      if (!skipTween) return;
+      skipTween.kill();
+      skipTween = null;
+      carouselSkipRef.current?.classList.remove("is-skipping");
+    };
+
+    const animateScrollTo = (destination) => {
+      stopSkipTween();
+      const state = { y: currentScrollY() };
+      const distance = Math.abs(destination - state.y);
+      skipTween = gsap.to(state, {
+        y: destination,
+        duration: gsap.utils.clamp(0.9, 1.45, 0.72 + distance / 3600),
+        ease: "power3.inOut",
+        onStart: () => carouselSkipRef.current?.classList.add("is-skipping"),
+        onUpdate: () => scrollPageTo(state.y, { smooth: false }),
+        onComplete: () => {
+          scrollPageTo(destination, { smooth: false });
+          carouselSkipRef.current?.classList.remove("is-skipping");
+          setSkipButton("right", false);
+          skipTween = null;
+        },
+        onInterrupt: () => carouselSkipRef.current?.classList.remove("is-skipping"),
+      });
+    };
 
     function build() {
       if (scrollTl) { scrollTl.scrollTrigger?.kill(); scrollTl.kill(); }
@@ -207,8 +249,8 @@ function LandingPages() {
       // de despejar velocidade na Bridge e o usuário passar batido. Sem lock,
       // sem brigar com o momentum do iOS. Calibrar pela fração da viewport:
       // maior = freia mais (mais dedo pra sair); menor = freia menos.
-      const EXIT_RUNWAY_VH = 0.7;
-      const runway = isMobile ? Math.round(window.innerHeight * EXIT_RUNWAY_VH) : 0;
+      const EXIT_RUNWAY_VH = isMobile ? 0.7 : 0.22;
+      const runway = Math.round(window.innerHeight * EXIT_RUNWAY_VH);
       const endDist = settleDist + scrollDist + runway;
 
       gsap.set(carouselTrack, { x: initialX });
@@ -344,20 +386,27 @@ function LandingPages() {
           onEnter() {
             gsap.set(target, { opacity: 1 });
             gsap.set(carouselViewport, { opacity: 0, pointerEvents: "none" });
+            setSkipButton("right", false);
           },
           onLeave() {
             // passou do último template descendo → some
-            backTopRef.current?.classList.remove("is-visible");
+            carouselSkipRef.current?.classList.remove("is-visible");
           },
           onLeaveBack() {
             gsap.set(carouselViewport, { opacity: 0, pointerEvents: "none" });
             gsap.set(target, { opacity: 1 });
             // saiu pelo topo do carrossel → some
-            backTopRef.current?.classList.remove("is-visible");
+            carouselSkipRef.current?.classList.remove("is-visible");
           },
           onUpdate(self) {
-            // dentro do carrossel: aparece só ao rolar de volta (direção -1)
-            backTopRef.current?.classList.toggle("is-visible", self.direction === -1);
+            const time = carouselTl.time();
+            const movingBack = self.direction === -1;
+            const carouselIsVisible = time >= settleDist;
+            const reachedLastCard = time >= settleDist + scrollDist - 8;
+            setSkipButton(
+              movingBack ? "left" : "right",
+              movingBack || (carouselIsVisible && !reachedLastCard)
+            );
             // (faixas satélites são atualizadas pelo ticker, via progresso
             // amortecido do scrub — não pelo progresso cru daqui)
           },
@@ -382,6 +431,20 @@ function LandingPages() {
       // razão das durações (scrollDist : runway), então o momentum de um flick
       // forte tem onde morrer antes do pin soltar pra Bridge.
       if (runway > 0) carouselTl.to({}, { duration: runway });
+
+      carouselSkipActionRef.current = () => {
+        const button = carouselSkipRef.current;
+        if (!button) return;
+        if (button.dataset.direction === "left") {
+          stopSkipTween();
+          scrollPageTo(0);
+          return;
+        }
+
+        const trigger = carouselTl?.scrollTrigger;
+        if (!trigger) return;
+        animateScrollTo(trigger.start + settleDist + scrollDist);
+      };
     }
 
     const delayedBuild = gsap.delayedCall(0.2, () => {
@@ -400,10 +463,15 @@ function LandingPages() {
     }
 
     window.addEventListener("resize", onResize);
+    window.addEventListener("wheel", stopSkipTween, { passive: true });
+    window.addEventListener("touchstart", stopSkipTween, { passive: true });
 
     return () => {
       window.removeEventListener("resize", onResize);
+      window.removeEventListener("wheel", stopSkipTween);
+      window.removeEventListener("touchstart", stopSkipTween);
       clearTimeout(resizeTimer);
+      stopSkipTween();
       delayedBuild.kill();
       if (scrollTl) { scrollTl.scrollTrigger?.kill(); scrollTl.kill(); }
       if (carouselTl) { carouselTl.scrollTrigger?.kill(); carouselTl.kill(); }
@@ -411,7 +479,8 @@ function LandingPages() {
       gsap.set(target, { clearProps: "all" });
       gsap.set(settleTarget, { clearProps: "transform,borderRadius" });
       gsap.set(carouselViewport, { clearProps: "opacity,visibility,pointerEvents" });
-      backTopRef.current?.classList.remove("is-visible");
+      carouselSkipActionRef.current = null;
+      carouselSkipRef.current?.classList.remove("is-visible", "is-left", "is-skipping");
     };
   }, []);
 
@@ -519,12 +588,13 @@ function LandingPages() {
       {createPortal(
         <button
           type="button"
-          className="lp__back-top"
-          aria-label="Voltar ao topo"
-          ref={backTopRef}
-          onClick={() => scrollPageTo(0)}
+          className="lp__carousel-skip"
+          aria-label="Ir ao último projeto"
+          data-direction="right"
+          ref={carouselSkipRef}
+          onClick={() => carouselSkipActionRef.current?.()}
         >
-          ↑
+          <span className="lp__carousel-skip-icon" aria-hidden="true">↑</span>
         </button>,
         document.body
       )}

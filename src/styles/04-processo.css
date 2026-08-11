@@ -16,20 +16,15 @@
   max-width: 1280px;
 }
 
-/* Teto do sticky do hero: sem isto, o container de referencia e o <main>
-   inteiro (vai ate o Contato), entao o hero fica "gruda-vel" ate quase o fim
-   da pagina — Sistema/Resultados/Papo reto escapam por terem z-index proprio
-   (.process-content-section), mas o Contact (componente global, sem esse
-   z-index) nao, e o hero vaza atras dele. Este wrapper prende o sticky
-   exatamente na janela hero + os 2 manifestos, como o .process-statement-scroller
-   ja faz para a frase sticky la dentro. */
+/* Agrupa o hero e os manifestos para documentar a sequencia visual. O pin do
+   hero e das frases e criado pelo ScrollTrigger: dentro do ScrollSmoother,
+   sticky CSS acompanha o conteudo transformado em vez de ficar na viewport. */
 .process-hero-stage {
   position: relative;
 }
 
 .process-hero {
-  position: sticky;
-  top: 0;
+  position: relative;
   z-index: 1;
   height: 100svh;
   min-height: 100svh;
@@ -189,8 +184,7 @@
 }
 
 .process-statement {
-  position: sticky;
-  top: 0;
+  position: relative;
   height: 100svh;
   display: grid;
   place-items: center;
@@ -217,12 +211,11 @@
   margin: 0;
   text-align: center;
   font-family: var(--font-display);
-  /* Calibrado pela referencia do Victor: a linha mais longa ocupa ~65% da
-     largura da tela (antes eram 40%). O container agora e a largura cheia
-     menos o padding, entao o cqi mede sobre ~1832px em 1920. */
-  font-size: clamp(3.2rem, 6.5cqi, 8.5rem);
+  /* Redução de 10% no desktop para a composição de três linhas respirar sem
+     dominar toda a largura da seção. */
+  font-size: clamp(2.88rem, 5.85cqi, 7.65rem);
   font-weight: 400;
-  line-height: 0.98;
+  line-height: 0.9;
   letter-spacing: 0;
   text-transform: uppercase;
 }
@@ -260,15 +253,8 @@
   background: var(--color-surface);
 }
 
-.process-eyebrow {
-  margin: 0;
-  font-size: 0.95rem;
-  font-weight: 500;
-  line-height: 1.2;
-  text-transform: uppercase;
-}
-
 .process-system {
+  margin-top: -35svh;
   padding: 8rem 0 16rem;
 }
 
@@ -285,7 +271,7 @@
 }
 
 .process-system__title {
-  margin: 3rem 0 0;
+  margin: 0;
   font-family: var(--font-display);
   font-size: clamp(5rem, 7cqi, 7.25rem);
   font-weight: 400;
@@ -302,6 +288,65 @@
   font-size: 0.92em;
   line-height: 0.7;
   text-transform: none;
+}
+
+.process-system__switch {
+  position: relative;
+  isolation: isolate;
+  display: inline-grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  width: min(100%, 18rem);
+  margin-top: 3rem;
+  border: 1px solid var(--color-foreground);
+  border-radius: 999px;
+  padding: 0.25rem;
+  background: var(--color-surface);
+}
+
+.process-system__switch::before {
+  position: absolute;
+  z-index: -1;
+  top: 0.25rem;
+  bottom: 0.25rem;
+  left: 0.25rem;
+  width: calc(50% - 0.25rem);
+  border-radius: inherit;
+  background: var(--color-foreground);
+  content: "";
+  transform: translateX(0);
+  transition: transform 0.42s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.process-system__switch[data-active="sistemas"]::before {
+  transform: translateX(100%);
+}
+
+.process-system__switch-button {
+  position: relative;
+  min-width: 0;
+  min-height: 2.75rem;
+  border: 0;
+  padding: 0.7rem 1.25rem;
+  color: var(--color-foreground);
+  background: transparent;
+  font: inherit;
+  font-size: 0.76rem;
+  font-weight: 650;
+  letter-spacing: 0.08em;
+  line-height: 1;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: color 0.28s ease;
+}
+
+.process-system__switch-button[aria-pressed="true"] {
+  color: var(--color-surface);
+}
+
+.process-system__switch-button:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+  border-radius: 999px;
 }
 
 .process-system__items {
@@ -572,6 +617,10 @@
     padding: 5rem 0 8rem;
   }
 
+  .process-system {
+    margin-top: 0;
+  }
+
   .process-system__layout,
   .process-reality__layout {
     grid-template-columns: 1fr;
@@ -587,6 +636,11 @@
 
   .process-system__header {
     margin-bottom: 4.5rem;
+  }
+
+  .process-system__switch {
+    width: min(100%, 20rem);
+    margin-top: 2.5rem;
   }
 
   .process-system__title,
@@ -655,6 +709,11 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .process-system__switch::before,
+  .process-system__switch-button {
+    transition: none;
+  }
+
   .process-statement-scroller {
     height: auto;
   }

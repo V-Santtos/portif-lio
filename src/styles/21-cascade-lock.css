@@ -2,10 +2,11 @@
    A ORDEM importa: este arquivo entra na posicao indicada pelo numero do nome.
    Nao reordenar regras nem separar os @media do bloco a que pertencem. */
 
-/* Cascade lock da rota /meu-processo: vem depois das bases compartilhadas. */
+/* Cascade lock da rota /meu-processo: vem depois das bases compartilhadas.
+   O pin e responsabilidade do ScrollTrigger em Processo.jsx; sticky CSS nao
+   sobrevive ao transform aplicado pelo ScrollSmoother. */
 .process-hero {
-  position: sticky;
-  top: 0;
+  position: relative;
   z-index: 1;
   height: 100svh;
   min-height: 100svh;

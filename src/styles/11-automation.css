@@ -135,6 +135,21 @@
   box-shadow: 0 14px 34px rgba(0, 0, 0, 0.35);
 }
 
+.auto__card--highlight .auto__card-title {
+  display: inline-flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 0.28em;
+  color: #fff;
+}
+
+.auto__idea-icon {
+  width: 1em;
+  height: 1em;
+  flex: 0 0 auto;
+  transform: translateY(0.08em);
+}
+
 .auto__card--highlight .auto__card-desc {
   color: rgba(20, 20, 20, 0.85);
 }

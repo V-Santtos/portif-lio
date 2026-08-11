@@ -248,8 +248,6 @@ function Bridge() {
           <LetterSwapLine sentence="2">O sistema</LetterSwapLine>
           <LetterSwapLine sentence="2" accent>otimiza.</LetterSwapLine>
         </h2>
-
-        <span className="bridge__dash" aria-hidden="true" />
       </div>
     </section>
   );

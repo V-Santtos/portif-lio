@@ -12,7 +12,7 @@ const CARDS = [
     desc: "Uma tarefa manual que ocupa horas do seu dia, uma agenda bagunçada, um processo travado — seja em qualquer setor, eu construo e otimizo uma ferramenta da maneira certa pra resolver o problema.",
   },
   {
-    title: "Sua ideia💡",
+    title: "Sua ideia",
     desc: "Tem uma ideia diferente dessas? Podemos construir juntos algo sob medida. Você me conta a ideia e tiramos ela do papel.",
   },
 ];
@@ -293,7 +293,25 @@ function Automation() {
                 className={`auto__card${isLast ? " auto__card--highlight" : ""}`}
                 key={c.title}
               >
-                <h3 className="auto__card-title">{c.title}</h3>
+                <h3 className="auto__card-title">
+                  <span>{c.title}</span>
+                  {isLast && (
+                    <svg
+                      className="auto__idea-icon"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      aria-hidden="true"
+                    >
+                      <path d="M9 18h6" />
+                      <path d="M10 22h4" />
+                      <path d="M15.09 14c.18-.58.57-1.15 1.07-1.66A6 6 0 1 0 7.84 12.34c.48.49.89 1.08 1.07 1.66" />
+                    </svg>
+                  )}
+                </h3>
                 <p className="auto__card-desc">{c.desc}</p>
                 {isLast && (
                   <a
@@ -317,12 +335,12 @@ function Automation() {
         <div className="auto__cta" onMouseEnter={handleCtaEnter} onMouseLeave={handleCtaLeave}>
           <p className="auto__cta-heading auto__cta-heading--split">
             <span className="auto__cta-heading-mask">
-              <span className="auto__cta-heading-strong" ref={ctaLine1Ref}>Quer ver</span>
+              <span className="auto__cta-heading-strong" ref={ctaLine1Ref}>Veja</span>
             </span>
             <span className="auto__cta-heading-muted-row">
               <span className="auto__cta-heading-line" ref={ctaLineLeftRef} aria-hidden="true" />
               <span className="auto__cta-heading-mask">
-                <span className="auto__cta-heading-muted" ref={ctaLine2Ref}>de perto?</span>
+                <span className="auto__cta-heading-muted" ref={ctaLine2Ref}>de perto</span>
               </span>
               <span className="auto__cta-heading-line" ref={ctaLineRightRef} aria-hidden="true" />
             </span>
