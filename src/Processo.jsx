@@ -7,7 +7,7 @@ import { getStaticSeo } from "./seo.js";
 
 const PROCESS_HERO_IMAGE = "";
 
-const SYSTEM_ITEMS = [
+const SITES_ITEMS = [
   {
     title: "Seu site começa no papel.",
     body: "Primeiro passo: entender seu negócio por dentro e por fora — o que você vende, quem é seu cliente e o que leva essas pessoas a escolherem você. Antes de qualquer desenho, você recebe a estrutura completa, o propósito e o papel de cada página.",
@@ -26,7 +26,33 @@ const SYSTEM_ITEMS = [
   },
 ];
 
-const RESULT_ITEMS = [
+// Lado Sistemas do seletor — copy definitiva, 4 cards.
+// 03 e 04 dividem o titulo com o lado Sites de proposito (decisao do
+// Victor): mesma promessa, mecanica/conteudo diferente.
+const SISTEMAS_ITEMS = [
+  {
+    title: "A criação se inicia numa conversa.",
+    body: "Uma ferramenta pode nascer de uma ideia que você deseja ver funcionando ou de um problema já existente que atrapalha seu dia a dia. São caminhos diferentes, e é por isso que eu começo entendendo o que você precisa.",
+  },
+  {
+    title: "Menos função, mais uso.",
+    body: "Cada peça da ferramenta é montada a partir de uma necessidade real, sem múltiplas funções que talvez nem sejam usadas. Assim você recebe algo completo pro que precisa resolver e simples de usar todo dia.",
+  },
+  {
+    title: "Feedback sem drama.",
+    body: "Você fica por dentro de como tudo está sendo criado. Se eu encontrar maneiras de deixar a ferramenta ainda mais eficiente para você, eu irei te consultar. E a sugestão pode vir de você também, a qualquer momento do processo.",
+  },
+  {
+    title: "Suporte pós-entrega.",
+    body: "O uso no dia a dia é que revela o que precisa de ajuste ou não. Por isso você terá 15 dias após a entrega pra corrigir caso algo tenha passado despercebido e moldar a ferramenta ao seu uso real.",
+  },
+];
+
+// "O que você recebe" — consciente de tipo desde 2026-08-12. Só o titulo do
+// lado Sistemas e definitivo; os 3 cards ainda sao PLACEHOLDER com a copy
+// de Sites (mesmo tratamento dado ao Metodo: array duplicado ate escrevermos
+// etapa por etapa).
+const SITES_RESULT_ITEMS = [
   {
     number: "01",
     title: "Sem precisar explicar tudo do zero.",
@@ -44,7 +70,21 @@ const RESULT_ITEMS = [
   },
 ];
 
-const REALITY_ITEMS = [
+const RESULTS_BY_TYPE = {
+  sites: {
+    title: ["O que você recebe é", "um site que funciona."],
+    items: SITES_RESULT_ITEMS,
+  },
+  sistemas: {
+    title: ["O que você recebe é", "uma ferramenta que funciona."],
+    items: SITES_RESULT_ITEMS.map((item) => ({ ...item })), // PLACEHOLDER
+  },
+};
+
+// "Um papo reto" — consciente de tipo desde 2026-08-12. Titulo da secao nao
+// cita "site", entao fica fixo no JSX; so os itens variam por tipo. Lado
+// Sistemas ainda e PLACEHOLDER com a copy de Sites.
+const SITES_REALITY_ITEMS = [
   {
     number: "01",
     title: "Sem promessa milagrosa.",
@@ -61,6 +101,25 @@ const REALITY_ITEMS = [
     body: "Site não cria um negócio forte. Ele faz um bom negócio parecer tão bom quanto realmente é: deixa a experiência mais fácil de enxergar, o valor mais simples de entender e os pontos fortes difíceis de ignorar.",
   },
 ];
+
+const REALITY_ITEMS_BY_TYPE = {
+  sites: SITES_REALITY_ITEMS,
+  sistemas: SITES_REALITY_ITEMS.map((item) => ({ ...item })), // PLACEHOLDER
+};
+
+// CTA final — consciente de tipo desde 2026-08-12. O texto de hoje ja nasceu
+// neutro ("Site ou sistema, o processo e o mesmo"), entao os dois lados
+// comecam identicos de proposito — nao e placeholder, e uma decisao a
+// revisitar: talvez nao precise mudar nada aqui.
+const SITES_CTA = {
+  title: ["Pronto pra começar?", "Bora construir o seu."],
+  body: "Site ou sistema, o processo é o mesmo. Me conta o que você precisa e a gente parte pra prática.",
+};
+
+const CTA_BY_TYPE = {
+  sites: SITES_CTA,
+  sistemas: { ...SITES_CTA },
+};
 
 const STATEMENTS = [
   {
@@ -79,8 +138,8 @@ const STATEMENTS = [
 ];
 
 const PROCESS_ITEMS_BY_TYPE = {
-  sites: SYSTEM_ITEMS.map((item) => ({ ...item })),
-  sistemas: SYSTEM_ITEMS.map((item) => ({ ...item })),
+  sites: SITES_ITEMS,
+  sistemas: SISTEMAS_ITEMS,
 };
 
 const PROCESS_TYPES = [
@@ -202,9 +261,7 @@ function ProcessStatement({ statement, index }) {
   );
 }
 
-function ProcessSystemSection() {
-  const [selectedType, setSelectedType] = useState("sites");
-  const [contentType, setContentType] = useState("sites");
+function ProcessSystemSection({ selectedType, contentType, setSelectedType, setContentType }) {
   const itemsRef = useRef(null);
   const exitTweenRef = useRef(null);
   const hasRenderedRef = useRef(false);
@@ -329,6 +386,14 @@ function ProcessSystemSection() {
 function Processo() {
   const pageRef = useRef(null);
   const { transitionTo } = usePageTransition();
+  // Seletor Sites/Sistemas do Método — o estado mora aqui (nao dentro do
+  // ProcessSystemSection) porque, desde 2026-08-12, ele tambem comanda o
+  // conteudo de "O que voce recebe", "Um papo reto" e o CTA final.
+  const [selectedType, setSelectedType] = useState("sites");
+  const [contentType, setContentType] = useState("sites");
+  const results = RESULTS_BY_TYPE[contentType];
+  const reality = REALITY_ITEMS_BY_TYPE[contentType];
+  const cta = CTA_BY_TYPE[contentType];
 
   useIsoLayoutEffect(() => {
     // Sem isto, acesso direto/F5 em /meu-processo fica com o #__boot (z-index 99)
@@ -527,16 +592,21 @@ function Processo() {
         ))}
         </div>
 
-        <ProcessSystemSection />
+        <ProcessSystemSection
+          selectedType={selectedType}
+          contentType={contentType}
+          setSelectedType={setSelectedType}
+          setContentType={setContentType}
+        />
 
         <section className="process-results process-content-section" aria-labelledby="process-results-title">
           <div className="container-x process-results__inner">
             <h2 className="process-results__title" id="process-results-title" data-process-reveal>
-              <span>O que você recebe é</span>
-              <span>um site que funciona.</span>
+              <span>{results.title[0]}</span>
+              <span>{results.title[1]}</span>
             </h2>
             <div className="process-results__list">
-              {RESULT_ITEMS.map((item) => (
+              {results.items.map((item) => (
                 <article className="process-results__item" data-process-reveal key={item.number}>
                   <span className="process-number">({item.number})</span>
                   <div>
@@ -555,7 +625,7 @@ function Processo() {
               Um papo <span>reto</span>
             </h2>
             <div className="process-reality__list">
-              {REALITY_ITEMS.map((item) => (
+              {reality.map((item) => (
                 <article className="process-reality__item" data-process-reveal key={item.number}>
                   <span className="process-number">({item.number})</span>
                   <div>
@@ -571,8 +641,8 @@ function Processo() {
         <section className="section case-cta">
           <div className="container-x">
             <div className="case-cta__card" data-process-reveal>
-              <h3 className="case-cta__title">Pronto pra começar?{"\n"}Bora construir o seu.</h3>
-              <p className="case-cta__body">Site ou sistema, o processo é o mesmo. Me conta o que você precisa e a gente parte pra prática.</p>
+              <h3 className="case-cta__title">{cta.title[0]}{"\n"}{cta.title[1]}</h3>
+              <p className="case-cta__body">{cta.body}</p>
               <a className="btn btn--accent case-cta__btn" href="https://wa.me/5533984246770" target="_blank" rel="noreferrer">
                 Bora!
               </a>
