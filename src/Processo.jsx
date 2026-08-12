@@ -9,49 +9,36 @@ const PROCESS_HERO_IMAGE = "";
 
 const SYSTEM_ITEMS = [
   {
-    title: "Planejamos cuidadosamente o seu projeto antes de começar a construção.",
-    body: "Primeiro passo: entender seu negócio por dentro e por fora — o que você vende, quem compra e o que leva essa pessoa a escolher você. Antes de qualquer design, você recebe a estrutura completa do site, o propósito e o papel de cada página.",
+    title: "Seu site começa no papel.",
+    body: "Primeiro passo: entender seu negócio por dentro e por fora — o que você vende, quem é seu cliente e o que leva essas pessoas a escolherem você. Antes de qualquer desenho, você recebe a estrutura completa, o propósito e o papel de cada página.",
   },
   {
-    title: "A mensagem é definida antes do início do projeto.",
-    body: "O Figma permanece fechado até a estratégia estar definida. Primeiro organizamos seu posicionamento, a hierarquia do conteúdo e o caminho de quem navega. Assim, cada elemento resolve um problema real do cliente — não fica ali só pra parecer bonito.",
-  },
-  {
-    title: "Um site que parece custar o que você cobra.",
-    body: "Design que reflete sua experiência e o valor do seu trabalho. Limpo, confiante e sem ruído visual, para o cliente perceber competência sem precisar adivinhar.",
-  },
-  {
-    title: "Sites profissionais que você pode manter atualizados facilmente.",
-    body: "Entrego uma estrutura rápida, organizada e preparada para busca, com um painel que permite atualizar serviços, cases e conteúdos quando precisar. Sem depender de mim para cada pequena mudança.",
+    title: "Um site que reflete a sua marca.",
+    body: "O design certo muda de negócio pra negócio — não existe uma fórmula pronta, como muitos prometem. Por isso escolho cada peça com cuidado, pra ela transparecer a sua marca antes de qualquer texto no site.",
   },
   {
     title: "Feedback sem drama.",
     body: "Você revisa o trabalho por etapas, não tudo de uma vez. Decisões menores ao longo do processo significam menos surpresa, menos retrabalho e uma construção mais tranquila.",
   },
   {
-    title: "Lançamento e o que vem depois.",
-    body: "Eu não desapareço quando o site entra no ar. Você recebe 30 dias de suporte para correções, ajustes de desempenho e orientações para atualizar o conteúdo com confiança.",
+    title: "Suporte pós-entrega.",
+    body: "Eu não desapareço depois da entrega. Você recebe 20 dias de suporte para correções pequenas, ajustes de desempenho e as orientações no que precisar.",
   },
 ];
 
 const RESULT_ITEMS = [
   {
     number: "01",
-    title: "Um site que fecha a distância entre o que você entrega e o que o cliente percebe.",
-    body: "Muito negócio bom parece comum na internet porque o site não mostra a qualidade do trabalho que existe por trás. O meu trabalho é aproximar essas duas coisas.",
-  },
-  {
-    number: "02",
     title: "Sem precisar explicar tudo do zero.",
     body: "A conversa não começa com uma apresentação longa sobre o que você faz e por que seu trabalho é diferente. O site organiza essa história e mostra seu valor antes do primeiro contato.",
   },
   {
-    number: "03",
+    number: "02",
     title: "Confiança antes da primeira conversa.",
     body: "Quem chega encontra mais motivos para confiar em você antes de mandar uma mensagem. Sua experiência deixa de ser só uma afirmação e passa a ser percebida em cada detalhe.",
   },
   {
-    number: "04",
+    number: "03",
     title: "Interesse que vira uma decisão mais segura.",
     body: "O site ajuda a filtrar quem não combina com o seu trabalho e dá segurança para o cliente certo avançar. O resultado são conversas mais curtas, claras e alinhadas.",
   },
@@ -60,8 +47,8 @@ const RESULT_ITEMS = [
 const REALITY_ITEMS = [
   {
     number: "01",
-    title: "Sem conta mágica de investir pouco e faturar uma fortuna.",
-    body: "Eu não vendo promessa de enriquecimento rápido. O que eu garanto é um site capaz de apresentar seu trabalho com clareza, atrair o cliente certo e construir confiança antes da conversa. O resultado também depende da força da sua oferta e de como as pessoas chegam até você.",
+    title: "Sem promessa milagrosa.",
+    body: "O que eu garanto é um site capaz de apresentar seu trabalho com clareza, atrair o cliente certo e construir confiança antes de iniciar uma conversa. O resultado também depende da força da sua oferta e de como as pessoas chegam até você.",
   },
   {
     number: "02",
@@ -78,15 +65,15 @@ const REALITY_ITEMS = [
 const STATEMENTS = [
   {
     desktop: [
-      { text: "Antes de construir qualquer coisa," },
-      { text: "eu entendo o que o seu" },
-      { accent: "negócio precisa." },
+      { text: "Antes de construir qualquer" },
+      { text: "coisa, eu entendo o que o" },
+      { accent: "seu negócio precisa." },
     ],
     mobile: [
       { text: "Antes de construir" },
       { text: "qualquer coisa," },
-      { text: "eu entendo o que o seu" },
-      { accent: "negócio precisa." },
+      { text: "eu entendo o que o" },
+      { accent: "seu negócio precisa." },
     ],
   },
 ];
@@ -563,18 +550,10 @@ function Processo() {
         </section>
 
         <section className="process-reality process-content-section" aria-labelledby="process-reality-title">
-          <div className="container-x process-reality__layout">
-            <div className="process-reality__left" data-process-reveal>
-              <h2 className="process-reality__title" id="process-reality-title">
-                Papo
-                <span>reto</span>
-              </h2>
-              <div className="process-reality__note">
-                <p>O site não cria um bom negócio.</p>
-                <strong>Ele deixa o valor mais fácil de enxergar.</strong>
-                <span aria-hidden="true">↘</span>
-              </div>
-            </div>
+          <div className="container-x process-reality__inner">
+            <h2 className="process-reality__title" id="process-reality-title" data-process-reveal>
+              Um papo <span>reto</span>
+            </h2>
             <div className="process-reality__list">
               {REALITY_ITEMS.map((item) => (
                 <article className="process-reality__item" data-process-reveal key={item.number}>

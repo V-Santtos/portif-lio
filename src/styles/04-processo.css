@@ -258,8 +258,7 @@
   padding: 8rem 0 16rem;
 }
 
-.process-system__layout,
-.process-reality__layout {
+.process-system__layout {
   display: grid;
   grid-template-columns: repeat(12, minmax(0, 1fr));
   gap: 1rem;
@@ -383,7 +382,7 @@
 }
 
 .process-results {
-  padding: 8rem 0 16rem;
+  padding: 8rem 0 9rem;
 }
 
 .process-results__inner {
@@ -414,12 +413,15 @@
   text-transform: none;
 }
 
+/* Tres cards numa linha so. Com 3 itens num grid de 2 colunas sobrava um orfao
+   na segunda linha; alem de fechar a linha, a mudanca de ritmo (a secao Metodo
+   logo acima e 2 colunas) marca a troca de secao. */
 .process-results__list {
-  margin-top: 6rem;
+  margin-top: 5rem;
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 26rem));
-  justify-content: space-around;
-  gap: 5rem 7rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  justify-content: space-between;
+  gap: 5rem 4rem;
 }
 
 .process-results__item,
@@ -440,75 +442,41 @@
 }
 
 .process-reality {
-  padding: 8rem 0 16rem;
+  padding: 8rem 0 9rem;
 }
 
-.process-reality__left {
-  grid-column: 1 / 5;
-  min-height: 64rem;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+.process-reality__inner {
+  container-type: inline-size;
 }
 
+/* Mesmo molde da .process-results: titulo centralizado + cards em 3 colunas.
+   As duas sao o par promessa/limite e por isso compartilham a linguagem; a
+   .process-system e a unica com titulo a esquerda, porque fala de processo. */
 .process-reality__title {
-  position: relative;
   margin: 0;
+  text-align: center;
   font-family: var(--font-display);
-  font-size: clamp(5rem, 7cqi, 7.25rem);
+  font-size: clamp(5rem, 7.5cqi, 7.5rem);
   font-weight: 400;
-  line-height: 0.82;
+  line-height: 0.9;
   letter-spacing: 0;
   text-transform: uppercase;
 }
 
+/* Inline, e nao block como no Results: aqui "Um papo reto" fica numa linha so. */
 .process-reality__title span {
-  display: block;
-  margin: -0.1em 0 0 0.72em;
   color: var(--color-accent);
   font-family: "Birthstone", cursive;
-  font-size: 0.95em;
-  line-height: 0.72;
+  font-size: 1.1em;
   text-transform: none;
 }
 
-.process-reality__note {
-  position: relative;
-  max-width: 20rem;
-  margin-left: 2rem;
-  padding-bottom: 4.5rem;
-  font-family: "Birthstone", cursive;
-  font-size: 2rem;
-  line-height: 1.05;
-}
-
-.process-reality__note p,
-.process-reality__note strong {
-  display: block;
-  margin: 0;
-  font-weight: 400;
-}
-
-.process-reality__note strong {
-  margin-top: 0.3rem;
-  color: var(--color-accent);
-}
-
-.process-reality__note > span {
-  position: absolute;
-  right: 1rem;
-  bottom: 0;
-  font-family: var(--font-body);
-  font-size: 3.5rem;
-  font-weight: 400;
-  transform: rotate(8deg);
-}
-
 .process-reality__list {
-  grid-column: 7 / -1;
-  display: flex;
-  flex-direction: column;
-  gap: 4rem;
+  margin-top: 5rem;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  justify-content: space-between;
+  gap: 5rem 4rem;
 }
 
 .process-reality__item {
@@ -539,14 +507,21 @@
     padding-right: 0.75rem;
   }
 
-  .process-system__header,
-  .process-reality__left {
+  .process-system__header {
     grid-column: 1 / 6;
   }
 
-  .process-system__items,
-  .process-reality__list {
+  .process-system__items {
     grid-column: 6 / -1;
+  }
+
+  /* No tablet, 3 colunas deixariam cada card com ~200px e quebrariam os titulos
+     display. Empilha numa coluna so, com medida de leitura limitada. */
+  .process-results__list,
+  .process-reality__list {
+    grid-template-columns: minmax(0, 34rem);
+    justify-content: center;
+    gap: 4rem;
   }
 }
 
@@ -621,16 +596,13 @@
     margin-top: 0;
   }
 
-  .process-system__layout,
-  .process-reality__layout {
+  .process-system__layout {
     grid-template-columns: 1fr;
     gap: 0;
   }
 
   .process-system__header,
-  .process-system__items,
-  .process-reality__left,
-  .process-reality__list {
+  .process-system__items {
     grid-column: 1;
   }
 
@@ -643,9 +615,14 @@
     margin-top: 2.5rem;
   }
 
-  .process-system__title,
-  .process-reality__title {
+  .process-system__title {
     font-size: clamp(4.5rem, 21cqi, 6rem);
+  }
+
+  /* Acompanha a .process-results, que agora e o par visual desta secao. */
+  .process-reality__title {
+    font-size: clamp(4rem, 18cqi, 5.5rem);
+    line-height: 0.9;
   }
 
   .process-system__items {
@@ -689,18 +666,10 @@
     gap: 1rem;
   }
 
-  .process-reality__left {
-    min-height: 0;
-    margin-bottom: 5rem;
-  }
-
-  .process-reality__note {
-    margin: 4.5rem 0 0;
-    max-width: 18rem;
-  }
-
   .process-reality__list {
-    gap: 3.5rem;
+    margin-top: 5rem;
+    grid-template-columns: 1fr;
+    gap: 4.5rem;
   }
 
   .nav-overlay__link {
