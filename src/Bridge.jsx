@@ -212,6 +212,21 @@ function Bridge() {
         .to(secondLetters, { yPercent: -50, duration: 0.9, stagger: 0.028 });
     };
 
+    // Salto programático que pousa DEPOIS da Escada (link CONTATO). Sem isso o
+    // checkTrigger dispararia no frame seguinte ao salto — a Escada está fora
+    // da tela, mas a geometria diz que ela já passou —, travaria o scroll por
+    // ~3,3s de animação que ninguém está vendo e pousaria no topo da Automation,
+    // roubando o destino. Aqui ela só se dá por tocada e deixa a frase no
+    // estado FINAL: quem rolar de volta vê o mesmo que quem assistiu.
+    const skipTrigger = () => {
+      if (hasPlayed || locked) return;
+      hasPlayed = true;
+      window.removeEventListener("scroll", checkTrigger);
+      gsap.ticker.remove(checkTrigger);
+      gsap.set([...firstLetters, ...secondLetters], { yPercent: -50 });
+    };
+    window.addEventListener("bridge:skip", skipTrigger);
+
     window.addEventListener("scroll", checkTrigger, { passive: true });
     // O smoother move o conteúdo por transform DEPOIS que os eventos de scroll
     // já pararam: o evento silencia mas a frase continua subindo. Sem o ticker
@@ -224,6 +239,7 @@ function Bridge() {
 
     return () => {
       window.removeEventListener("scroll", checkTrigger);
+      window.removeEventListener("bridge:skip", skipTrigger);
       gsap.ticker.remove(checkTrigger);
       if (tl) { tl.kill(); tl = null; }
       unlockScroll();

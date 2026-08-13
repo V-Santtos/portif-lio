@@ -1,22 +1,15 @@
 import { useRef } from "react";
-import { gsap, prefersReducedMotion, scrollPageTo, useIsoLayoutEffect, fadeJump } from "./lib.jsx";
+import { gsap, prefersReducedMotion, useIsoLayoutEffect, fadeJump, goToContactCta } from "./lib.jsx";
 import { usePageTransition } from "./PageTransition.jsx";
 
 function Hero({ ready }) {
   const { transitionTo } = usePageTransition();
 
-  // Links da navbar como âncoras de seção (Projetos continua sendo rota).
-  const scrollToId = (id) => {
-    const el = document.getElementById(id);
-    if (el) scrollPageTo(el);
-  };
-  // Contato: salto até o final suavizado por um fade (não atravessa o scrub do
-  // carrossel, que dá impressão de travamento) e sinaliza o destino no WhatsApp.
+  // Contato: salto até os cards da Automation suavizado por um fade (não
+  // atravessa o scrub do carrossel, que dá impressão de travamento) e sinaliza
+  // o destino piscando o botão do WhatsApp.
   const goToContact = () => {
-    fadeJump(() => {
-      document.getElementById("contato")?.scrollIntoView();
-      window.dispatchEvent(new CustomEvent("contact:highlight"));
-    });
+    fadeJump(() => goToContactCta());
   };
 
   const sectionRef = useRef(null);
@@ -73,7 +66,6 @@ function Hero({ ready }) {
           <div className="hero__nav-links">
             <button onClick={() => transitionTo("/projetos")} className="hero__nav-link-btn">Projetos</button>
             <button onClick={() => transitionTo("/meu-processo")} className="hero__nav-link-btn">Meu processo</button>
-            <button onClick={() => scrollToId("auto")} className="hero__nav-link-btn">Sistemas</button>
             <button onClick={goToContact} className="hero__nav-link-btn">Contato</button>
           </div>
           <button type="button" onClick={() => transitionTo("/comecar")} className="hero__talk-btn" aria-label="Começar">

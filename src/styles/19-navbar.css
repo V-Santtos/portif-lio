@@ -141,6 +141,11 @@
   display: block;
   height: 1.15em;
   line-height: 1.15;
+  /* Clipa cada camada na PRÓPRIA caixa. Sem isso, glifo com acento (o Í de
+     INÍCIO) tem tinta que estoura acima de 1.15em: a cópia creme de baixo
+     vazava esse pedaço pra dentro da janela do .nav-roll__char e aparecia
+     como um risco branco sob a palavra, parado, sem hover. */
+  overflow: hidden;
 }
 .nav-roll__top {
   color: var(--color-foreground);

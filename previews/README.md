@@ -1,19 +1,15 @@
-﻿# Previews
+# Previews legados
 
-Pasta isolada para montar os previews HTML/CSS que depois podem substituir os PNGs do carrossel.
+> Esta pasta contém protótipos isolados antigos. O sistema oficial de cases reais do carrossel vive em `public/previews/<slug>/`. Antes de trabalhar nele, ler [`../PREVIEW-CAPSULES.md`](../PREVIEW-CAPSULES.md) e [`../../Regras/09-carrossel-hero-capsules.md`](../../Regras/09-carrossel-hero-capsules.md).
 
-Cada preview deve ficar em sua propria subpasta, por exemplo:
+Não usar esta pasta como arquitetura para um novo case real e não religar estes protótipos diretamente ao portfolio principal.
 
-- preview-01/
-- preview-02/
-- preview-03/
-- preview-04/
+## Protótipos históricos
 
-Nada aqui esta linkado ao portfolio principal ainda.
+- `preview-01/` — Hero EcoScape antigo.
+- `preview-02/` — Hero Nexous antigo.
+- `preview-03/` — Hero Roofora antigo.
+- `preview-04/` — Hero Dinevo antigo.
+- `preview-05/` — material isolado adicional.
 
-## Previews criados
-
-- `preview-01/` - Hero EcoScape, em portugues, aprovado visualmente para teste isolado.
-- `preview-02/` - Hero Nexous, em portugues, gerado para teste isolado.
-- `preview-03/` - Hero Roofora, em portugues, gerado para teste isolado.
-- `preview-04/` - Hero Dinevo, em portugues, gerado para teste isolado.
+O EcoScape oficial e validado está em `public/previews/ecoscape/`.

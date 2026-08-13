@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1440, initial-scale=1" />
+    <meta name="color-scheme" content="dark" />
+    <title>Preview do hero Nexous</title>
+    <link rel="preload" href="./assets/hero-bg.jpg" as="image" type="image/jpeg" />
+    <link
+      rel="preload"
+      href="./assets/inter-display-500.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      href="./assets/playfair-display-400.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link rel="stylesheet" href="./capsule.css" />
+  </head>
+  <body>
+    <main class="capsule" aria-label="Preview do hero do site Nexous">
+      <div class="capsule__media" aria-hidden="true">
+        <img class="capsule__background" src="./assets/hero-bg.jpg" alt="" />
+      </div>
+
+      <header class="capsule__header">
+        <nav class="capsule__nav" aria-label="Navegação do preview">
+          <div class="capsule__nav-group">
+            <button class="nav-link" type="button">Início</button>
+            <button class="nav-link" type="button">Sobre</button>
+            <button class="nav-link" type="button">Serviços</button>
+          </div>
+
+          <button class="capsule__brand" type="button" aria-label="Nexous">
+            NEXOUS<span>™</span>
+          </button>
+
+          <div class="capsule__nav-group capsule__nav-group--right">
+            <button class="nav-link" type="button">Projetos</button>
+
+            <div class="nav-pages">
+              <button
+                class="nav-link nav-pages__trigger"
+                type="button"
+                aria-haspopup="menu"
+                aria-expanded="false"
+              >
+                <span>Todas as páginas</span>
+                <svg viewBox="0 0 12 12" aria-hidden="true">
+                  <path d="M2 4.25 6 8l4-3.75" />
+                </svg>
+              </button>
+
+              <div class="nav-pages__menu" role="menu" aria-label="Todas as páginas">
+                <button type="button" role="menuitem">Início</button>
+                <button type="button" role="menuitem">Sobre</button>
+                <button type="button" role="menuitem">Serviços</button>
+                <button type="button" role="menuitem">Projetos</button>
+                <button type="button" role="menuitem">Blogs</button>
+                <button type="button" role="menuitem">Preços</button>
+                <button type="button" role="menuitem">Contato</button>
+                <button type="button" role="menuitem">Privacidade</button>
+                <button type="button" role="menuitem">404</button>
+                <button type="button" role="menuitem">Detalhes do serviço</button>
+                <button type="button" role="menuitem">Detalhes do projeto</button>
+                <button type="button" role="menuitem">Detalhes do blog</button>
+              </div>
+            </div>
+
+            <button class="capsule-action capsule__contact" type="button">
+              <span class="capsule-action__label">
+                <span class="capsule-action__label-track">
+                  <span>Contato</span><span aria-hidden="true">Contato</span>
+                </span>
+              </span>
+              <span class="capsule-action__icon" aria-hidden="true">
+                <span class="capsule-action__icon-track">
+                  <svg viewBox="0 0 32 32"><path d="M11 16h10m-4-4 4 4-4 4" /></svg>
+                  <svg viewBox="0 0 32 32"><path d="M11 16h10m-4-4 4 4-4 4" /></svg>
+                </span>
+              </span>
+            </button>
+          </div>
+        </nav>
+      </header>
+
+      <section class="capsule__content">
+        <p class="capsule__badge">Agência criativa digital</p>
+
+        <h1 class="capsule__title" aria-label="Soluções inovadoras para elevar sua marca">
+          <span class="capsule__line capsule__line--top">
+            <img src="./assets/title-innovative-left.jpg" alt="" />
+            <span class="title-copy">SOLUÇÕES</span>
+            <img src="./assets/title-top-right.jpg" alt="" />
+          </span>
+          <span class="capsule__line capsule__line--serif">
+            <span class="title-copy">INOVADORAS PARA</span>
+          </span>
+          <span class="capsule__line">
+            <span class="title-copy">ELEVAR SUA</span>
+          </span>
+          <span class="capsule__line capsule__line--bottom">
+            <img src="./assets/title-brand-left.jpg" alt="" />
+            <span class="title-copy">MARCA</span>
+            <img src="./assets/title-brand-right.jpg" alt="" />
+          </span>
+        </h1>
+
+        <p class="capsule__copy">
+          Da criação ao desempenho, desenvolvemos estratégias que geram crescimento<br />
+          mensurável para marcas ambiciosas.
+        </p>
+
+        <button class="capsule-action capsule__cta" type="button">
+          <span class="capsule-action__label">
+            <span class="capsule-action__label-track">
+              <span>Agendar conversa</span><span aria-hidden="true">Agendar conversa</span>
+            </span>
+          </span>
+          <span class="capsule-action__icon" aria-hidden="true">
+            <span class="capsule-action__icon-track">
+              <svg viewBox="0 0 32 32"><path d="M11 16h10m-4-4 4 4-4 4" /></svg>
+              <svg viewBox="0 0 32 32"><path d="M11 16h10m-4-4 4 4-4 4" /></svg>
+            </span>
+          </span>
+        </button>
+      </section>
+    </main>
+
+    <script src="../_shared/gsap.min.js"></script>
+    <script src="./capsule.js"></script>
+  </body>
+</html>

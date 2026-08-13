@@ -105,6 +105,26 @@ export function scrollPageTo(target, { smooth = true } = {}) {
   el?.scrollIntoView({ behavior });
 }
 
+// Destino do link CONTATO: o card SUA IDEIA da Automation, onde mora o botão
+// do WhatsApp — não a seção #contato do rodapé. Medido AO VIVO (regra da
+// região abaixo do carrossel: nada de posição capturada antes).
+// A âncora é o card SUA IDEIA, não a fileira `.auto__cards`: no desktop os
+// três dividem o mesmo topo e o enquadramento é o mesmo (cards no alto,
+// "Veja de perto" fechando embaixo), mas no mobile eles empilham e mirar na
+// fileira jogaria o botão do WhatsApp 60px ABAIXO da tela — justo o que o
+// link existe pra mostrar. Os 6% são a folga do topo.
+export function goToContactCta() {
+  const card = document.querySelector(".auto__card--highlight") || document.querySelector(".auto__cards");
+  if (!card) return false;
+  const target = card.getBoundingClientRect().top + currentScrollY() - window.innerHeight * 0.06;
+  // A Escada fica no caminho: o check ao vivo dela dispararia no frame
+  // seguinte ao salto, travaria o scroll por ~3,3s e roubaria o pouso.
+  window.dispatchEvent(new CustomEvent("bridge:skip"));
+  scrollPageTo(Math.max(0, target), { smooth: false });
+  window.dispatchEvent(new CustomEvent("contact:highlight"));
+  return true;
+}
+
 // Salto de página suavizado: um fade rápido cobre a tela, o jump acontece
 // instantâneo por trás (sem atravessar o scrub do carrossel) e revela no
 // destino. Peça simples — só opacity num div fixo, sem scroll-lock.

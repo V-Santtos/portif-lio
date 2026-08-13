@@ -1,11 +1,22 @@
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { Flip, ScrollTrigger, currentScrollY, gsap, prefersReducedMotion, scrollPageTo, useIsoLayoutEffect, useTitleReveal } from "./lib.jsx";
+import CasePreviewFrame from "./CasePreviewFrame.jsx";
 import LandingPreview from "./LandingPreview.jsx";
 
 const LP_ITEMS = [
-  { preview: "eco", tag: "Jardinagem", title: "EcoScape" },
-  { preview: "nexous", tag: "Agência", title: "Nexous" },
+  {
+    preview: "eco",
+    capsuleSrc: "/previews/ecoscape/index.html",
+    tag: "Jardinagem",
+    title: "EcoScape",
+  },
+  {
+    preview: "nexous",
+    capsuleSrc: "/previews/nexous/index.html",
+    tag: "Agência",
+    title: "Nexous",
+  },
   { preview: "roofora", tag: "Serviços", title: "Roofora" },
   { preview: "dinevo", tag: "Restaurante", title: "Dinevo" },
   { preview: "minta", tag: "Fintech", title: "Minta" },
@@ -52,12 +63,6 @@ function StripCard({ item }) {
     return (
       <article className="lp__strip-card lp__strip-card--preview" onClick={onTap}>
         <LandingPreview variant={item.preview} />
-        <div className="lp__preview-overlay">
-          <div>
-            <span>{item.tag}</span>
-            <strong>{item.title}</strong>
-          </div>
-        </div>
       </article>
     );
   }
@@ -71,18 +76,17 @@ function StripCard({ item }) {
 
 function PreviewCard({ item }) {
   return (
-    <article className="lp__preview-card">
-      {item.preview ? (
+    <article className={`lp__preview-card${item.capsuleSrc ? " lp__preview-card--interactive" : ""}`}>
+      {item.capsuleSrc ? (
+        <CasePreviewFrame
+          src={item.capsuleSrc}
+          title={`Preview interativo do hero ${item.title}`}
+        />
+      ) : item.preview ? (
         <LandingPreview variant={item.preview} />
       ) : (
         <img src={item.img} className="lp__thumb-img" alt={item.title} />
       )}
-      <div className="lp__preview-overlay">
-        <div>
-          <span>{item.tag}</span>
-          <strong>{item.title}</strong>
-        </div>
-      </div>
     </article>
   );
 }

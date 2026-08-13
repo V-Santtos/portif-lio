@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { gsap, fadeJump, currentScrollY } from "./lib.jsx";
+import { gsap, fadeJump, currentScrollY, scrollPageTo, goToContactCta } from "./lib.jsx";
 import { usePageTransition } from "./PageTransition.jsx";
 import { useLocation } from "react-router-dom";
 
@@ -192,18 +192,18 @@ function Navbar() {
     setMenuOpen(false);
     setTimeout(() => {
       if (path === "#contato") {
-        const localContact = document.getElementById("contato");
-        if (localContact) {
-          fadeJump(() => {
-            localContact.scrollIntoView();
-            window.dispatchEvent(new CustomEvent("contact:highlight"));
-          });
+        // scrollIntoView é proibido aqui: dentro do #smooth-wrapper (fixed +
+        // overflow hidden) ele rola o WRAPPER por dentro, deixa o scroll nativo
+        // em 0 e o usuário sem conseguir voltar. scrollPageTo passa pelo
+        // smoother. Mesma regra vale pro #auto logo abaixo.
+        if (document.querySelector(".auto__card--highlight")) {
+          fadeJump(() => goToContactCta());
         } else {
           window.location.href = "/#contato";
         }
       } else if (path === "#auto") {
         if (location.pathname === "/") {
-          fadeJump(() => document.getElementById("auto")?.scrollIntoView());
+          fadeJump(() => scrollPageTo("#auto", { smooth: false }));
         } else {
           window.location.href = "/#auto";
         }
@@ -264,7 +264,6 @@ function Navbar() {
           <button onClick={() => handleLink("/")} className="nav-overlay__link">INÍCIO</button>
           <button onClick={() => handleLink("/projetos")} className="nav-overlay__link">PROJETOS</button>
           <button onClick={() => handleLink("/meu-processo")} className="nav-overlay__link">MEU PROCESSO</button>
-          <button onClick={() => handleLink("#auto")} className="nav-overlay__link">SISTEMAS</button>
           <button onClick={() => handleLink("#contato")} className="nav-overlay__link">CONTATO</button>
           {/* Mobile: COMEÇAR entra na lista (a barra esconde o botão) */}
           <button onClick={() => handleLink("/comecar")} className="nav-overlay__link nav-overlay__link--comecar">COMEÇAR</button>

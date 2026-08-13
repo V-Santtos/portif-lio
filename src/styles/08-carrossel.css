@@ -283,6 +283,7 @@
   position: absolute;
   inset: 0;
   z-index: 3;
+  pointer-events: none;
   will-change: transform;
   transform: translate(0) rotate(0.001deg);
 }
@@ -301,7 +302,7 @@
   justify-content: center;
   align-items: center;
   overflow: hidden;
-  border: 1px solid rgba(0,0,0,0.16);
+  border: 0;
   border-radius: var(--lp-card-radius);
   background: var(--color-dark);
   box-shadow: 0 12px 48px rgba(0,0,0,0.12);
@@ -345,7 +346,7 @@
   display: flex;
   align-items: center;
   overflow: hidden;
-  pointer-events: none;
+  pointer-events: auto;
   z-index: 2;
   will-change: clip-path;
 }
@@ -368,39 +369,11 @@
   border-radius: var(--lp-card-radius);
   background: var(--color-dark);
   box-shadow: 0 12px 48px rgba(0,0,0,0.12);
+  pointer-events: none;
 }
 
-.lp__preview-overlay {
-  position: absolute;
-  inset: auto 0 0 0;
-  z-index: 2;
-  padding: 1.5rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  gap: 1rem;
-  color: #fff;
-  background: linear-gradient(to top, rgba(0,0,0,0.62), transparent);
-  opacity: 0;
-  transition: opacity 240ms ease;
-}
-
-.lp__preview-card:hover .lp__preview-overlay {
-  opacity: 1;
-}
-
-.lp__preview-overlay span {
-  font-size: 11px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-}
-
-.lp__preview-overlay strong {
-  font-family: var(--font-display);
-  font-size: 32px;
-  line-height: 0.95;
-  text-transform: uppercase;
-  font-weight: 400;
+.lp__preview-card--interactive {
+  pointer-events: auto;
 }
 
 /* ── Carrossel mobile — cards maiores, expansão com mais contraste ── */
@@ -416,14 +389,6 @@
   .lp__preview-card { width: 88vw; }
   .lp__carousel-track { gap: 1.25rem; }
   .lp__thumb-pill { padding: 0.4rem 0.75rem; font-size: 10px; }
-  /* overlay sempre visível no touch — tipografia menor pra não cobrir o preview */
-  .lp__preview-overlay { padding: 0.9rem 1rem; }
-  .lp__preview-overlay span { font-size: 9px; }
-  .lp__preview-overlay strong { font-size: 18px; }
-}
-/* Touch não tem hover: tag+título dos previews sempre visíveis */
-@media (hover: none) {
-  .lp__preview-overlay { opacity: 1; }
 }
 
 /* ── Faixas satélites do carrossel — placeholders (só mobile) ──── */

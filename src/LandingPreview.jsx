@@ -1,9 +1,4 @@
 import { useLayoutEffect, useRef, useState } from "react";
-import ecoAvatar01 from "../previews/preview-01/assets/avatar-01.png";
-import ecoAvatar02 from "../previews/preview-01/assets/avatar-02.png";
-import ecoGarden from "./preview-assets/eco-garden.jpg";
-import ecoWorker from "../previews/preview-01/assets/hero-worker.png";
-
 import nexousBg from "./preview-assets/nexous-bg.jpg";
 import nexousBrandLeft from "./preview-assets/nexous-brand-left.jpg";
 import nexousBrandRight from "./preview-assets/nexous-brand-right.jpg";
@@ -82,62 +77,13 @@ function PreviewLink({ className, children, label }) {
 function EcoPreview() {
   return (
     <PreviewShell className="lp-preview--eco" label="Hero preview inspirado em EcoScape">
-      <section className="hero-preview">
-        <nav className="hero-preview__nav" aria-label="Navegacao do preview">
-          <PreviewLink className="hero-preview__brand">
-            <span className="hero-preview__brand-mark" />
-            EcoScape
-          </PreviewLink>
-
-          <div className="hero-preview__links">
-            <span>Inicio</span>
-            <span>Sobre</span>
-            <span>Servicos</span>
-            <span>Blog</span>
-            <span>Paginas</span>
-          </div>
-
-          <div className="hero-preview__nav-actions">
-            <PreviewLink className="hero-preview__nav-cta">Comecar</PreviewLink>
-            <PreviewLink className="hero-preview__icon-btn" label="Abrir contato" />
-          </div>
-        </nav>
-
-        <div className="hero-preview__image">
-          <img src={ecoGarden} alt="" loading="lazy" />
-        </div>
-
-        <div className="hero-preview__content">
-          <p className="hero-preview__eyebrow">// Manutencao de gramado</p>
-          <h1>
-            <span>Jardins saudaveis</span>
-            <span>em <em>todas</em> as</span>
-            <span>estacoes</span>
-          </h1>
-          <p className="hero-preview__copy">
-            Cuidado especializado e manutencao sob medida para manter seu jardim verde,
-            vivo e bonito em qualquer clima.
-          </p>
-        </div>
-
-        <div className="hero-preview__actions">
-          <PreviewLink>Agendar agora</PreviewLink>
-          <PreviewLink className="hero-preview__icon-btn" label="Agendar" />
-        </div>
-
-        <aside className="hero-preview__stat" aria-label="Indicador de prova social">
-          <div>
-            <strong>7M+</strong>
-            <span>clientes ativos</span>
-            <div className="hero-preview__avatars" aria-hidden="true">
-              <img src={ecoAvatar01} alt="" loading="lazy" />
-              <img src={ecoAvatar02} alt="" loading="lazy" />
-              <img src={ecoAvatar01} alt="" loading="lazy" />
-            </div>
-          </div>
-          <img className="hero-preview__person" src={ecoWorker} alt="" loading="lazy" />
-        </aside>
-      </section>
+      <img
+        className="eco-static-thumbnail"
+        src="/previews/ecoscape/assets/thumbnail-exact.jpg"
+        alt=""
+        loading="eager"
+        draggable="false"
+      />
     </PreviewShell>
   );
 }

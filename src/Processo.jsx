@@ -14,15 +14,15 @@ const SITES_ITEMS = [
   },
   {
     title: "Um site que reflete a sua marca.",
-    body: "O design certo muda de negócio pra negócio — não existe uma fórmula pronta, como muitos prometem. Por isso escolho cada peça com cuidado, pra ela transparecer a sua marca antes de qualquer texto no site.",
+    body: "O design certo muda de negócio pra negócio — não existe uma fórmula pronta, como muitos prometem. Por isso escolho cada peça com cuidado, para ela transparecer a sua marca antes de qualquer texto no site.",
   },
   {
     title: "Feedback sem drama.",
-    body: "Você revisa o trabalho por etapas, não tudo de uma vez. Decisões menores ao longo do processo significam menos surpresa, menos retrabalho e uma construção mais tranquila.",
+    body: "Você revisa o trabalho por etapas, não tudo de uma vez. Decisões menores ao longo do processo significam menos surpresa e menos retrabalho. Para assim facilitar uma construção mais tranquila.",
   },
   {
     title: "Suporte pós-entrega.",
-    body: "Eu não desapareço depois da entrega. Você recebe 20 dias de suporte para correções pequenas, ajustes de desempenho e as orientações no que precisar.",
+    body: "Eu não desapareço depois da entrega. Você recebe 10 dias de suporte para correções pequenas, ajustes de desempenho e orientações no que precisar.",
   },
 ];
 
@@ -32,11 +32,11 @@ const SITES_ITEMS = [
 const SISTEMAS_ITEMS = [
   {
     title: "A criação se inicia numa conversa.",
-    body: "Uma ferramenta pode nascer de uma ideia que você deseja ver funcionando ou de um problema já existente que atrapalha seu dia a dia. São caminhos diferentes, e é por isso que eu começo entendendo o que você precisa.",
+    body: "Uma ferramenta pode nascer de uma ideia que você deseja ver funcionando ou de um problema já existente que atrapalha seu dia a dia. São caminhos diferentes, e é por isso que eu começo entendendo o que você precisa e qual é a sua dor.",
   },
   {
     title: "Menos função, mais uso.",
-    body: "Cada peça da ferramenta é montada a partir de uma necessidade real, sem múltiplas funções que talvez nem sejam usadas. Assim você recebe algo completo pro que precisa resolver e simples de usar todo dia.",
+    body: "Cada peça da ferramenta é montada a partir de uma necessidade real, sem múltiplas funções que talvez nem sejam usadas. Assim você recebe algo completo, eficiente e simples de se usar todos os dias.",
   },
   {
     title: "Feedback sem drama.",
@@ -56,7 +56,7 @@ const SITES_RESULT_ITEMS = [
   {
     number: "01",
     title: "Sem precisar explicar tudo do zero.",
-    body: "A conversa não começa com uma apresentação longa sobre o que você faz e por que seu trabalho é diferente. O site organiza essa história e mostra seu valor antes do primeiro contato.",
+    body: "Uma conversa iniciada com seu cliente não começa com uma apresentação longa sobre o que você faz e por que seu trabalho é diferente. O site organiza essa história e mostra seu valor antes do primeiro contato.",
   },
   {
     number: "02",
@@ -78,7 +78,7 @@ const SISTEMAS_RESULT_ITEMS = [
   {
     number: "01",
     title: "Seu processo ganha estrutura.",
-    body: "Se hoje os problemas do seu negócio estão espalhados, com um em cada canto, a ferramenta certa muda isso. Você passa a ter um lugar único e sólido onde consegue gerenciar adequadamente cada parte do seu processo diário.",
+    body: "Se hoje os problemas do seu negócio estão espalhados, com um em cada canto, a ferramenta certa muda isso. Você passa a ter um lugar único e sólido onde consegue gerenciar adequadamente cada parte dos seus processos diários e resolvê-los.",
   },
   {
     number: "02",
@@ -88,7 +88,7 @@ const SISTEMAS_RESULT_ITEMS = [
   {
     number: "03",
     title: "Uma ferramenta exclusiva e escalável.",
-    body: "Você até pode contratar uma ferramenta pronta, mas sabe que ela foi feita pra atender todo mundo, por isso vem cheia de função que você nunca abre, e sem justamente aquela que o seu dia precisa. Com uma sob medida, ela já nasce do jeito que você precisa, e cresce junto quando o negócio pedir mais.",
+    body: "Você até pode contratar uma ferramenta pronta, mas sabe que ela foi feita pra atender todo mundo, por isso vem cheia de função que você nunca abre, e sem justamente aquela que o seu dia precisa. Com uma sob medida, ela já nasce do jeito que você precisa, e cresce junto quando necessitar.",
   },
 ];
 
@@ -121,17 +121,17 @@ const SITES_REALITY_ITEMS = [
   {
     number: "01",
     title: "Sem promessa milagrosa.",
-    body: "O que eu garanto é um site capaz de apresentar seu trabalho com clareza, atrair o cliente certo e construir confiança antes de iniciar uma conversa. O resultado também depende da força da sua oferta e de como as pessoas chegam até você.",
+    body: "O que eu garanto é um site capaz de apresentar seu trabalho com clareza, atrair o cliente certo e construir confiança antes mesmo dele enviar a primeira mensagem. O resultado também depende da força da sua oferta e de como as pessoas chegam até você.",
   },
   {
     number: "02",
-    title: "Seu site não vai encontrar clientes sozinho.",
+    title: "O site não encontra clientes sozinho.",
     body: "Site converte visita em interesse. Ele não sai procurando pessoas enquanto você dorme. O papel dele é aproveitar melhor o tráfego que já vem de indicação, conteúdo, anúncio, relacionamento e prospecção.",
   },
   {
     number: "03",
     title: "Um bom site amplifica um bom negócio.",
-    body: "Site não cria um negócio forte. Ele faz um bom negócio parecer tão bom quanto realmente é: deixa a experiência mais fácil de enxergar, o valor mais simples de entender e os pontos fortes difíceis de ignorar.",
+    body: "Site não cria um negócio forte. Ele faz um bom negócio parecer tão bom quanto realmente é: deixar a experiência mais fácil de enxergar, o valor mais simples de entender e os pontos fortes difíceis de ignorar.",
   },
 ];
 
@@ -577,10 +577,6 @@ function Processo() {
     });
   };
 
-  const goToHomeSection = (id) => {
-    window.location.href = `/#${id}`;
-  };
-
   return (
     <>
       <Seo {...getStaticSeo("processo")} />
@@ -595,7 +591,6 @@ function Processo() {
               <div className="hero__nav-links">
                 <button onClick={() => transitionTo("/projetos")} className="hero__nav-link-btn">Projetos</button>
                 <button onClick={() => scrollPageTo(0)} className="hero__nav-link-btn" aria-current="page">Meu processo</button>
-                <button onClick={() => goToHomeSection("auto")} className="hero__nav-link-btn">Sistemas</button>
                 <button onClick={goToContact} className="hero__nav-link-btn">Contato</button>
               </div>
               <StartButton onClick={() => transitionTo("/comecar")} />

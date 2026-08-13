@@ -11,6 +11,22 @@
   src: url("../../previews/preview-04/assets/fonts/anton-latin.woff2") format("woff2");
 }
 
+@font-face {
+  font-family: "Geist Eco Preview";
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url("/previews/ecoscape/assets/geist.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Playfair Eco Preview";
+  font-style: italic;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url("/previews/ecoscape/assets/playfair-italic.woff2") format("woff2");
+}
+
 .lp-preview {
   position: absolute;
   inset: 0;
@@ -20,6 +36,33 @@
   color: #fff;
   background: #050505;
   pointer-events: none;
+}
+
+/* Hero Capsules: documento real isolado, usado apenas nos cards expandidos. */
+.case-preview-frame {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: #07100c;
+}
+
+.case-preview-frame__document {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1440px;
+  height: 810px;
+  border: 0;
+  background: #07100c;
+  transform-origin: 0 0;
+  will-change: transform;
+}
+
+@media (max-width: 767px), (hover: none) {
+  .case-preview-frame,
+  .case-preview-frame__document {
+    pointer-events: none;
+  }
 }
 
 .lp-preview__canvas {
@@ -53,7 +96,14 @@
   --eco-lime: #d1fc71;
   --eco-white: #fff;
   background: var(--eco-dark);
-  font-family: Inter, system-ui, sans-serif;
+  font-family: "Geist Eco Preview", Inter, system-ui, sans-serif;
+}
+
+.lp-preview .eco-static-thumbnail {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  user-select: none;
 }
 
 .lp-preview .hero-preview,
@@ -102,8 +152,7 @@
 }
 
 .lp-preview .hero-preview__image img {
-  object-position: 52% 50%;
-  filter: saturate(0.94) contrast(1.02);
+  object-position: 50% 51%;
 }
 
 .lp-preview .hero-preview__nav {
@@ -135,6 +184,11 @@
   font-size: clamp(15px, 1.9cqw, 24px);
   font-weight: 800;
   letter-spacing: -0.05em;
+}
+
+.lp-preview .hero-preview__brand-logo {
+  width: clamp(92px, 10.3cqw, 132px);
+  height: auto;
 }
 
 .lp-preview .hero-preview__brand-mark {
@@ -240,18 +294,23 @@
 .lp-preview .hero-preview h1 em {
   display: inline-block;
   margin-right: 0.18em;
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: "Playfair Eco Preview", Georgia, "Times New Roman", serif;
   font-style: italic;
   font-weight: 700;
 }
 
 .lp-preview .hero-preview__copy {
-  width: min(35cqw, 448px);
+  width: auto;
   margin: 2.2cqw 0 0;
   font-size: clamp(12px, 1.25cqw, 16px);
   line-height: 1.28;
   font-weight: 600;
   letter-spacing: -0.045em;
+}
+
+.lp-preview .hero-preview__copy > span {
+  display: block;
+  white-space: nowrap;
 }
 
 .lp-preview .hero-preview__actions {
@@ -1470,4 +1529,3 @@
   /* sem o blur, o vidro da Roofora fica escuro levemente opaco pra manter leitura */
   .lp-preview .roofora-card { background: rgba(16, 20, 24, 0.45); }
 }
-
