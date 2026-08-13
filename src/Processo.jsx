@@ -104,8 +104,19 @@ const RESULTS_BY_TYPE = {
 };
 
 // "Um papo reto" — consciente de tipo desde 2026-08-12. Titulo da secao nao
-// cita "site", entao fica fixo no JSX; so os itens variam por tipo. Lado
-// Sistemas ainda e PLACEHOLDER com a copy de Sites.
+// cita "site", entao fica fixo no JSX; so os itens variam por tipo.
+//
+// 2026-08-13: a secao ficou OCULTA no lado Sistemas (decisao do Victor).
+// Ela nao foi deletada de proposito — pode voltar quando houver material.
+// Motivo do corte: no lado Sites existem tres promessas infladas do mercado
+// pra derrubar (site vende sozinho / traz cliente sozinho / salva negocio
+// fraco), uma por card. Em Sistemas so existe UMA verdade desse tipo — a
+// ferramenta so ajuda se for usada de fato — e as outras candidatas diziam
+// a mesma coisa por outro angulo ("voce ainda tem trabalho"). Uma verdade
+// nao vira grade de tres cards sem virar enchimento.
+//
+// Pra trazer de volta: escrever os itens em SISTEMAS_REALITY_ITEMS. A secao
+// volta a renderizar sozinha — o guard e a existencia de itens.
 const SITES_REALITY_ITEMS = [
   {
     number: "01",
@@ -124,23 +135,38 @@ const SITES_REALITY_ITEMS = [
   },
 ];
 
+// Vazio de proposito: e o que mantem a secao oculta no lado Sistemas.
+// Nao repovoar com a copy de Sites — copia disfarcada entre os dois lados
+// e proibida (Regras/06 §3). Ver o comentario acima.
+const SISTEMAS_REALITY_ITEMS = [];
+
 const REALITY_ITEMS_BY_TYPE = {
   sites: SITES_REALITY_ITEMS,
-  sistemas: SITES_REALITY_ITEMS.map((item) => ({ ...item })), // PLACEHOLDER
+  sistemas: SISTEMAS_REALITY_ITEMS,
 };
 
-// CTA final — consciente de tipo desde 2026-08-12. O texto de hoje ja nasceu
-// neutro ("Site ou sistema, o processo e o mesmo"), entao os dois lados
-// comecam identicos de proposito — nao e placeholder, e uma decisao a
-// revisitar: talvez nao precise mudar nada aqui.
-const SITES_CTA = {
-  title: ["Pronto pra começar?", "Bora construir o seu."],
-  body: "Site ou sistema, o processo é o mesmo. Me conta o que você precisa e a gente parte pra prática.",
-};
+// CTA final — consciente de tipo desde 2026-08-13. O corpo antigo ("Site ou
+// sistema, o processo e o mesmo") contradizia o resto da pagina, que passou
+// dois dias inteiros provando que sao coisas diferentes. Titulo continua
+// igual nos dois lados (nao foi pedido pra mudar); corpo agora e por tipo,
+// texto final ditado pelo Victor — literal, so ortografia corrigida.
+//
+// Titulo cortado pra 1 linha so (2026-08-13, decisao do Victor): "Bora
+// construir o seu." saiu por repetir "bora" com o botao ("BORA!") e o
+// heading do Contact logo abaixo ("BORA CONSTRUIR JUNTOS"). String simples
+// (nao array) porque nao ha mais segunda linha pra unir com "\n" — mesmo
+// padrao do titulo de CTA em Case.jsx, que tambem e string unica.
+const CTA_TITLE = "Pronto pra começar?";
 
 const CTA_BY_TYPE = {
-  sites: SITES_CTA,
-  sistemas: { ...SITES_CTA },
+  sites: {
+    title: CTA_TITLE,
+    body: "Você não precisa ter uma ideia estruturada logo de início na cabeça para começar. Me conta o que seu negócio faz e quem você quer atrair, que o resto a gente desenha junto.",
+  },
+  sistemas: {
+    title: CTA_TITLE,
+    body: "Pode ser uma ideia que você quer ver de pé ou um problema que tira sua paz todos os dias. Me conta qual é o seu caso e o resto a gente desenha junto.",
+  },
 };
 
 const STATEMENTS = [
@@ -602,8 +628,15 @@ function Processo() {
             </div>
 
             <div className="process-hero__meta">
-              <p>Seu site reflete a qualidade do seu trabalho — ou não. Meu processo existe para ajudar o cliente certo a perceber essa diferença.</p>
-              <p aria-hidden="true">(Role para o meu sistema)</p>
+              {/* Texto do Victor (2026-08-13), literal. Substituiu o placeholder
+                  emprestado da referencia (bogdankolomiyets.com), que abria com
+                  "Seu site reflete..." e por isso fechava a pagina no lado Sites
+                  antes mesmo do leitor chegar no seletor. Precisa continuar
+                  neutro: mora ACIMA do toggle, entao nao pode citar "site" nem
+                  "ferramenta". Tambem nao pode falar de "entender antes de
+                  construir" — esse angulo e do statement pinado logo abaixo. */}
+              <p>Antes de confiar um projeto a alguém, você merece saber como essa pessoa trabalha. E é exatamente por isso que esse processo existe.</p>
+              <p aria-hidden="true">(Role para o meu método)</p>
             </div>
           </div>
           <div className="process-hero__wash" aria-hidden="true" />
@@ -641,29 +674,31 @@ function Processo() {
           </div>
         </section>
 
-        <section className="process-reality process-content-section" aria-labelledby="process-reality-title">
-          <div className="container-x process-reality__inner">
-            <h2 className="process-reality__title" id="process-reality-title" data-process-reveal>
-              Um papo <span>reto</span>
-            </h2>
-            <div className="process-reality__list">
-              {reality.map((item) => (
-                <article className="process-reality__item" data-process-reveal key={item.number}>
-                  <span className="process-number">({item.number})</span>
-                  <div>
-                    <h3>{item.title}</h3>
-                    <p>{item.body}</p>
-                  </div>
-                </article>
-              ))}
+        {reality.length > 0 && (
+          <section className="process-reality process-content-section" aria-labelledby="process-reality-title">
+            <div className="container-x process-reality__inner">
+              <h2 className="process-reality__title" id="process-reality-title" data-process-reveal>
+                Um papo <span>reto</span>
+              </h2>
+              <div className="process-reality__list">
+                {reality.map((item) => (
+                  <article className="process-reality__item" data-process-reveal key={item.number}>
+                    <span className="process-number">({item.number})</span>
+                    <div>
+                      <h3>{item.title}</h3>
+                      <p>{item.body}</p>
+                    </div>
+                  </article>
+                ))}
+              </div>
             </div>
-          </div>
-        </section>
+          </section>
+        )}
 
         <section className="section case-cta">
           <div className="container-x">
             <div className="case-cta__card" data-process-reveal>
-              <h3 className="case-cta__title">{cta.title[0]}{"\n"}{cta.title[1]}</h3>
+              <h3 className="case-cta__title">{cta.title}</h3>
               <p className="case-cta__body">{cta.body}</p>
               <a className="btn btn--accent case-cta__btn" href="https://wa.me/5533984246770" target="_blank" rel="noreferrer">
                 Bora!

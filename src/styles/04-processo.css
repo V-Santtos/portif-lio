@@ -489,6 +489,17 @@
   z-index: 5;
 }
 
+/* CTA final com titulo de 1 linha so (2026-08-13, cortamos "Bora construir
+   o seu." por repetir "bora" com o botao e o heading do Contact). O padding
+   vertical de .case-cta__card foi calibrado pra 2 linhas de titulo; com uma
+   so, sobrava vazio demais. Escopado a .process-page de proposito — essa
+   classe e compartilhada com o CTA final dos cases (Case.jsx), que mantem
+   2 linhas e nao deve encolher. */
+.process-page .case-cta__card {
+  padding-top: clamp(3.75rem, 10vw, 8.25rem);
+  padding-bottom: clamp(4.25rem, 10.5vw, 8.75rem);
+}
+
 /* Seis destinos no overlay: preserva o pôster tipográfico sem estourar a altura. */
 .nav-overlay__links {
   container-type: inline-size;
