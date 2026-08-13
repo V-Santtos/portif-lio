@@ -43,7 +43,7 @@ const STATIC = {
   },
   comecar: {
     path: "/comecar",
-    title: "Vamos conversar — Victor Cardoso",
+    title: "Vamos começar — Victor Cardoso",
     description:
       "Conte sua ideia e receba um retorno rápido. Sites, sistemas e automações sob medida para o seu negócio.",
   },

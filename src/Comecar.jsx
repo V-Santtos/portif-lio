@@ -7,10 +7,10 @@ import { getStaticSeo } from "./seo.js";
 
 const TIMELINES = ["Imediato", "Em 1 mês", "Em 2-3 meses", "Ainda não sei"];
 const BUDGETS = [
-  "Menos de R$ 1.000",
-  "R$ 1.000 a R$ 2.500",
-  "R$ 2.500 a R$ 5.000",
-  "Acima de R$ 5.000",
+  "Menos de R$ 500",
+  "R$ 500 a R$ 1.400",
+  "R$ 1.400 a R$ 2.500",
+  "Acima de R$ 2.500",
 ];
 
 // Destino do formulário: webhook do n8n (workflow "portfolio").
@@ -219,13 +219,13 @@ function Comecar() {
           <p className="comecar__kicker">Preencha abaixo que te retorno em breve.</p>
           <h1 className="comecar__title" ref={titleRef}>
             <span className="word"><span>Vamos</span></span>{" "}
-            <span className="word"><span>conversar.</span></span>
+            <span className="word"><span>começar.</span></span>
           </h1>
         </header>
 
         <form className="comecar__form" ref={formRef} onSubmit={handleSubmit}>
           <div className="comecar__field" data-reveal>
-            <label className="comecar__label" htmlFor="cm-nome">Nome <span>*</span></label>
+            <label className="comecar__label" htmlFor="cm-nome">Qual seu nome? <span>*</span></label>
             <input id="cm-nome" name="nome" type="text" className="comecar__input" placeholder="Seu nome" required />
           </div>
 

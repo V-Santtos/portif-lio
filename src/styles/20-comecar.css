@@ -36,6 +36,12 @@
 .comecar__title .word {
   display: block;
   overflow: hidden;
+  /* Cedilha do Ç ("Começar") desce abaixo da linha de base e o line-height
+     0.84 nao deixa folga — sem isso a mascara de entrada corta o rabinho.
+     Padding + margin negativo iguais: da folga na caixa sem empurrar a
+     proxima linha (mesmo truque de .auto__title .word--box). */
+  padding-bottom: 0.14em;
+  margin-bottom: -0.14em;
 }
 .comecar__title .word > span {
   display: inline-block;
