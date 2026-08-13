@@ -62,11 +62,7 @@ function Contact() {
         <div data-reveal>
           <span className="contact__field-label">Redes</span>
           <div className="contact__social">
-            <a href="#" aria-label="LinkedIn">
-              <span>LinkedIn</span>
-              <span className="arrow" aria-hidden="true">↗</span>
-            </a>
-            <a href="#" aria-label="Instagram">
+            <a href="https://www.instagram.com/victorcard.s/" target="_blank" rel="noreferrer" aria-label="Instagram">
               <span>Instagram</span>
               <span className="arrow" aria-hidden="true">↗</span>
             </a>
