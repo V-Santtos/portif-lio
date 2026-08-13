@@ -70,6 +70,28 @@ const SITES_RESULT_ITEMS = [
   },
 ];
 
+// Lado Sistemas de "O que você recebe" — 01, 02 e 03 fechados (2026-08-13).
+// Cada card nomeia uma DOR universal (01 = estrutura, 02 = tempo, 03 =
+// crescimento), nunca um caso concreto: o portfolio recebe lead de qualquer
+// nicho, e citar galpao/loja/WhatsApp fecha a porta pra quem nao e aquilo.
+const SISTEMAS_RESULT_ITEMS = [
+  {
+    number: "01",
+    title: "Seu processo ganha estrutura.",
+    body: "Se hoje os problemas do seu negócio estão espalhados, com um em cada canto, a ferramenta certa muda isso. Você passa a ter um lugar único e sólido onde consegue gerenciar adequadamente cada parte do seu processo diário.",
+  },
+  {
+    number: "02",
+    title: "Seu tempo, de volta\ne a seu favor.",
+    body: "O que consome horas do seu dia raramente é o trabalho em si, mas sim a parte manual em volta dele. Quando a ferramenta correta te auxilia, tudo fica mais claro — e o tempo passa a trabalhar a seu favor.",
+  },
+  {
+    number: "03",
+    title: "Uma ferramenta exclusiva e escalável.",
+    body: "Você até pode contratar uma ferramenta pronta, mas sabe que ela foi feita pra atender todo mundo, por isso vem cheia de função que você nunca abre, e sem justamente aquela que o seu dia precisa. Com uma sob medida, ela já nasce do jeito que você precisa, e cresce junto quando o negócio pedir mais.",
+  },
+];
+
 const RESULTS_BY_TYPE = {
   sites: {
     title: ["O que você recebe é", "um site que funciona."],
@@ -77,7 +99,7 @@ const RESULTS_BY_TYPE = {
   },
   sistemas: {
     title: ["O que você recebe é", "uma ferramenta que funciona."],
-    items: SITES_RESULT_ITEMS.map((item) => ({ ...item })), // PLACEHOLDER
+    items: SISTEMAS_RESULT_ITEMS,
   },
 };
 
