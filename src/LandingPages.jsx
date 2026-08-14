@@ -94,6 +94,7 @@ function PreviewCard({ item }) {
 function LandingPages() {
   const sectionRef = useRef(null);
   const titleRef = useRef(null);
+  const mobileTitleRef = useRef(null);
   const startWrapperRef = useRef(null);
   const endWrapperRef = useRef(null);
   const settleAnchorRef = useRef(null);
@@ -132,6 +133,11 @@ function LandingPages() {
     trigger: titleRef,
     start: revealLater ? "top 70%" : "top 85%",
     stagger: revealLater ? 0.05 : 0.04,
+  });
+  useTitleReveal(mobileTitleRef, {
+    trigger: mobileTitleRef,
+    start: "top 70%",
+    stagger: 0.05,
   });
 
   useIsoLayoutEffect(() => {
@@ -385,6 +391,10 @@ function LandingPages() {
               }
             : undefined,
           pin: section,
+          // Mesma razão do pin do Hero (ver App.jsx): no touch o pin por
+          // transform é atualizado na main thread enquanto o scroll roda no
+          // compositor — durante o momentum o carrossel pinado treme.
+          ...(isMobile && { pinType: "fixed" }),
           anticipatePin: 1,
           invalidateOnRefresh: true,
           onEnter() {
@@ -490,34 +500,61 @@ function LandingPages() {
 
   const titleHtml = `
     <span class="lp__line">
-      <span class="word"><span>Sem</span></span>
-      <span class="word"><span>te</span></span>
-      <span class="word"><span>conhecer,</span></span>
-      <span class="word"><span>a</span></span>
+      <span class="word"><span>Antes</span></span>
+      <span class="word"><span>de</span></span>
+      <span class="word"><span>falar</span></span>
+      <span class="word"><span>com</span></span>
+      <span class="word"><span>você,</span></span>
     </span>
     <span class="lp__line">
-      <span class="word"><span>primeira</span></span>
-      <span class="word"><span>impressão</span></span>
-      <span class="word"><span>do</span></span>
       <span class="word"><span>seu</span></span>
-    </span>
-    <span class="lp__line">
       <span class="word"><span>cliente</span></span>
-      <span class="word"><span>define</span></span>
-      <span class="word"><span>se</span></span>
-      <span class="word"><span>ele</span></span>
+      <span class="word"><span>já</span></span>
+      <span class="word"><span>criou</span></span>
+      <span class="word"><span>uma</span></span>
     </span>
     <span class="lp__line">
-      <span class="word"><span>confia</span></span>
-      <span class="word"><span>no</span></span>
+      <span class="word accent"><span>primeira</span></span>
+      <span class="word accent"><span>impressão.</span></span>
+      <span class="word"><span>E</span></span>
+      <span class="word"><span>ela</span></span>
+    </span>
+    <span class="lp__line">
+      <span class="word"><span>pode</span></span>
+      <span class="word"><span>fazer</span></span>
+      <span class="word"><span>a</span></span>
+      <span class="word"><span>diferença</span></span>
+    </span>
+    <span class="lp__line">
+      <span class="word"><span>entre</span></span>
+      <span class="word"><span>escolher</span></span>
+      <span class="word"><span>o</span></span>
       <span class="word accent"><span>seu</span></span>
-      <span class="word accent"><span>serviço</span></span>
     </span>
     <span class="lp__line">
-      <span class="word"><span>ou</span></span>
-      <span class="word"><span>procura</span></span>
-      <span class="word"><span>outro.</span></span>
+      <span class="word accent"><span>negócio</span></span>
+      <span class="word"><span>e</span></span>
+      <span class="word"><span>o</span></span>
+      <span class="word"><span>do</span></span>
+      <span class="word"><span>concorrente.</span></span>
     </span>
+  `;
+
+  const mobileTitleHtml = `
+    <span class="lp__line"><span class="word"><span>Antes</span></span> <span class="word"><span>de</span></span></span>
+    <span class="lp__line"><span class="word"><span>falar</span></span> <span class="word"><span>com</span></span></span>
+    <span class="lp__line"><span class="word"><span>voc\u00ea,</span></span> <span class="word"><span>seu</span></span></span>
+    <span class="lp__line"><span class="word"><span>cliente</span></span> <span class="word"><span>j\u00e1</span></span></span>
+    <span class="lp__line"><span class="word"><span>criou</span></span> <span class="word"><span>uma</span></span></span>
+    <span class="lp__line"><span class="word accent"><span>primeira</span></span> <span class="word accent"><span>impress\u00e3o.</span></span></span>
+    <span class="lp__line"><span class="word"><span>E</span></span> <span class="word"><span>ela</span></span></span>
+    <span class="lp__line"><span class="word"><span>pode</span></span> <span class="word"><span>fazer</span></span></span>
+    <span class="lp__line"><span class="word"><span>a</span></span> <span class="word"><span>diferen\u00e7a</span></span></span>
+    <span class="lp__line"><span class="word"><span>entre</span></span> <span class="word"><span>escolher</span></span></span>
+    <span class="lp__line"><span class="word"><span>o</span></span> <span class="word accent"><span>seu</span></span></span>
+    <span class="lp__line"><span class="word accent"><span>neg\u00f3cio</span></span> <span class="word"><span>e</span></span></span>
+    <span class="lp__line"><span class="word"><span>o</span></span> <span class="word"><span>do</span></span></span>
+    <span class="lp__line"><span class="word"><span>concorrente.</span></span></span>
   `;
 
   return (
@@ -525,9 +562,14 @@ function LandingPages() {
       <div className="container-x">
         <p className="eyebrow lp__eyebrow">Presença Digital</p>
         <h2
-          className="section-title lp__title--main"
+          className="section-title lp__title--main lp__title--desktop"
           ref={titleRef}
           dangerouslySetInnerHTML={{ __html: titleHtml }}
+        />
+        <h2
+          className="section-title lp__title--main lp__title--mobile"
+          ref={mobileTitleRef}
+          dangerouslySetInnerHTML={{ __html: mobileTitleHtml }}
         />
       </div>
 

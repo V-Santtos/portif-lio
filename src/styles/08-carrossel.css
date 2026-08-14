@@ -17,11 +17,12 @@
 }
 .lp__title--main {
   text-align: center;
-  font-size: clamp(60px, 9vw, 128px);
+  font-size: clamp(52px, 7vw, 112px);
   line-height: 0.82;
   margin-bottom: 2.5rem;
 }
 .lp__line { display: block; }
+.lp__title--mobile { display: none; }
 .lp__copy { max-width: 48ch; }
 .lp__copy p { font-size: 16px; }
 
@@ -379,6 +380,14 @@
 /* ── Carrossel mobile — cards maiores, expansão com mais contraste ── */
 @media (max-width: 767px) {
   .lp { padding-top: 7rem; }
+  .lp__title--desktop { display: none; }
+  .lp__title--mobile {
+    display: block;
+    font-size: clamp(40px, 12vw, 52px);
+    line-height: 0.84;
+    letter-spacing: -0.01em;
+  }
+  .lp__title--mobile .lp__line { white-space: nowrap; }
   .lp__scaling-header { padding: 3.5rem 5vw 10vh; }
   /* 100vh do desktop deixa ~340px de creme sobrando abaixo do card 16:9;
      aqui o card fica só com uma folga curta (fundo creme segue contínuo) */
