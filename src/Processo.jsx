@@ -710,7 +710,7 @@ function Processo() {
           </div>
         </section>
 
-        <Contact />
+        <Contact showFaq={false} showCta={false} />
       </main>
     </>
   );

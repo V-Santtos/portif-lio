@@ -9,9 +9,9 @@
   background: linear-gradient(
     to bottom,
     var(--color-surface) 0%,
-    rgba(240, 82, 53, 0.18) 32%,
-    rgba(240, 82, 53, 0.72) 52%,
-    #f05235 68%,
+    rgba(240, 82, 53, 0.18) 82%,
+    rgba(240, 82, 53, 0.72) 93%,
+    #f05235 98%,
     #e84a22 100%
   );
   color: var(--color-foreground);
@@ -19,14 +19,237 @@
   position: relative;
 }
 
+/* FAQ — composição inspirada na referência: título editorial centralizado,
+   cartões brancos e uma única resposta aberta por vez. A abertura fica a
+   cargo do GSAP; estes são apenas os estados visuais de repouso. */
+.contact__faq {
+  width: min(calc(100% - 3rem), 900px);
+  margin: 0 auto;
+  padding: clamp(1rem, 3vh, 3rem) 0 clamp(20rem, 32vh, 30rem);
+}
+
+.faq__title {
+  margin: 0 0 clamp(3.5rem, 7vh, 6rem);
+  text-align: center;
+  font-family: var(--font-display);
+  font-size: clamp(72px, 8vw, 132px);
+  font-weight: 900;
+  line-height: 0.9;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+  color: #1B1A18;
+}
+
+.faq__title-word {
+  display: inline-block;
+  overflow: hidden;
+  padding-top: 0.18em;
+  margin-top: -0.18em;
+  padding-right: 0.05em;
+  vertical-align: bottom;
+}
+
+.faq__title-word > span {
+  display: inline-block;
+}
+
+.faq__list {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.faq__item {
+  background: #fff;
+  border-radius: 9px;
+  color: var(--color-foreground);
+  box-shadow: 0 2px 4px rgba(72, 56, 31, 0.025);
+}
+
+.faq__question-heading {
+  margin: 0;
+  font: inherit;
+}
+
+.faq__trigger {
+  width: 100%;
+  min-height: 88px;
+  padding: 1rem 1rem 1rem clamp(1.6rem, 2.4vw, 2.7rem);
+  border: 0;
+  background: transparent;
+  color: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  text-align: left;
+  cursor: pointer;
+  font-family: var(--font-body);
+  font-size: clamp(18px, 1.45vw, 24px);
+  line-height: 1.25;
+}
+
+.faq__trigger:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+}
+
+.faq__question {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.55em;
+}
+
+.faq__number {
+  flex: none;
+  font-family: "Birthstone", cursive;
+  font-size: 1.2rem;
+  font-weight: 700;
+  font-style: normal;
+  line-height: 1;
+  letter-spacing: 0;
+}
+
+.faq__icon {
+  width: clamp(48px, 4vw, 58px);
+  height: clamp(48px, 4vw, 58px);
+  flex: none;
+  border-radius: 6px;
+  background: var(--color-foreground);
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.faq__icon svg {
+  width: 42%;
+  height: 42%;
+}
+
+.faq__panel {
+  height: 0;
+  overflow: hidden;
+}
+
+.faq__answer-body {
+  padding: 0 clamp(5.2rem, 7vw, 7rem) clamp(2rem, 3.5vh, 3rem) clamp(1.6rem, 2.4vw, 2.7rem);
+  color: rgba(22, 22, 22, 0.72);
+  font-family: var(--font-body);
+  font-size: clamp(15px, 1.15vw, 18px);
+  line-height: 1.65;
+}
+
+.faq__answer-body p {
+  margin: 0;
+}
+
+.faq__answer-body p + p {
+  margin-top: 1rem;
+}
+
+/* CTA final da home — EXCLUSIVO desta pagina (decisao do Victor, 2026-08-14).
+   NAO reusa .case-cta (17-cases.css) de proposito: aquele bloco e
+   compartilhado com /meu-processo e com o fim dos cases, e este aqui vai
+   divergir em conteudo. Montagem espelhada da referencia canonica: eyebrow,
+   titulo de 2 linhas e botao branco, tudo centrado num card escuro.
+   Medidas da referencia (desktop 1238px): card #1b1a18, raio 17px,
+   padding 128px, gap 64px eyebrow->miolo e 32px titulo->botao; titulo 86px
+   com line-height 1.05 e tracking -0.02em; botao 34.7px. Traduzidas em
+   clamp pra acompanhar o resto do site em vez de fixar px. */
+.home-cta {
+  position: relative;
+  padding-inline: clamp(1rem, 2.5vw, 3rem);
+  padding-bottom: clamp(6rem, 12vh, 11rem);
+}
+
+.home-cta__card {
+  background: var(--color-dark);
+  color: #f1ede0;
+  border-radius: clamp(12px, 1.1vw, 18px);
+  padding: clamp(6rem, 13vw, 12rem) clamp(1.5rem, 5vw, 4rem);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(2.5rem, 4.5vw, 4rem);
+  text-align: center;
+}
+
+.home-cta__eyebrow {
+  margin: 0;
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: clamp(12px, 1vw, 17px);
+  line-height: 1.4;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.home-cta__main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(1.5rem, 2.4vw, 2rem);
+}
+
+/* Fonte recalculada pra acompanhar o card depois que ele cresceu (2026-08-14):
+   6vw/5.4rem era o tamanho 1:1 com a referencia, calibrado quando o card
+   tinha a largura dela. Esticar o card sem mexer na fonte deixou a escrita
+   pequena sobrando espaço vazio nas laterais. Subiu o fator fluido (6→8.5vw)
+   e o teto (5.4→7.5rem) na mesma proporcao que o card ganhou de largura. */
+.home-cta__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(2.4rem, 8.5vw, 7.5rem);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+}
+
+/* Mesmo destaque de "Um papo reto" (04-processo.css), mas maiusculo aqui —
+   pedido do Victor, e bate com o "YES" da referencia, tambem em caixa alta. */
+.home-cta__title span {
+  color: var(--color-accent);
+  font-family: "Birthstone", cursive;
+  font-size: 1.1em;
+  margin-right: 0.3em;
+}
+
+/* Padding vertical assimetrico pelo mesmo motivo do .case-cta__btn: o Anton
+   nasce alto na caixa e centraliza otico so com mais folga em cima. */
+.home-cta__btn {
+  background: #fff;
+  color: var(--color-dark);
+  border-radius: 8px;
+  padding: clamp(1.1rem, 1.5vw, 1.5rem) clamp(2.75rem, 4.4vw, 4.35rem) clamp(0.8rem, 1.1vw, 1.1rem);
+  font-family: var(--font-display);
+  font-size: clamp(1.6rem, 3.4vw, 3rem);
+  line-height: 1;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  transition: transform 200ms ease, opacity 200ms ease;
+}
+.home-cta__btn:hover {
+  transform: translateY(-2px);
+  opacity: 0.92;
+}
+
 .contact__title-strip {
   text-align: center;
   margin-bottom: 2rem;
 }
 
+/* Na referencia o nome sangra de margem a margem. Como "VICTOR CARDOSO" tem
+   menos glifos que o titulo anterior, o corpo subiu de 13.5vw pra 17vw pra
+   ocupar a mesma largura — o .contact tem overflow:hidden, entao mesmo que
+   estoure em alguma largura ele corta em vez de criar barra horizontal. */
 .contact__title {
   font-family: var(--font-display);
-  font-size: clamp(80px, 13.5vw, 215px);
+  font-size: clamp(80px, 19vw, 340px);
   line-height: 0.88;
   text-transform: uppercase;
   letter-spacing: -0.005em;
@@ -35,38 +258,83 @@
   margin: 0;
 }
 
-.contact__title .word {
-  display: inline-block;
-  overflow: hidden;
-  padding-right: 0.06em;
-  padding-top: 0.18em;
-  margin-top: -0.18em;
-}
-.contact__title .word > span { display: inline-block; transform: translateY(110%); }
+/* As mascaras por letra sao criadas pelo SplitText em runtime (Contact.jsx),
+   nao aqui — o overflow vem do proprio mask:"chars". */
 
+/* Mesma tecnica do .hero > .container-x (06-hero.css): tira o max-width de
+   1280px do container-x base pra colar nas bordas da viewport, igual a
+   referencia (o footer dela usa so ~32px de respiro fixo). Pedido do Victor
+   (2026-08-14) pra reaproveitar o padrao que ja existe no Hero em vez de
+   deixar o rodape preso na coluna central estreita. Afeta contact__info E
+   footer, os dois container-x diretos da secao — senao a copyright ficaria
+   com bordas diferentes da grade acima dela. */
+.contact > .container-x {
+  max-width: none;
+  padding-inline: clamp(1.25rem, 2.4vw, 2.75rem);
+}
+
+/* Rodape reposicionado em 2026-08-14 na montagem da referencia canonica:
+   hairline no topo, tres grupos numa grade de 12 colunas (menu 4 / redes 3 /
+   e-mail 5, o ultimo alinhado a direita) e o nome gigante embaixo de tudo.
+   Os grupos da esquerda poem rotulo e links LADO A LADO; o da direita
+   empilha, porque ancorado na margem direita nao sobra espaco lateral. */
 .contact__info {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  padding: 2rem 0 1.5rem;
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 1rem;
+  align-items: start;
+  padding: clamp(2.5rem, 4vw, 4rem) 0 clamp(4rem, 8vw, 7rem);
   border-top: 1px solid rgba(22, 22, 22, 0.25);
 }
 
+.contact__col {
+  display: flex;
+  align-items: flex-start;
+  gap: clamp(1.5rem, 4vw, 4rem);
+}
+.contact__col--menu { grid-column: span 4; }
+.contact__col--redes { grid-column: span 3; }
+.contact__col--email {
+  grid-column: span 5;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.75rem;
+}
+
 .contact__field-label {
+  flex: none;
   font-family: var(--font-body); font-weight: 500;
   font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;
   color: rgba(22, 22, 22, 0.6);
-  margin-bottom: 0.5rem;
   display: block;
 }
 
-.contact__email {
-  display: block;
-  margin-top: 0.25rem;
-  color: var(--color-foreground);
-  font-size: clamp(15px, 1.3vw, 20px);
-  letter-spacing: -0.01em;
+.contact__group {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
 }
+.contact__col--email .contact__group { align-items: flex-end; }
+
+/* Links e botoes do rodape compartilham a mesma pinta: o <button> do menu so
+   e botao porque a navegacao passa pela transicao de pagina, nao por href. */
+.contact__group a,
+.contact__group button {
+  padding: 0;
+  border: 0;
+  background: none;
+  font-family: var(--font-body);
+  font-size: clamp(16px, 1.6vw, 23px);
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  color: var(--color-foreground);
+  text-align: inherit;
+  cursor: pointer;
+  transition: opacity 200ms ease;
+}
+.contact__group a:hover,
+.contact__group button:hover { opacity: 0.6; }
 
 .contact__social { display: flex; flex-direction: column; gap: 0.5rem; font-size: 14px; }
 .contact__social a {
@@ -87,7 +355,7 @@
 
 .footer__back-top {
   position: absolute;
-  right: 4rem;
+  right: 2rem;
   bottom: 6rem;
   display: flex;
   align-items: center;
@@ -154,6 +422,39 @@
    (depois das regras base pra vencer na cascata) */
 @media (max-width: 767px) {
   .contact { padding-top: 6rem; }
+  .contact__faq {
+    width: 100%;
+    padding: 0 1.25rem 3rem;
+  }
+  .home-cta {
+    padding-inline: 1.25rem;
+    padding-bottom: 5rem;
+  }
+  .home-cta__card {
+    padding: 4rem 1.5rem;
+    gap: 2.25rem;
+  }
+  .faq__title {
+    margin-bottom: 3rem;
+    font-size: clamp(58px, 15vw, 82px);
+    line-height: 0.9;
+  }
+  .faq__trigger {
+    min-height: 76px;
+    padding: 0.85rem;
+    gap: 0.85rem;
+    font-size: 17px;
+  }
+  .faq__question { gap: 0.42em; }
+  .faq__icon {
+    width: 48px;
+    height: 48px;
+  }
+  .faq__answer-body {
+    padding: 0 1rem 1.5rem;
+    font-size: 15px;
+    line-height: 1.6;
+  }
   /* desktop: faixa nowrap full-bleed; mobile: empilha BORA / CONSTRUIR / JUNTOS! */
   .contact__title {
     white-space: normal;
@@ -161,17 +462,28 @@
     line-height: 0.9;
     padding-inline: 0.5rem;
   }
+  /* Grade de 12 nao cabe em telefone: os tres grupos viram uma pilha, e o
+     e-mail perde o alinhamento a direita junto (na coluna unica ele passa a
+     ser mais um item da esquerda). */
   .contact__info {
-    flex-direction: column;
+    grid-template-columns: 1fr;
     gap: 2rem;
-    /* o shorthand da base zera o padding lateral do container-x — devolve */
-    padding-inline: var(--gutter-x);
   }
+  .contact__col--menu,
+  .contact__col--redes,
+  .contact__col--email { grid-column: auto; }
+  .contact__col--email {
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+  .contact__col--email .contact__group { align-items: flex-start; }
   .footer {
     flex-direction: column;
     align-items: flex-start;
     gap: 0.35rem;
-    padding: 1.5rem var(--gutter-x) 2rem;
+    /* so block: o inline fica por conta do .contact > .container-x acima,
+       que agora vale em qualquer largura (mesmo padrao do Hero). */
+    padding-block: 1.5rem 2rem;
   }
   .footer__back-top,
   .lp__carousel-skip {
