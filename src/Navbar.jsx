@@ -36,10 +36,12 @@ const StartButton = ({ onClick }) => (
 
 function Navbar() {
   const [visible, setVisible] = useState(false);
+  const [inverted, setInverted] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const { transitionTo } = usePageTransition();
   const location = useLocation();
   const lastScrollY = useRef(0);
+  const navRef = useRef(null);
   const overlayRef = useRef(null);
   const linksRef = useRef(null);
   const hasOpenedRef = useRef(false);
@@ -53,6 +55,25 @@ function Navbar() {
     // usuário está voltando" e aparecia sozinha no meio da Escada. O visual não
     // dá esse salto.
     const handleScroll = () => {
+      // Inverte os pills (creme sobre escuro) quando alguma área escura do
+      // site está sob a faixa do navbar — independe do show/hide abaixo, pra
+      // não haver salto de cor enquanto a barra some/aparece. offsetHeight
+      // (não getBoundingClientRect) porque o translateY do show/hide desloca
+      // o rect sem mudar a altura real do elemento.
+      const navHeight = navRef.current?.offsetHeight ?? 0;
+      const darkZones = document.querySelectorAll(
+        ".automation, .home-cta__card, .case-cta__card"
+      );
+      let overlapsDark = false;
+      for (const zone of darkZones) {
+        const rect = zone.getBoundingClientRect();
+        if (rect.top < navHeight && rect.bottom > 0) {
+          overlapsDark = true;
+          break;
+        }
+      }
+      setInverted(overlapsDark);
+
       const currentY = currentScrollY();
       const atTop = currentY < window.innerHeight * 0.9;
       const delta = currentY - lastScrollY.current;
@@ -220,7 +241,8 @@ function Navbar() {
   return (
     <>
       <div
-        className={`floating-nav${visible ? " floating-nav--visible" : ""}`}
+        ref={navRef}
+        className={`floating-nav${visible ? " floating-nav--visible" : ""}${inverted ? " floating-nav--inverted" : ""}`}
         aria-hidden={menuOpen ? "true" : undefined}
       >
         <button

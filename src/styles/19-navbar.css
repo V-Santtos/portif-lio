@@ -40,6 +40,7 @@
   width: auto;
   filter: invert(1);
   display: block;
+  transition: filter 0.3s ease;
 }
 
 .floating-nav__menu-btn {
@@ -58,6 +59,7 @@
   border: none;
   border-radius: 8px;
   cursor: pointer;
+  transition: background 0.3s ease, color 0.3s ease;
 }
 
 .floating-nav__cta {
@@ -75,6 +77,23 @@
   text-transform: uppercase;
   border-radius: 8px;
   user-select: none;
+}
+
+/* Sobre as áreas escuras do site (Automation, cards finais escuros da home
+   e dos cases), os pills invertem pra creme — senão preto sobre preto some. */
+.floating-nav--inverted .floating-nav__logo-box,
+.floating-nav--inverted .floating-nav__menu-btn,
+.floating-nav--inverted .hero__talk-btn {
+  background: var(--color-surface);
+  color: var(--color-foreground);
+}
+
+.floating-nav--inverted .floating-nav__logo-box img {
+  filter: none;
+}
+
+.floating-nav .hero__talk-btn {
+  transition: background 0.3s ease, color 0.3s ease;
 }
 
 /* ── Menu Overlay ──────────────────────────────────────────────── */
