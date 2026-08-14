@@ -12,7 +12,7 @@ import Contact from "./Contact.jsx";
 import Seo from "./Seo.jsx";
 import { getStaticSeo } from "./seo.js";
 
-const SHOW_ABOUT_SECTION = false;
+const SHOW_ABOUT_SECTION = true;
 
 function shouldShowInitialLoader() {
   if (typeof window === "undefined") return true;

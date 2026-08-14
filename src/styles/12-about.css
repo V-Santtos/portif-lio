@@ -1,158 +1,156 @@
-/* About (oculta) — extraido do styles.css original, linhas 3546-3699.
+/* About — poster editorial (replica da referencia enviada pelo Victor).
    A ORDEM importa: este arquivo entra na posicao indicada pelo numero do nome.
-   Nao reordenar regras nem separar os @media do bloco a que pertencem. */
+   Nao reordenar regras nem separar os @media do bloco a que pertencem.
+
+   COMO ESTE ARQUIVO FUNCIONA (ler antes de mexer em qualquer numero):
+   O poster e um CONTAINER (`container-type: inline-size`) e TODA medida
+   interna esta em `cqw` = 1% da largura do poster. Os valores sao as
+   coordenadas da referencia divididas pela largura dela (735px), entao a
+   composicao inteira reescala em bloco: para deixar tudo maior ou menor,
+   mexa SO na largura do `.about__poster` — titulo, foto, hairlines e
+   espacamentos acompanham juntos, na proporcao certa. Trocar um cqw por px
+   quebra isso e passa a exigir recalculo manual peca por peca. */
 
 
 /* About */
 .about {
-  padding: 0 0 9rem;
-  margin-top: -19rem;
+  /* usado tambem pela hairline, que desce desde a borda da secao pra encostar
+     na Automation — manter os dois em sincronia */
+  --about-pad-top: 8rem;
+  /* a largura do poster vira variavel porque a hairline (que mora FORA dele)
+     precisa dela pra calcular a propria altura */
+  --about-poster-w: min(1600px, 93vw);
+
+  padding: var(--about-pad-top) 0 9rem;
   background: var(--color-surface);
-  color: var(--color-foreground);
-}
-.about__inner {
-  text-align: center;
-}
-.about__eyebrow {
-  display: inline-flex;
-  margin-bottom: 1.5rem;
-}
-.about__title {
-  text-align: center;
-  font-size: clamp(140px, 28vw, 520px);
-  line-height: 0.9;
-}
-.about__title .word > span {
-  transform: none;
+  /* titulo, "Prazer em te conhecer!" e descricao herdam daqui — pedido do
+     Victor pra sair do preto puro (--color-foreground) e usar a mesma cor
+     da hairline (--color-dark) */
+  color: var(--color-dark);
 }
 
-.about-card {
+/* alinhado a ESQUERDA (nao centrado) — decisao do Victor */
+.about__poster {
+  container-type: inline-size;
   position: relative;
-  width: 100%;
-  max-width: clamp(520px, 52vw, 700px);
-  aspect-ratio: 1 / 1;
-  border-radius: 24px;
-  overflow: hidden;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.18);
-  transform-style: preserve-3d;
-  cursor: default;
-  margin: 0 auto;
+  width: var(--about-poster-w);
+  margin-inline: 0 auto;
+  padding: 4.5cqw 0 6cqw;
+  font-family: var(--font-body);
+}
+
+/* Hairline vertical (so uma; a de baixo foi removida a pedido do Victor).
+   Mora na SECAO, nao no poster: o poster e alinhado a esquerda e o botao
+   circular da Automation e centrado na pagina, entao o eixo do botao e o 50%
+   DA SECAO. Por isso a altura nao pode usar `cqw` (unidade do poster) — ela
+   repete a formula da largura do poster na mao.
+   Comeca na borda de cima da secao; nao adianta subir mais, dentro da
+   Automation ela e da cor do proprio fundo escuro de la. */
+.about__rule {
+  position: absolute;
+  width: 7px;
   background: var(--color-dark);
 }
+.about__rule--top {
+  left: 50%;
+  transform: translateX(-50%);
+  top: 0;
+  /* desce por DENTRO do "r" de "sobre" — nao so ate o topo dele, cola no
+     glifo mesmo (some atras do traco preto) */
+  height: calc(0.296 * var(--about-poster-w) + var(--about-pad-top) + 2.5rem);
+}
 
-.about-card__img {
-  position: absolute;
-  inset: 0;
+/* Titulo gigante — Inter 900, leading negativo como no poster.
+   🔴 O CORPO NAO E O DA REFERENCIA (34cqw), e nao pode ser: la a 2a linha e
+   "me.", 3 glifos estreitos, e sobra vao pra foto. "mim." e quase tao largo
+   quanto "sobre" — a 34cqw a linha 2 estourava a medida em 30cqw e jogava a
+   foto 379px pra fora do poster. 25.2cqw e o corpo em que "mim." + a foto
+   preenchem a medida EXATA, que e o que a referencia faz na 2a linha.
+   Mexeu aqui? Rodar `node .probe-about-medidas.mjs` — ele mede e diz se
+   ainda cabe. */
+.about__title {
+  margin: 21cqw 0 0;
+  padding-inline: 6.1cqw;
+  font-size: 28cqw;
+  line-height: 0.69;
+  font-weight: 900;
+  letter-spacing: -0.03em;
+}
+.about__title-line {
+  display: block;
+}
+/* a foto entra logo depois do ponto de "mim.", encostada nele — nao empurrada
+   ate a margem direita */
+.about__title-line--2 {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.06em;
+  margin-top: 2.3cqw;
+}
+.about__word {
+  /* alinhamento optico: o glifo gigante entra um tico a esquerda do texto
+     pequeno, senao a coluna parece torta */
+  margin-left: -0.6cqw;
+}
+
+/* Foto encaixada no vazio da segunda linha do titulo.
+   Medidas em `em` (= corpo do titulo), nao em cqw: assim ela cresce e encolhe
+   junto com a tipografia e a proporcao com a palavra nunca se perde. Os
+   valores sao os da referencia divididos pelo corpo dela (31.6/34, 20.4/34). */
+.about__photo {
+  flex: none;
+  width: 0.944em;
+  height: 0.687em;
+  border-radius: 0.088em;
+  overflow: hidden;
+  /* base da foto na LINHA DE BASE do texto: a linha de base fica a 0.709em do
+     topo da caixa de linha (line-height 0.69 + metricas da Inter), entao o topo
+     da foto e a diferenca. E o que faz ela "encaixar" na palavra em vez de
+     flutuar. */
+  margin-top: 0.022em;
+}
+.about__photo img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  border-radius: 24px;
-  transform: translateZ(-20px) scale(1.1);
+  display: block;
+  filter: grayscale(1);
 }
 
-.about-card--image-only {
-  border-radius: 28px;
-  box-shadow: 0 28px 82px rgba(20, 20, 20, 0.18);
+/* Bloco de baixo: saudacao + paragrafo, alinhados a esquerda */
+.about__foot {
+  margin-top: 13cqw;
+  padding-inline: 6.1cqw;
 }
 
-.about-card--image-only .about-card__img {
-  border-radius: 28px;
-  transform: none;
-}
-
-.about-card__overlay {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(to top, rgba(0,0,0,0.65), rgba(0,0,0,0.18), transparent);
-  border-radius: 24px;
-}
-
-.about-card__content {
-  position: absolute;
-  inset: 0;
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  transform: translateZ(40px);
-}
-
-.about-card__header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  border-radius: 12px;
-  border: 1px solid rgba(255,255,255,0.12);
-  background: rgba(255,255,255,0.06);
-  padding: 16px;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-}
-
-.about-card__title {
-  margin: 0 0 4px;
-  font-family: var(--font-display);
-  font-size: 18px;
+.about__intro {
+  margin: 0;
+  font-size: max(20px, 5cqw);
+  line-height: 1;
   font-weight: 900;
-  color: #fff;
-  text-transform: uppercase;
-  letter-spacing: 0.01em;
+  letter-spacing: -0.025em;
 }
 
-.about-card__desc {
-  margin: 0;
-  font-size: 12px;
-  color: rgba(255,255,255,0.65);
-  line-height: 1.4;
+.about__body {
+  margin: 1.2cqw 0 0;
+  max-width: 54.7cqw;
+  font-size: max(13px, 1.56cqw);
+  line-height: 1.35;
+  font-weight: 300;
+  letter-spacing: 0;
 }
 
-.about-card__tag {
-  position: absolute;
-  top: 108px;
-  left: 20px;
-  border-radius: 999px;
-  background: rgba(0,0,0,0.45);
-  padding: 6px 16px;
-  font-size: 12px;
-  font-weight: 700;
-  color: #fff;
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
-
-.about__columns {
-  display: grid;
-  grid-template-columns: 1fr clamp(520px, 52vw, 700px) 1fr;
-  align-items: stretch;
-  gap: 3rem;
-  margin-top: -22rem;
-}
-
-.about__col-left,
-.about__col-right {
-  font-size: clamp(15px, 1.25vw, 20px);
-  line-height: 1.75;
-  color: var(--color-foreground);
-  font-weight: 400;
-  letter-spacing: -0.01em;
-  display: flex;
-}
-
-.about__col-left {
-  text-align: right;
-  align-items: flex-start;
-  justify-content: flex-end;
-}
-
-.about__col-right {
-  text-align: left;
-  align-items: flex-end;
-}
-
-.about__col-left p,
-.about__col-right p {
-  margin: 0;
+/* Mobile — o poster inteiro encolhe junto (cqw), mas os textos pequenos
+   parariam em 5px. Os `max()` acima seguram o piso de legibilidade; aqui so
+   se afrouxa o que encosta. */
+@media (max-width: 700px) {
+  .about {
+    --about-pad-top: 5rem;
+    padding-bottom: 6rem;
+  }
+  .about__body {
+    max-width: 100%;
+  }
 }
 
 /* ──────────────────────────────────────────────────────────────── */
