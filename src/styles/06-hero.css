@@ -127,7 +127,7 @@
   pointer-events: none;
   position: absolute;
   inset: auto 0 0 0;
-  height: 58vh;
+  height: 58%; /* % do próprio .hero, não vh — não desalinha se a altura do Hero mudar */
   background:
     linear-gradient(
       to top,
@@ -159,8 +159,32 @@
 
 /* ── Hero mobile — mesmo poster, cadência em 4 linhas ─────────── */
 @media (max-width: 767px) {
-  /* svh: altura estável com a barra de URL do navegador mobile */
+  /* svh, não lvh. lvh é o viewport GRANDE (barra recolhida) — no load, com a
+     barra ainda visível, a tela real é MENOR que isso, e o Hero dimensionado
+     pro tamanho grande empurrava "— Construa o caminho" pra fora da área
+     visível (cortava texto). svh garante que o conteúdo sempre cabe.
+     Troca aceita: quando a barra recolhe sozinha no meio do scroll, pode
+     sobrar por um instante uma tira do creme da seção de baixo — cosmético,
+     autocorrige na próxima amostragem do Safari. Prefere isso a cortar texto. */
   .hero { min-height: 100svh; }
+  /* A barra de baixo do Safari amostra perto do rodapé da tela. O wash
+     original ficava sólido só até ~18% da própria altura e ali já estava a
+     55% de opacidade — na faixa que a barra lê, a cor já não era laranja
+     puro. Por isso o topo (sempre dentro do creme, tanto no #__boot quanto
+     aqui) pintava certo e a base não. Alargado pra bater com a proporção
+     sólida do #__boot (que já pinta certo — ver index.html). */
+  .hero__wash {
+    height: 46%;
+    background: linear-gradient(to top,
+      #f05235 0%,
+      #f05235 24%,
+      rgba(240, 82, 53, 0.94) 38%,
+      rgba(240, 82, 53, 0.72) 56%,
+      rgba(240, 82, 53, 0.44) 74%,
+      rgba(240, 82, 53, 0.16) 88%,
+      rgba(240, 82, 53, 0) 100%
+    );
+  }
   .hero__nav { padding: 1.1rem 0; }
   .hero__logo-mark { height: 26px; }
   .hero__main { padding: 1.75rem 0 1.5rem; }
@@ -182,4 +206,3 @@
     align-self: auto;
   }
 }
-

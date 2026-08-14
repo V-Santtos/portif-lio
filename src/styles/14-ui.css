@@ -9,7 +9,12 @@
   position: fixed;
   top: 0; left: 0;
   height: 2px;
-  width: 0%;
+  /* Largura cheia + scaleX no JS: escrever `width` todo frame invalida o layout
+     e os getBoundingClientRect() do mesmo ticker viram reflow SÍNCRONO
+     (layout thrashing). scaleX roda no compositor e não suja o layout. */
+  width: 100%;
+  transform: scaleX(0);
+  transform-origin: 0 50%;
   background: var(--gradient-accent);
   z-index: 90;
   pointer-events: none;

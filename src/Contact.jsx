@@ -419,11 +419,19 @@ function Contact({ showFaq = true, showCta = true }) {
       </div>
 
       <div className="contact__title-strip" ref={titleStripRef}>
+        <a
+          className="footer__back-top footer__back-top--title"
+          href="#"
+          aria-label="Voltar ao topo"
+          onClick={(e) => { e.preventDefault(); scrollPageTo(0); }}
+        >
+          &uarr;
+        </a>
         <h2 className="contact__title" ref={titleRef}>Victor Cardoso</h2>
       </div>
 
       <a
-        className="footer__back-top"
+        className="footer__back-top footer__back-top--legacy"
         href="#"
         aria-label="Voltar ao topo"
         onClick={(e) => { e.preventDefault(); scrollPageTo(0); }}

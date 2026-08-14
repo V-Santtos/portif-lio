@@ -9,7 +9,7 @@ const CARDS = [
   },
   {
     title: "Processos",
-    desc: "Uma tarefa manual que ocupa horas do seu dia, uma agenda bagunçada, um processo travado — seja em qualquer setor, eu construo e otimizo uma ferramenta da maneira certa pra resolver o problema.",
+    desc: "Processos travados, tarefas manuais e rotinas desorganizadas não precisam fazer parte do seu dia. Eu construo soluções pensadas para tornar tudo mais simples e eficiente .",
   },
   {
     title: "Sua ideia",
@@ -259,12 +259,71 @@ function Automation() {
     // pós-handoff da Bridge aciona o check.
     const title = titleRef.current;
     const intro = sectionRef.current?.querySelector(".auto__intro");
+    const cards = sectionRef.current?.querySelectorAll(".auto__card") ?? [];
+    const automationSection = sectionRef.current;
     const wordSpans = title ? title.querySelectorAll(".word > span") : [];
 
     // 135% (e não 110%): o til do Ã de PADRÃO sobe além do corpo da letra
     // e com 110% a pontinha vazava pra dentro da máscara no estado escondido.
     gsap.set(wordSpans, { yPercent: 135 });
     if (intro) gsap.set(intro, { opacity: 0, y: 18 });
+
+    // Os cards ficam logo abaixo da dobra quando o hero da Automation ocupa a
+    // tela. Eles sobem dela na mesma linguagem de entrada vertical do site,
+    // revelando primeiro Rotina, depois Processos e, por último, Sua ideia.
+    // A geometria é medida ao vivo: depois do pin da Escada, uma posição de
+    // ScrollTrigger capturada antes do handoff pode ficar stale.
+    gsap.set(cards, { autoAlpha: 0, y: 96, willChange: "transform, opacity" });
+
+    let cardsSequenceStarted = false;
+    let cardsSequenceTl = null;
+    const stopCardsVisibilityCheck = () => {
+      window.removeEventListener("scroll", checkCardsVisible);
+      gsap.ticker.remove(checkCardsVisible);
+    };
+    const playCardsSequence = () => {
+      if (cardsSequenceStarted || !cards.length) return;
+      cardsSequenceStarted = true;
+      stopCardsVisibilityCheck();
+      cardsSequenceTl = gsap.timeline();
+      cardsSequenceTl.to(cards, {
+        autoAlpha: 1,
+        y: 0,
+        duration: 0.9,
+        ease: "power3.out",
+        stagger: 0.24,
+        clearProps: "transform,opacity,visibility,willChange",
+      });
+    };
+
+    const checkCardsVisible = () => {
+      if (cardsSequenceStarted || !cards.length) return;
+      // Durante a transição da Escada a seção vira uma camada fixed; nessa
+      // janela a geometria dos cards não representa o que está na viewport.
+      if (automationSection?.classList.contains("automation--handoff")) return;
+      // Dispara quando a ponta da fileira chega à base da viewport. Como os
+      // cards começam 96px abaixo, a entrada revela as pontas um de cada vez.
+      if (cards[0].getBoundingClientRect().top > window.innerHeight * 0.9) return;
+      playCardsSequence();
+    };
+
+    // No desktop, a Bridge emite este evento exatamente quando termina de
+    // entregar a Automation e a tela fica parada no enquadramento do hero.
+    // A cascata acontece AQUI: só as pontas dos cards estão dentro da viewport.
+    // O observador por geometria abaixo continua apenas como fallback para
+    // mobile, salto direto pelo menu ou restauração de scroll do navegador.
+    const playCardsAtAutomationHandoff = () => {
+      if (window.matchMedia("(min-width: 768px)").matches) {
+        playCardsSequence();
+      }
+    };
+    window.addEventListener("automation:word-swap", playCardsAtAutomationHandoff);
+
+    window.addEventListener("scroll", checkCardsVisible, { passive: true });
+    // O ScrollSmoother continua movendo o conteúdo entre eventos de scroll.
+    // O ticker garante que a entrada não perca a hora exata depois do handoff.
+    gsap.ticker.add(checkCardsVisible);
+    checkCardsVisible();
 
     let sequenceStarted = false;
     let sequenceTl = null;
@@ -300,10 +359,14 @@ function Automation() {
       setupCancelled = true;
       window.removeEventListener("resize", onResize);
       window.removeEventListener("scroll", checkTitleVisible);
+      window.removeEventListener("scroll", checkCardsVisible);
+      window.removeEventListener("automation:word-swap", playCardsAtAutomationHandoff);
+      gsap.ticker.remove(checkCardsVisible);
       wordBox.removeEventListener("click", onWordClick);
       if (unlockTimer) clearTimeout(unlockTimer);
       if (sequenceTl) sequenceTl.kill();
       if (swapTl) swapTl.kill();
+      if (cardsSequenceTl) cardsSequenceTl.kill();
     };
   }, []);
 

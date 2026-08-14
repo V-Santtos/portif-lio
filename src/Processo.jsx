@@ -57,7 +57,7 @@ const SITES_RESULT_ITEMS = [
   {
     number: "01",
     title: "Sem precisar explicar tudo do zero.",
-    body: "Uma conversa iniciada com seu cliente não começa com uma apresentação longa sobre o que você faz e por que seu trabalho é diferente. O site organiza essa história e mostra seu valor antes do primeiro contato.",
+    body: "Antes mesmo do primeiro contato, seu cliente já precisa entender quem você é, o que você faz e por que escolher o seu trabalho. O site organiza essas informações e apresenta seu valor de forma clara.",
   },
   {
     number: "02",
@@ -84,12 +84,12 @@ const SISTEMAS_RESULT_ITEMS = [
   {
     number: "02",
     title: "Seu tempo, de volta\ne a seu favor.",
-    body: "O que consome horas do seu dia raramente é o trabalho em si, mas sim a parte manual em volta dele. Quando a ferramenta correta te auxilia, tudo fica mais claro — e o tempo passa a trabalhar a seu favor.",
+    body: "O que consome horas do seu dia raramente é o trabalho em si, mas sim as tarefas manuais em volta dele. Com a ferramenta certa, tudo fica mais simples, mais organizado e você ganha tempo para focar no que realmente importa.",
   },
   {
     number: "03",
-    title: "Uma ferramenta exclusiva e escalável.",
-    body: "Você até pode contratar uma ferramenta pronta, mas sabe que ela foi feita pra atender todo mundo, por isso vem cheia de função que você nunca abre, e sem justamente aquela que o seu dia precisa. Com uma sob medida, ela já nasce do jeito que você precisa, e cresce junto quando necessitar.",
+    title: "Uma solução exclusiva \ne  escalável.",
+    body: "Ferramentas prontas são feitas para atender todo mundo. Por isso, muitas vezes vêm cheias de funções que você não usa e deixam de lado justamente o que o seu negócio precisa. Com uma solução sob medida, você tem apenas o que faz sentido para a sua rotina e ela pode evoluir junto com o seu negócio.",
   },
 ];
 
@@ -132,7 +132,7 @@ const SITES_REALITY_ITEMS = [
   {
     number: "03",
     title: "Um bom site amplifica um bom negócio.",
-    body: "Site não cria um negócio forte. Ele faz um bom negócio parecer tão bom quanto realmente é: deixar a experiência mais fácil de enxergar, o valor mais simples de entender e os pontos fortes difíceis de ignorar.",
+    body: "Site não cria um negócio forte. Ele faz um bom negócio parecer tão bom quanto realmente é, deixando a experiência mais fácil de enxergar, o valor mais simples de entender e os pontos fortes difíceis de ignorar.",
   },
 ];
 
@@ -162,11 +162,11 @@ const CTA_TITLE = "Pronto pra começar?";
 const CTA_BY_TYPE = {
   sites: {
     title: CTA_TITLE,
-    body: "Você não precisa ter uma ideia estruturada logo de início na cabeça para começar. Me conta o que seu negócio faz e quem você quer atrair, que o resto a gente desenha junto.",
+    body: "Você não precisa ter tudo estruturado desde o início. Me conta o que seu negócio faz e quem você quer atrair. O resto, a gente constrói junto.",
   },
   sistemas: {
     title: CTA_TITLE,
-    body: "Pode ser uma ideia que você quer ver de pé ou um problema que tira sua paz todos os dias. Me conta qual é o seu caso e o resto a gente desenha junto.",
+    body: "Tem uma ideia, um processo que precisa melhorar ou alguma parte do seu negócio que poderia funcionar melhor? Me conta qual é o seu caso e o resto a gente constrói junto.",
   },
 };
 
@@ -640,7 +640,7 @@ function Processo() {
                   "ferramenta". Tambem nao pode falar de "entender antes de
                   construir" — esse angulo e do statement pinado logo abaixo. */}
               <p>Antes de confiar um projeto a alguém, você merece saber como essa pessoa trabalha.<br />Por isso esse processo existe.</p>
-              <p aria-hidden="true">(Role para o meu método)</p>
+              <p aria-hidden="true"></p>
             </div>
           </div>
         </section>

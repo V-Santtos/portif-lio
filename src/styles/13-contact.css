@@ -373,6 +373,7 @@
   opacity: 0.8;
   transform: translateY(-3px);
 }
+.footer__back-top--title { display: none; }
 
 /* Controle direcional do carrossel — avança ou retorna conforme o scroll */
 .lp__carousel-skip {
@@ -455,12 +456,16 @@
     font-size: 15px;
     line-height: 1.6;
   }
-  /* desktop: faixa nowrap full-bleed; mobile: empilha BORA / CONSTRUIR / JUNTOS! */
+  /* No telefone, o nome ocupa a largura inteira em uma unica linha. */
+  .contact__title-strip {
+    position: relative;
+    padding-top: 3.75rem;
+  }
   .contact__title {
-    white-space: normal;
-    font-size: clamp(64px, 19vw, 90px);
+    white-space: nowrap;
+    font-size: clamp(50px, 16.5vw, 76px);
     line-height: 0.9;
-    padding-inline: 0.5rem;
+    padding-inline: 0;
   }
   /* Grade de 12 nao cabe em telefone: os tres grupos viram uma pilha, e o
      e-mail perde o alinhamento a direita junto (na coluna unica ele passa a
@@ -492,7 +497,12 @@
     height: 54px;
     font-size: 22px;
   }
-  .footer__back-top { bottom: 7.5rem; }
+  .footer__back-top--legacy { display: none; }
+  .contact__title-strip .footer__back-top--title {
+    display: flex;
+    top: 0;
+    bottom: auto;
+  }
   /* seta do carrossel removida no mobile — outro efeito entra no lugar */
   .lp__carousel-skip { display: none; }
 }

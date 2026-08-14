@@ -88,15 +88,20 @@
        referencia. Nao vale pro boot escuro da intro (data-boot-dark). */
     @media (max-width: 767px) {
       html[data-booting]:not([data-boot-dark]) #__boot {
-        /* Esqueleto do Hero: creme em cima, laranja SÓLIDO na base (o Safari
-           amostra uma faixa grande de baixo — precisa de sólido de verdade) e
-           fade LISO no meio, pra o flash do boot casar com o Hero sem a linha
-           dura do teste 50/50. */
-        background: linear-gradient(to top,
-          #f05235 0%,
-          #f05235 38%,
-          #FEF8E8 82%,
-          #FEF8E8 100%);
+        /* Replica os pontos do wash final do Hero. Assim, a primeira pintura
+           que o Safari vê não exibe um gradiente maior nem mais duro antes do
+           CSS da aplicação assumir. */
+        background:
+          linear-gradient(to top,
+            #f05235 0%,
+            #f05235 11.04%,
+            rgba(240, 82, 53, 0.94) 17.48%,
+            rgba(240, 82, 53, 0.72) 25.76%,
+            rgba(240, 82, 53, 0.44) 34.04%,
+            rgba(240, 82, 53, 0.16) 40.48%,
+            rgba(240, 82, 53, 0) 46%
+          ),
+          #FEF8E8;
       }
     }
   </style>
