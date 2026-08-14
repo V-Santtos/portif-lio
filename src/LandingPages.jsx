@@ -541,19 +541,16 @@ function LandingPages() {
   `;
 
   const mobileTitleHtml = `
-    <span class="lp__line"><span class="word"><span>Antes</span></span> <span class="word"><span>de</span></span></span>
-    <span class="lp__line"><span class="word"><span>falar</span></span> <span class="word"><span>com</span></span></span>
-    <span class="lp__line"><span class="word"><span>voc\u00ea,</span></span> <span class="word"><span>seu</span></span></span>
+    <span class="lp__line"><span class="word"><span>Antes</span></span> <span class="word"><span>de</span></span> <span class="word"><span>falar</span></span></span>
+    <span class="lp__line"><span class="word"><span>com</span></span> <span class="word"><span>voc\u00ea,</span></span> <span class="word"><span>seu</span></span></span>
     <span class="lp__line"><span class="word"><span>cliente</span></span> <span class="word"><span>j\u00e1</span></span></span>
     <span class="lp__line"><span class="word"><span>criou</span></span> <span class="word"><span>uma</span></span></span>
     <span class="lp__line"><span class="word accent"><span>primeira</span></span> <span class="word accent"><span>impress\u00e3o.</span></span></span>
-    <span class="lp__line"><span class="word"><span>E</span></span> <span class="word"><span>ela</span></span></span>
-    <span class="lp__line"><span class="word"><span>pode</span></span> <span class="word"><span>fazer</span></span></span>
+    <span class="lp__line"><span class="word"><span>E</span></span> <span class="word"><span>ela</span></span> <span class="word"><span>pode</span></span> <span class="word"><span>fazer</span></span></span>
     <span class="lp__line"><span class="word"><span>a</span></span> <span class="word"><span>diferen\u00e7a</span></span></span>
     <span class="lp__line"><span class="word"><span>entre</span></span> <span class="word"><span>escolher</span></span></span>
-    <span class="lp__line"><span class="word"><span>o</span></span> <span class="word accent"><span>seu</span></span></span>
-    <span class="lp__line"><span class="word accent"><span>neg\u00f3cio</span></span> <span class="word"><span>e</span></span></span>
-    <span class="lp__line"><span class="word"><span>o</span></span> <span class="word"><span>do</span></span></span>
+    <span class="lp__line"><span class="word"><span>o</span></span> <span class="word accent"><span>seu</span></span> <span class="word accent"><span>neg\u00f3cio</span></span></span>
+    <span class="lp__line"><span class="word"><span>ou</span></span> <span class="word"><span>o</span></span> <span class="word"><span>do</span></span> <span class="word"><span>seu</span></span></span>
     <span class="lp__line"><span class="word"><span>concorrente.</span></span></span>
   `;
 

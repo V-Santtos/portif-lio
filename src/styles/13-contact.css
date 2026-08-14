@@ -500,7 +500,7 @@
   .footer__back-top--legacy { display: none; }
   .contact__title-strip .footer__back-top--title {
     display: flex;
-    top: 0;
+    top: -0.6rem;
     bottom: auto;
   }
   /* seta do carrossel removida no mobile — outro efeito entra no lugar */
