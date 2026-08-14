@@ -66,12 +66,13 @@
   position: relative;
   width: 100%;
   margin: 0;
+  text-align: center;
   font-family: var(--font-display);
   font-weight: 400;
   /* "PROCESSO" em Bebas Neue mede 3,081em: 3,081 x 31cqi = 95,5% do container.
      Acima de 32,46cqi a palavra passa da largura e o overflow:hidden da mascara
      (necessario pra entrada vertical) decepa o ultimo O. */
-  font-size: clamp(10rem, 31cqi, 39rem);
+  font-size: clamp(10rem, 32cqi, 39rem);
   line-height: 0.76;
   letter-spacing: 0;
   text-transform: uppercase;
@@ -111,21 +112,25 @@
   text-transform: none;
 }
 
+/* Full-bleed, ancorada no rodape do hero e ABAIXO do wash (z 0 < z 1). O PNG
+   corta o torso reto na borda de baixo; so chegando ate o fim do hero esse
+   corte fica enterrado no laranja solido do wash. Encolher a caixa devolve o
+   corte pra dentro da area visivel. */
 .process-hero__image {
   position: absolute;
-  z-index: 2;
-  left: 50%;
-  bottom: -1px;
-  width: min(42%, 46rem);
-  max-height: 78vh;
+  z-index: 3;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 90%;
   object-fit: contain;
   object-position: center bottom;
-  transform: translateX(-50%);
 }
 
 .process-hero__meta {
   position: relative;
-  z-index: 4;
+  z-index: 6;
   flex: none;
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -152,7 +157,7 @@
 
 .process-hero__wash {
   position: absolute;
-  z-index: 1;
+  z-index: 4;
   inset: auto 0 0;
   height: 58%;
   pointer-events: none;
@@ -550,7 +555,7 @@
   .process-hero__title {
     /* min baixo de proposito: 6.8rem travava o fit e o ultimo O era decepado
        em telas <= 360px (70px de corte no 320). Quem manda e o cqi. */
-    font-size: clamp(5rem, 31cqi, 9.5rem);
+    font-size: clamp(5rem, 32cqi, 9.5rem);
     line-height: 0.78;
   }
 
@@ -563,9 +568,11 @@
     font-size: clamp(4.25rem, 19cqi, 6rem);
   }
 
+  /* No mobile a largura da viewport trava o `contain` e a figura fica pequena
+     demais; `cover` deixa ela crescer e corta so o excesso de ombro. */
   .process-hero__image {
-    width: 100%;
-    max-height: 72%;
+    height: 80%;
+    object-fit: cover;
   }
 
   .process-hero__meta {

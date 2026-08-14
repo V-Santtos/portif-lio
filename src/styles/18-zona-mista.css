@@ -7,7 +7,7 @@
   align-items: center;
   gap: 0.6rem;
   padding: 5px 18px 5px 5px;
-  background: var(--color-foreground);
+  background: var(--color-dark);
   color: #fff;
   border: none;
   cursor: pointer;

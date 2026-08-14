@@ -4,8 +4,9 @@ import Seo from "./Seo.jsx";
 import { currentScrollY, fadeJump, gsap, prefersReducedMotion, scrollPageTo, ScrollTrigger, useIsoLayoutEffect } from "./lib.jsx";
 import { usePageTransition } from "./PageTransition.jsx";
 import { getStaticSeo } from "./seo.js";
+import processHeroPortrait from "../asset/process-hero-portrait.png";
 
-const PROCESS_HERO_IMAGE = "";
+const PROCESS_HERO_IMAGE = processHeroPortrait;
 
 const SITES_ITEMS = [
   {
@@ -617,10 +618,18 @@ function Processo() {
                   <span className="process-hero__accent-inner">Meu</span>
                 </span>
               </h1>
-              {PROCESS_HERO_IMAGE && (
-                <img className="process-hero__image" src={PROCESS_HERO_IMAGE} alt="" />
-              )}
             </div>
+
+            {/* Ordem de pilha do hero: titulo (2) < foto (3) < wash (4) < nav (5)
+                < meta (6). A foto cobre a palavra PROCESSO — se ficar por baixo,
+                os vazios das letras enchem de cinza e a palavra perde o contorno.
+                Ambos moram DENTRO do __inner porque ele ja e o contexto de
+                empilhamento (container-type: inline-size aplica contain: layout);
+                fora dele nao ha z-index que os separe do titulo. */}
+            {PROCESS_HERO_IMAGE && (
+              <img className="process-hero__image" src={PROCESS_HERO_IMAGE} alt="" />
+            )}
+            <div className="process-hero__wash" aria-hidden="true" />
 
             <div className="process-hero__meta">
               {/* Texto do Victor (2026-08-13), literal. Substituiu o placeholder
@@ -630,11 +639,10 @@ function Processo() {
                   neutro: mora ACIMA do toggle, entao nao pode citar "site" nem
                   "ferramenta". Tambem nao pode falar de "entender antes de
                   construir" — esse angulo e do statement pinado logo abaixo. */}
-              <p>Antes de confiar um projeto a alguém, você merece saber como essa pessoa trabalha. E é exatamente por isso que esse processo existe.</p>
+              <p>Antes de confiar um projeto a alguém, você merece saber como essa pessoa trabalha.<br />Por isso esse processo existe.</p>
               <p aria-hidden="true">(Role para o meu método)</p>
             </div>
           </div>
-          <div className="process-hero__wash" aria-hidden="true" />
         </section>
 
         {STATEMENTS.map((statement, index) => (

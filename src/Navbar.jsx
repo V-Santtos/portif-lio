@@ -91,6 +91,10 @@ function Navbar() {
   // Só desktop tem hover; reduced-motion mantém o fallback CSS de cor.
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    // Sem hover real (mobile/touch) o roll nunca dispara, mas o DOM dele ainda
+    // impõe .nav-roll__char { height: 1.15em } sobre o line-height 0.95 do link
+    // — 10px a mais por linha, afastando os destinos do overlay.
+    if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
     const root = linksRef.current;
     if (!root) return;
 
