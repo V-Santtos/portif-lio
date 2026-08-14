@@ -97,6 +97,14 @@ function About() {
       gsap.to(pontoFinal, { color: "var(--color-dark)", duration: 0.4, ease: "power2.out" });
     };
 
+    // Ponto de disparo do impacto — calibrado igual no resto da cascata
+    // (bounce, cor dos pontos), então atrasar aqui atrasa tudo junto sem
+    // mexer em mais nada. Só no mobile: o Victor pediu um pouco depois do
+    // que já estava, sem alterar o desktop calibrado antes.
+    const isMobile = window.matchMedia("(max-width: 767px)").matches;
+    const GATILHO = isMobile ? 0.85 : 0.8;
+    const REARME = isMobile ? 0.73 : 0.68;
+
     const desenhar = () => {
       if (!alturaFinal) return;
       const rect = section.getBoundingClientRect();
@@ -107,14 +115,12 @@ function About() {
       const p = gsap.utils.clamp(0, 1, percorrido / total);
       gsap.set(line, { drawSVG: `0% ${p * 100}%` });
 
-      // Dispara em 0.80 — ponto calibrado pelo Victor. O impacto acontece
-      // antes do traço terminar de desenhar.
       // Histerese: só rearma depois de recuar bastante. Sem a folga, parar o
       // scroll exatamente no ponto de disparo faria o impacto repetir todo frame.
-      if (p >= 0.8 && !bateu) {
+      if (p >= GATILHO && !bateu) {
         bateu = true;
         impacto();
-      } else if (p < 0.68 && bateu) {
+      } else if (p < REARME && bateu) {
         bateu = false;
         reverter();
       }

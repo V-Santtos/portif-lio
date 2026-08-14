@@ -209,6 +209,16 @@
     --about-pad-top: 5rem;
     padding-bottom: 6rem;
   }
+  /* 🔴 A linha fica fixa em 50% da SECAO (correto, nao mexer) — quem se move
+     pra encontrar ela e a palavra. Medido com puppeteer em 390px: a linha
+     caia dentro do "B" (137-200px), o "R" vai de 200-237px. Encolher o
+     titulo pra 23.7cqw (fator 0.846 sobre os 28cqw do desktop) poe a linha
+     no meio do "R" — o padding-inline nao muda (e cqw do POSTER, nao do
+     titulo), so a largura das letras encolhe, entao o inicio de "sobre"
+     fica no mesmo lugar e so o fim das letras anda pra esquerda. */
+  .about__title {
+    font-size: 25.2cqw;
+  }
   .about__body {
     max-width: 100%;
   }
