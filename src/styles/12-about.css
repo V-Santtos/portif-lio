@@ -33,6 +33,11 @@
 .about__poster {
   container-type: inline-size;
   position: relative;
+  /* 🔴 z-index EXPLICITO: o titulo tem que pintar POR CIMA da hairline pra ela
+     mergulhar atras do glifo em vez de cruzar por cima dele. Sem isso a ordem
+     so funciona por acidente de ordem no DOM — qualquer reordenacao do JSX
+     inverteria a pintura sem dar erro. */
+  z-index: 1;
   width: var(--about-poster-w);
   margin-inline: 0 auto;
   padding: 4.5cqw 0 6cqw;
@@ -42,22 +47,36 @@
 /* Hairline vertical (so uma; a de baixo foi removida a pedido do Victor).
    Mora na SECAO, nao no poster: o poster e alinhado a esquerda e o botao
    circular da Automation e centrado na pagina, entao o eixo do botao e o 50%
-   DA SECAO. Por isso a altura nao pode usar `cqw` (unidade do poster) — ela
-   repete a formula da largura do poster na mao.
+   DA SECAO.
+   🔴 A ALTURA NAO MORA MAIS AQUI. O `About.jsx` mede `.about__hook` (marcador
+   dentro do "b" de "sobre") ao vivo e seta o height do SVG. A formula antiga
+   (`calc(0.296 * poster + pad + 2.5rem)`) misturava termo proporcional com
+   termo FIXO: os 2.5rem eram ~6% da altura no desktop e ~18% no mobile, entao
+   o pouso na letra so acertava numa faixa de largura. Nao reintroduzir calc.
    Comeca na borda de cima da secao; nao adianta subir mais, dentro da
    Automation ela e da cor do proprio fundo escuro de la. */
 .about__rule {
   position: absolute;
   width: 7px;
-  background: var(--color-dark);
+  overflow: visible;
+  /* fica ABAIXO do poster (z-index:1) — o traco mergulha atras da letra */
+  z-index: 0;
 }
 .about__rule--top {
   left: 50%;
   transform: translateX(-50%);
   top: 0;
-  /* desce por DENTRO do "r" de "sobre" — nao so ate o topo dele, cola no
-     glifo mesmo (some atras do traco preto) */
-  height: calc(0.296 * var(--about-poster-w) + var(--about-pad-top) + 2.5rem);
+}
+.about__rule--top line {
+  stroke: var(--color-dark);
+  stroke-width: 7;
+}
+
+/* Marcador de medida: largura zero, sem caixa propria — existe so pra o JS
+   perguntar ao navegador onde o "b" comeca. Nao dar padding/margin aqui. */
+.about__hook {
+  display: inline-block;
+  width: 0;
 }
 
 /* Titulo gigante — Inter 900, leading negativo como no poster.
@@ -91,6 +110,47 @@
   /* alinhamento optico: o glifo gigante entra um tico a esquerda do texto
      pequeno, senao a coluna parece torta */
   margin-left: -0.6cqw;
+  /* 🔴 OBRIGATORIO. Os spans internos (`about__hook`, `about__i`,
+     `about__dot`) sao inline-block, e inline-block CRIA ponto de quebra de
+     linha no meio da palavra. Sem isto, o "." de "mim." quebra pra uma 2a
+     linha e vai parar na margem esquerda (a linha 2 e flex, com a foto
+     disputando a largura). "sobre" quebraria em "so"/"bre" pelo mesmo motivo. */
+  white-space: nowrap;
+}
+
+/* Pingo do "i" e ponto final de "mim." — trocam pro laranja junto com o
+   impacto da hairline (About.jsx). Cor em `em`/`--color-dark` como o resto do
+   titulo, pra nascer identica ao texto e a troca ficar so na animacao.
+   🔴 O "i" digitado e o "ı" SEM pingo (U+0131) de proposito — cobrir o pingo
+   REAL da fonte com uma bolinha por cima nunca fecha 100% porque a forma dele
+   nao e um circulo perfeito. Sem pingo da fonte, a bolinha e a UNICA marca ali,
+   entao so precisa parecer um "i" normal, nao vencer um por baixo. */
+.about__sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+.about__i {
+  position: relative;
+  display: inline-block;
+}
+.about__i-dot {
+  position: absolute;
+  /* 🔴 numeros calibrados por olho — ajustar se nao ficar como um "i" normal. */
+  width: 0.195em;
+  height: 0.195em;
+  left: calc(50% + 0.015em);
+  top: 0.114em;
+  transform: translate(-50%, -100%);
+  border-radius: 50%;
+  background: var(--color-dark);
+}
+.about__dot {
+  display: inline-block;
+  color: var(--color-dark);
 }
 
 /* Foto encaixada no vazio da segunda linha do titulo.
@@ -115,6 +175,7 @@
   object-fit: cover;
   display: block;
   filter: grayscale(1);
+  transform: scale(1.15);
 }
 
 /* Bloco de baixo: saudacao + paragrafo, alinhados a esquerda */
