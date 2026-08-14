@@ -35,7 +35,9 @@
   width: 100%;
   height: var(--loader-progress);
   background: var(--color-accent);
-  transition: height 180ms ease-out;
+  /* Sem transition de proposito: o valor que chega aqui (InitialLoader.jsx)
+     ja e suavizado por lerp a cada frame. Uma transition por cima ficava
+     perseguindo um alvo que ja se move suave, e so atrasava a barra. */
 }
 
 .initial-loader__counter {
@@ -51,13 +53,69 @@
   letter-spacing: 0;
   user-select: none;
 }
+/* Numero em "rolo": cada digito e uma janela de 1em (overflow hidden) com
+   uma pilha estatica de linhas (0-9), deslocada por transform a cada tique
+   pausado do loop em InitialLoader.jsx (nao mais a cada frame — por isso o
+   transition aqui, diferente da barra: o valor agora salta por passos
+   espacados, e a transition e o que transforma o salto num flip). */
 .initial-loader__number {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
   font-size: clamp(8.8rem, 15.4vw, 18rem);
+}
+.initial-loader__digit {
+  display: block;
+  height: 1em;
+  overflow: hidden;
+}
+/* O "1" da centena mora fora do fluxo, encostado a esquerda da dezena+unidade
+   — assim ele nao empurra os outros dois digitos a vida toda, so aparece
+   deslizando de baixo pra cima no fim. */
+.initial-loader__digit--hundreds {
+  position: absolute;
+  right: 100%;
+  top: 0;
+}
+.initial-loader__digit--hundreds .initial-loader__digit-row {
+  transition: transform 80ms ease-out, opacity 80ms ease-out;
+}
+.initial-loader__digit-track {
+  display: flex;
+  flex-direction: column;
+  will-change: transform;
+  /* Sem transition aqui de proposito: o valor ja chega quantizado (inteiro) e
+     com tempo minimo de tela. Uma transition por cima ficaria sempre em voo
+     entre dois passos e a janela de 1em voltaria a mostrar duas linhas
+     cortadas ao mesmo tempo — exatamente o numero "quebrado" de antes. */
+}
+.initial-loader__digit-row {
+  height: 1em;
+  line-height: 1;
+  display: block;
 }
 .initial-loader__percent {
   margin-top: 0.06em;
   font-size: clamp(3rem, 4.1vw, 5rem);
 }
+
+/* Saida: o numero nao some inteiro de uma vez. Cada numeral rola pra cima e
+   sai um de cada vez (centena -> dezena -> unidade -> %), e so depois o
+   overlay apaga (.is-exiting). O delay em cascata e o que faz o "um por vez";
+   o LEAVE_MS do InitialLoader.jsx cobre o ultimo delay + a duracao. */
+.initial-loader__digit,
+.initial-loader__percent {
+  transition: transform 360ms cubic-bezier(0.65, 0, 0.35, 1), opacity 300ms ease;
+}
+.initial-loader.is-leaving .initial-loader__digit,
+.initial-loader.is-leaving .initial-loader__percent {
+  transform: translateY(-120%);
+  opacity: 0;
+}
+.initial-loader.is-leaving .initial-loader__digit--hundreds { transition-delay: 0ms; }
+.initial-loader.is-leaving .initial-loader__digit--tens { transition-delay: 95ms; }
+.initial-loader.is-leaving .initial-loader__digit--units { transition-delay: 190ms; }
+.initial-loader.is-leaving .initial-loader__percent { transition-delay: 275ms; }
 
 @media (max-width: 767px) {
   .initial-loader__counter {
