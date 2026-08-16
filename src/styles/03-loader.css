@@ -41,6 +41,13 @@
 }
 
 .initial-loader__counter {
+  /* So usada abaixo de 1024px (blocos @media mais abaixo): distancia fixa
+     entre a borda da tela e o "1" do 100%, em px reais — nao escala com
+     fonte nem viewport de proposito, e o unico numero que se mexe pra
+     reposicionar o numeral inteiro. Piso tecnico: a barra mede 10px fixos
+     em toda essa faixa (320-1023px) — abaixo disso o "1" volta a entrar
+     nela. Ajustado a mao com o Victor em 2026-08-16. */
+  --loader-num-offset: 20px;
   position: fixed;
   left: clamp(2.6rem, 7.6vw, 9.5rem);
   bottom: max(clamp(2.8rem, 5.2vw, 5.9rem), env(safe-area-inset-bottom));
@@ -119,13 +126,38 @@
 
 @media (max-width: 767px) {
   .initial-loader__counter {
-    left: clamp(1.55rem, 9vw, 2.8rem);
+    /* O "1" da centena mora FORA desta caixa (right:100%, ver acima), entao a
+       borda visual em 100% nao e o `left` — e `left - 0.4em` do numero (0.4em
+       = avanco de um digito na Bebas Neue, medido). Aqui a fonte e 31vw, o
+       dobro do desktop, entao esse recuo passa de 12vw: maior que qualquer
+       `left` fixo razoavel, e o "1" caia fora da tela por cima da barra.
+       Por isso o left NAO e um valor solto — e --loader-num-offset (acima)
+       MAIS a largura do digito pendurado. Amarrado assim, o "1" pousa sempre
+       na mesma distancia da borda, fonte em qualquer ponto do clamp (os dois
+       clamps nao precisam mais conversar entre si). Mexeu na fonte? O left
+       segue. */
+    --loader-num-size: clamp(6.2rem, 31vw, 9.6rem);
+    left: calc(var(--loader-num-offset) + 0.4 * var(--loader-num-size));
     bottom: max(clamp(2.25rem, 10vh, 4rem), env(safe-area-inset-bottom));
   }
   .initial-loader__number {
-    font-size: clamp(6.2rem, 31vw, 9.6rem);
+    font-size: var(--loader-num-size);
   }
   .initial-loader__percent {
     font-size: clamp(2.2rem, 9vw, 3.2rem);
+  }
+}
+
+/* Tablet (768-1023px): mesmo bug do mobile, raiz diferente. Aqui a fonte
+   (clamp acima, 8.8rem-18rem) trava no PISO ate ~914px, enquanto o `left`
+   desktop (7.6vw) ainda esta subindo devagar demais pra acompanhar — o "1"
+   fica atras da barra ate essa largura. Mesma correcao do bloco mobile:
+   left derivado do proprio tamanho da fonte, so que aqui pro clamp desktop
+   (nao reaproveita --loader-num-size porque so existe dentro do @media
+   mobile acima; index intocado). Acima de 1024px isso para de se aplicar e
+   o `left` original (ja validado) volta a mandar. */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .initial-loader__counter {
+    left: calc(var(--loader-num-offset) + 0.4 * clamp(8.8rem, 15.4vw, 18rem));
   }
 }
