@@ -688,7 +688,9 @@
 
 .lp-preview .roofora-hero__image img {
   object-position: 50% 48%;
-  filter: brightness(0.72) contrast(1.04) saturate(0.95);
+  /* Filtro queimado no arquivo (2026-08-16) — visual identico, sem custo de
+     GPU recalculando a cada frame que a camada se move. Engasgo medido:
+     pior frame caiu de ~288ms pra ~14ms numa passada pelo carrossel mobile. */
 }
 
 .lp-preview .roofora-hero__content {
@@ -966,7 +968,7 @@
 
 .lp-preview .dinevo-hero__media img {
   object-position: 58% 50%;
-  filter: brightness(0.74) saturate(1.08) contrast(1.04);
+  /* Filtro queimado no arquivo (2026-08-16) — ver nota em .roofora-hero__image img. */
 }
 
 .lp-preview .dinevo-hero__shade {
@@ -1143,7 +1145,7 @@
   height: 100%;
   object-fit: cover;
   object-position: 50% 36%;
-  filter: brightness(0.86) saturate(1.06) contrast(1.04);
+  /* Filtro queimado no arquivo (2026-08-16) — ver nota em .roofora-hero__image img. */
 }
 
 .lp-preview .minta-hero__media::after {

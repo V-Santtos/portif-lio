@@ -371,25 +371,29 @@ function LandingPages() {
           start: "center center",
           end: `+=${endDist}`,
           scrub: isMobile ? 1 : 0.6,
-          // Snap por card no touch: o flick "aterrissa" no card mais próximo.
-          // Pontos reescalados pelas pistas de entrada/saída.
-          snap: isMobile
-            ? {
-                snapTo: [
-                  0,
-                  ...Array.from(
-                    { length: cardCount },
-                    (_, i) => (settleDist + (i / (cardCount - 1)) * scrollDist) / endDist
-                  ),
-                  1,
-                ],
-                duration: { min: 0.25, max: 0.6 },
-                ease: "power2.out",
-                // Assenta só no SENTIDO do movimento: descendo, a pista flui pro
-                // fim (Bridge) — nunca puxa de volta pro último card (yank).
-                directional: true,
-              }
-            : undefined,
+          // 🔴 SEM `snap` no mobile — removido em 2026-08-16 depois de medido.
+          //
+          // O snap por card existia aqui e era INCOMPATIVEL com o ScrollSmoother
+          // (adotado em 2026-08-08). Sintoma: parar o dedo no meio do carrossel
+          // e, ~500ms depois, o scroll voltar sozinho pro topo da pagina.
+          //
+          // O calculo do snap estava certo — ele criava o tween mirando o card
+          // seguinte. O que quebrava era a EXECUCAO: o tween move o scroll pelo
+          // proxy do ScrollSmoother e depois rele essa posicao pra detectar se o
+          // usuario interveio (_interruptionTracker no ScrollTrigger). No touch o
+          // smoother roda em passthrough (`smoothTouch:false`), entao a escrita
+          // (window.scrollTo nativo) e a leitura (-currentY do smoother) andam em
+          // ticks diferentes, discordam, e o GSAP resolve a discordancia
+          // escrevendo 0 — pro topo. Medido: uma unica chamada scrollTo(0, 0).
+          //
+          // Mesma familia do bug de pin resolvido com `pinType:"fixed"` logo
+          // abaixo: o proxy e a verdade pro ScrollTrigger, mas no touch o scroll
+          // real passa por fora dele. Pro snap nao existe escape hatch — a saida
+          // e nao usar snap. Quem cobria o motivo original (nao passar batido
+          // pela Bridge num flick) e a EXIT_RUNWAY_VH, que continua no lugar.
+          //
+          // Nao reintroduzir sem antes conferir que o snap pousa certo com o
+          // ScrollSmoother ativo.
           pin: section,
           // Mesma razão do pin do Hero (ver App.jsx): no touch o pin por
           // transform é atualizado na main thread enquanto o scroll roda no
