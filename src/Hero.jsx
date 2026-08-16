@@ -1,7 +1,6 @@
 import { useRef } from "react";
 import { gsap, prefersReducedMotion, useIsoLayoutEffect, fadeJump, goToContactCta } from "./lib.jsx";
 import { usePageTransition } from "./PageTransition.jsx";
-import heroPhotoMobile from "../asset/process-hero-portrait.png";
 
 function Hero({ ready }) {
   const { transitionTo } = usePageTransition();
@@ -98,13 +97,13 @@ function Hero({ ready }) {
           <h1 className="hero__title" ref={titleRef}>
             <span className="hero__line">
               <span className="word"><span>SISTEMAS</span></span>{" "}
-              <span className="word"><span>SOB</span></span>{" "}
+              <span className="word accent"><span>SOB</span></span>{" "}
               <span className="word"><span><span className="accent">MEDIDA</span>.</span></span>
             </span>
             <span className="hero__line">
               <span className="word"><span>SITES</span></span>{" "}
               <span className="word"><span>QUE</span></span>{" "}
-              <span className="word"><span><span className="accent">CONVERTEM</span>.</span></span>
+              <span className="word"><span>CONVERTEM.</span></span>
             </span>
           </h1>
         </div>
@@ -116,19 +115,6 @@ function Hero({ ready }) {
         </div>
       </div>
 
-      {/* Teste: mesma foto do hero de /meu-processo, só no mobile — atrás do
-          wash de propósito (fica um blend com o laranja, não compete com o
-          título). Some no desktop via CSS (display:none).
-          O filtro SVG tinge só o pixel OPACO da foto (feComposite "atop"
-          confina o feFlood cinza dentro do alpha do PNG) — um box-shadow
-          comum pintaria o retângulo transparente ao redor da pessoa também. */}
-      <svg width="0" height="0" style={{ position: "absolute" }} aria-hidden="true">
-        <filter id="hero-photo-tint">
-          <feFlood floodColor="#808080" floodOpacity="0.04" result="tint" />
-          <feComposite in="tint" in2="SourceGraphic" operator="atop" />
-        </filter>
-      </svg>
-      <img className="hero__photo" src={heroPhotoMobile} alt="" aria-hidden="true" />
       <div className="hero__wash" aria-hidden="true"></div>
     </section>
   );
