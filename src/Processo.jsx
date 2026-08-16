@@ -232,11 +232,18 @@ function ProcessStatement({ statement, index }) {
       return;
     }
 
+    const isMobile = window.matchMedia("(max-width: 767px)").matches;
+
     const context = gsap.context(() => {
       gsap.set(lineElements, { yPercent: 135, opacity: 0 });
 
       // Pin e animação têm inícios diferentes. Manter os dois no mesmo
       // ScrollTrigger faria a seção pinada parar a 15% do topo.
+      // pinType:"fixed" no mobile — mesma correção do pin do Hero (App.jsx)
+      // e do carrossel (LandingPages.jsx): sem isso o pin cai em pinType
+      // "transform" (o ScrollSmoother registra scroller:#smooth-wrapper) e
+      // reposiciona por JS na main thread, que atrasa atrás do compositor
+      // durante o momentum do touch e treme.
       ScrollTrigger.create({
         trigger: root,
         start: "top top",
@@ -244,6 +251,7 @@ function ProcessStatement({ statement, index }) {
         pin: statement,
         pinSpacing: false,
         invalidateOnRefresh: true,
+        ...(isMobile && { pinType: "fixed" }),
       });
 
       gsap
@@ -482,7 +490,12 @@ function Processo() {
       // Mesmo overlap da abertura da home: enquanto a primeira frase entra,
       // o hero continua na viewport e a proxima secao o cobre. Sem spacing
       // extra, porque a hero ja ocupa uma viewport no fluxo normal.
+      // pinType:"fixed" no mobile — mesma correção do pin do Hero da home
+      // (App.jsx) e do carrossel (LandingPages.jsx): sem isso o pin cai em
+      // pinType "transform" e treme durante o momentum do touch. Ver o
+      // comentário completo em App.jsx.
       if (hero) {
+        const isMobile = window.matchMedia("(max-width: 767px)").matches;
         ScrollTrigger.create({
           trigger: hero,
           start: "top top",
@@ -490,6 +503,7 @@ function Processo() {
           pin: true,
           pinSpacing: false,
           refreshPriority: -1,
+          ...(isMobile && { pinType: "fixed" }),
         });
       }
 
