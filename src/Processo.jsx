@@ -11,11 +11,11 @@ const PROCESS_HERO_IMAGE = processHeroPortrait;
 const SITES_ITEMS = [
   {
     title: "Seu site começa no papel.",
-    body: "Primeiro passo: entender seu negócio por dentro e por fora — o que você vende, quem é seu cliente e o que leva essas pessoas a escolherem você. Antes de qualquer desenho, você recebe a estrutura completa, o propósito e o papel de cada página.",
+    body: "Primeiro passo: entender seu negócio por dentro e por fora, o que você vende, quem é seu cliente e o que leva essas pessoas a escolherem você. Antes de qualquer desenho, você recebe a estrutura completa, o propósito e o papel de cada página.",
   },
   {
     title: "Um site que reflete a sua marca.",
-    body: "O design certo muda de negócio pra negócio — não existe uma fórmula pronta, como muitos prometem. Por isso escolho cada peça com cuidado, para ela transparecer a sua marca antes de qualquer texto no site.",
+    body: "O design certo muda de negócio pra negócio. Não existe uma fórmula pronta, como muitos prometem. Por isso escolho cada peça com cuidado, para ela transparecer a sua marca antes de qualquer texto no site.",
   },
   {
     title: "Feedback sem drama.",
@@ -23,7 +23,7 @@ const SITES_ITEMS = [
   },
   {
     title: "Suporte pós-entrega.",
-    body: "Eu não desapareço depois da entrega. Você recebe 10 dias de suporte para correções pequenas, ajustes de desempenho e orientações no que precisar.",
+    body: "Eu não desapareço depois da entrega. Cada projeto conta com um período de acompanhamento pensado de acordo com o que foi desenvolvido, para correções pontuais, ajustes de desempenho e orientações no que precisar.",
   },
 ];
 
@@ -45,7 +45,7 @@ const SISTEMAS_ITEMS = [
   },
   {
     title: "Suporte pós-entrega.",
-    body: "O uso no dia a dia é que revela o que precisa de ajuste ou não. Por isso você terá 15 dias após a entrega pra corrigir caso algo tenha passado despercebido e moldar a ferramenta ao seu uso real.",
+    body: "É no uso do dia a dia que aparecem os ajustes que nem sempre são visíveis antes da entrega. Por isso, cada projeto conta com um período de acompanhamento adequado ao que foi desenvolvido, para corrigir pontos pontuais e adaptar a ferramenta ao seu uso real.",
   },
 ];
 
@@ -121,7 +121,7 @@ const RESULTS_BY_TYPE = {
 const SITES_REALITY_ITEMS = [
   {
     number: "01",
-    title: "Sem promessa milagrosa.",
+    title: "UM BOM SITE CRIA O CAMINHO.",
     body: "O que eu garanto é um site capaz de apresentar seu trabalho com clareza, atrair o cliente certo e construir confiança antes mesmo dele enviar a primeira mensagem. O resultado também depende da força da sua oferta e de como as pessoas chegam até você.",
   },
   {
@@ -695,7 +695,7 @@ function Processo() {
           <section className="process-reality process-content-section" aria-labelledby="process-reality-title">
             <div className="container-x process-reality__inner">
               <h2 className="process-reality__title" id="process-reality-title" data-process-reveal>
-                Um papo <span>reto</span>
+                O papel <span>real</span>
               </h2>
               <div className="process-reality__list">
                 {reality.map((item) => (

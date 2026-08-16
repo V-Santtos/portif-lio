@@ -200,6 +200,11 @@
   font-weight: 300;
   letter-spacing: 0;
 }
+/* segundo paragrafo (agora sao dois): respiro de paragrafo, nao de bloco —
+   em `em` do proprio texto, entao acompanha o `max()` do font-size acima */
+.about__body + .about__body {
+  margin-top: 1em;
+}
 
 /* Mobile — o poster inteiro encolhe junto (cqw), mas os textos pequenos
    parariam em 5px. Os `max()` acima seguram o piso de legibilidade; aqui so

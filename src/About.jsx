@@ -72,8 +72,13 @@ function About() {
     const pingoI = section.querySelectorAll(".about__i-dot");
     const pontoFinal = section.querySelectorAll(".about__dot");
     let bateu = false;
+    let medindo = true;
 
     const impacto = () => {
+      // Trava a remedição contínua enquanto o bounce roda: o texto está
+      // deslocado por transform (yPercent), e medir aqui pegaria a posição
+      // errada — ver motivo completo abaixo, em "medindo".
+      medindo = false;
       // yPercent (não px): é relativo à altura da própria caixa, que é `cqw` —
       // o recuo do impacto escala junto com o pôster de graça.
       gsap
@@ -81,7 +86,10 @@ function About() {
           // Remedir depois do impacto: se a tela for redimensionada NO MEIO da
           // animação, a medida sai com o transform aplicado. No fim ele já
           // voltou a zero, então aqui o valor é sempre o de repouso.
-          onComplete: medir,
+          onComplete: () => {
+            medir();
+            medindo = true;
+          },
         })
         .to(palavras, { yPercent: 6, duration: 0.16, ease: "power2.out", stagger: 0.07 })
         .to(pingoI, { backgroundColor: "var(--color-accent)", scale: 1.5, duration: 0.2, ease: "power2.out" }, "<")
@@ -106,6 +114,16 @@ function About() {
     const REARME = isMobile ? 0.73 : 0.68;
 
     const desenhar = () => {
+      // Remedir a cada frame, não só uma vez no mount: `medir()` rodava
+      // apenas em fonts.ready, e se QUALQUER coisa deslocasse o layout entre
+      // esse instante e o momento em que o traço chega no "b" pela primeira
+      // vez (rede real mais lenta que localhost — imagem, fonte, o que for),
+      // a medida antiga ficava desatualizada e o traço mirava no lugar
+      // errado. Só corrigia sozinho depois, porque `impacto()` remede no
+      // fim — daí o efeito só falhava na primeira vez em cada sessão, nunca
+      // mais depois. Mesma filosofia do resto da função: geometria ao vivo,
+      // nunca valor capturado antes (Regras/01).
+      if (medindo) medir();
       if (!alturaFinal) return;
       const rect = section.getBoundingClientRect();
       // 0 quando o topo da seção toca a base da tela; 1 quando o ponto de
@@ -135,13 +153,13 @@ function About() {
       medir();
       desenhar();
       gsap.ticker.add(desenhar);
-      window.addEventListener("resize", medir);
+      // Sem listener de resize: desenhar() já remede a cada frame (acima),
+      // resize inclusive — dois caminhos fazendo a mesma coisa era redundante.
     });
 
     return () => {
       cancelado = true;
       gsap.ticker.remove(desenhar);
-      window.removeEventListener("resize", medir);
     };
   }, []);
 
@@ -239,14 +257,20 @@ function About() {
         </h2>
 
         <div className="about__foot">
-          <h3 className="about__intro" data-reveal>Prazer em te conhecer!</h3>
+          <h3 className="about__intro" data-reveal>Nunca fui de receita pronta.</h3>
           <p className="about__body" data-reveal>
-            Opa! Meu nome é Victor. Eu crio sites que posicionam o seu negócio
-            como a escolha óbvia — sem enrolação, sem promessas vazias. A
-            maioria dos sites de pequenas empresas parecem feitos às pressas.
-            Confusos, genéricos, que não convencem ninguém. Eu crio sites que
-            comunicam com clareza, transmitem confiança e fazem o "sim"
-            parecer natural.
+            Meu nome é Victor. Sou desenvolvedor de produtos digitais e
+            trabalho diretamente com cada cliente para entender o que
+            realmente precisa ser resolvido e transformar ideias em sites ou
+            ferramentas mais claras, úteis e bem pensadas para cada negócio.
+          </p>
+          <p className="about__body" data-reveal>
+            Acredito que muitas empresas ainda não aproveitam o digital de uma
+            forma que realmente acompanhe sua realidade. Para mim, você ou seu
+            negócio não deveriam se esforçar para caber dentro de uma caixa.
+            Seja na forma como se apresenta ou nas ferramentas que utiliza no
+            dia a dia, a tecnologia deve se moldar ao que você precisa, e não
+            fazer você se moldar a ela.
           </p>
         </div>
       </div>

@@ -146,6 +146,11 @@
   z-index: 1;
 }
 
+/* Foto de teste (só mobile, ver media query abaixo) — some no desktop */
+.hero__photo {
+  display: none;
+}
+
 /* index pill */
 .hero__index {
   position: absolute;
@@ -187,7 +192,29 @@
   }
   .hero__nav { padding: 1.1rem 0; }
   .hero__logo-mark { height: 26px; }
-  .hero__main { padding: 1.75rem 0 1.5rem; }
+  .hero__main { padding: 0 0 1.5rem; }
+  /* Teste: foto atrás do wash, saindo do rodapé do Hero — mesmo z-index do
+     wash (0) mas ANTES dele no DOM, então o wash pinta por cima e faz o
+     blend com o laranja. object-position:top pra mostrar o rosto/torso,
+     não o corte de baixo do PNG (pensado pra colar no rodapé de /meu-processo,
+     aqui a proporção da faixa é outra). */
+  .hero__photo {
+    display: block;
+    position: absolute;
+    z-index: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    height: 62%;
+    object-fit: cover;
+    object-position: -30% top;
+    pointer-events: none;
+    /* Tinge só o pixel opaco da foto (filtro SVG definido no JSX) — separa o
+       preto da foto do preto do título sem pintar o retângulo transparente
+       ao redor da pessoa. Ajustar floodOpacity no filtro, não aqui. */
+    filter: url(#hero-photo-tint);
+  }
   /* Poster: as linhas quebram por palavra (os .word são inline-block,
      a máscara da animação continua funcionando linha a linha) */
   .hero__line { white-space: normal; }

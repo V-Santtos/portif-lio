@@ -112,6 +112,7 @@
   font-style: normal;
   line-height: 1;
   letter-spacing: 0;
+  color: var(--color-accent);
 }
 
 .faq__icon {

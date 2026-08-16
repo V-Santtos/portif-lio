@@ -1,6 +1,7 @@
 import { useRef } from "react";
 import { gsap, prefersReducedMotion, useIsoLayoutEffect, fadeJump, goToContactCta } from "./lib.jsx";
 import { usePageTransition } from "./PageTransition.jsx";
+import heroPhotoMobile from "../asset/process-hero-portrait.png";
 
 function Hero({ ready }) {
   const { transitionTo } = usePageTransition();
@@ -120,6 +121,19 @@ function Hero({ ready }) {
         </div>
       </div>
 
+      {/* Teste: mesma foto do hero de /meu-processo, só no mobile — atrás do
+          wash de propósito (fica um blend com o laranja, não compete com o
+          título). Some no desktop via CSS (display:none).
+          O filtro SVG tinge só o pixel OPACO da foto (feComposite "atop"
+          confina o feFlood cinza dentro do alpha do PNG) — um box-shadow
+          comum pintaria o retângulo transparente ao redor da pessoa também. */}
+      <svg width="0" height="0" style={{ position: "absolute" }} aria-hidden="true">
+        <filter id="hero-photo-tint">
+          <feFlood floodColor="#808080" floodOpacity="0.04" result="tint" />
+          <feComposite in="tint" in2="SourceGraphic" operator="atop" />
+        </filter>
+      </svg>
+      <img className="hero__photo" src={heroPhotoMobile} alt="" aria-hidden="true" />
       <div className="hero__wash" aria-hidden="true"></div>
     </section>
   );
