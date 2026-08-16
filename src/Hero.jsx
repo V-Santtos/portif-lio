@@ -99,12 +99,12 @@ function Hero({ ready }) {
             <span className="hero__line">
               <span className="word"><span>SISTEMAS</span></span>{" "}
               <span className="word"><span>SOB</span></span>{" "}
-              <span className="word accent"><span>MEDIDA.</span></span>
+              <span className="word"><span><span className="accent">MEDIDA</span>.</span></span>
             </span>
             <span className="hero__line">
               <span className="word"><span>SITES</span></span>{" "}
               <span className="word"><span>QUE</span></span>{" "}
-              <span className="word"><span>CONVERTEM.</span></span>
+              <span className="word"><span><span className="accent">CONVERTEM</span>.</span></span>
             </span>
           </h1>
         </div>
