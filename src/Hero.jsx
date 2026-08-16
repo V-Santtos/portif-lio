@@ -16,14 +16,13 @@ function Hero({ ready }) {
   const sectionRef = useRef(null);
   const titleRef = useRef(null);
   const metaLeftRef = useRef(null);
-  const metaRightRef = useRef(null);
   const navRef = useRef(null);
 
   useIsoLayoutEffect(() => {
     if (prefersReducedMotion()) return;
     const titleSpans = titleRef.current?.querySelectorAll(".word > span");
     if (titleSpans) gsap.set(titleSpans, { y: 0, yPercent: 160 });
-    gsap.set([metaLeftRef.current, metaRightRef.current], { y: 16, opacity: 0 });
+    gsap.set(metaLeftRef.current, { y: 16, opacity: 0 });
     gsap.set(navRef.current, { y: -16, opacity: 0 });
   }, []);
 
@@ -34,7 +33,7 @@ function Hero({ ready }) {
     const reduce = prefersReducedMotion();
     if (reduce) {
       gsap.set(titleSpans, { y: 0, yPercent: 0, clearProps: "transform" });
-      [metaLeftRef.current, metaRightRef.current, navRef.current].forEach((el) => {
+      [metaLeftRef.current, navRef.current].forEach((el) => {
         if (el) {
           el.style.opacity = 1;
           el.style.transform = "none";
@@ -52,7 +51,6 @@ function Hero({ ready }) {
       "-=0.35"
     );
     tl.to(metaLeftRef.current, { y: 0, opacity: 1, duration: 0.6 }, "-=0.55");
-    tl.to(metaRightRef.current, { y: 0, opacity: 1, duration: 0.6 }, "-=0.65");
 
     return () => tl.kill();
   }, [ready]);
@@ -114,9 +112,6 @@ function Hero({ ready }) {
         <div className="hero__meta">
           <div className="left" ref={metaLeftRef}>
             Construo a ferramenta certa para sua rotina, suas ideias e seu negócio. E também sites personalizados pensados do zero.
-          </div>
-          <div className="right" ref={metaRightRef}>
-            — Construa o caminho.
           </div>
         </div>
       </div>

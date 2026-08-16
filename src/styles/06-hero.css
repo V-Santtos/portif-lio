@@ -99,7 +99,7 @@
 
 .hero__meta {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr;
   gap: 2rem;
   padding-bottom: 2.5rem;
   padding-top: 1rem;
@@ -110,7 +110,6 @@
   flex-shrink: 0; /* não esmaga em viewport curto */
 }
 .hero__meta .left { max-width: 38ch; }
-.hero__meta .right { text-align: right; max-width: 28ch; justify-self: end; align-self: end; }
 
 .hero__cta-row {
   display: flex;
@@ -208,7 +207,7 @@
     width: 100%;
     height: 62%;
     object-fit: cover;
-    object-position: -30% top;
+    object-position: center top;
     pointer-events: none;
     /* Tinge só o pixel opaco da foto (filtro SVG definido no JSX) — separa o
        preto da foto do preto do título sem pintar o retângulo transparente
@@ -220,16 +219,11 @@
   .hero__line { white-space: normal; }
   .hero__title {
     font-size: clamp(52px, 18vw, 88px);
-    line-height: 0.92;
+    line-height: 0.84;
   }
   .hero__meta {
     grid-template-columns: 1fr;
     gap: 1.1rem;
     padding-bottom: 2rem;
-  }
-  .hero__meta .right {
-    text-align: left;
-    justify-self: start;
-    align-self: auto;
   }
 }
