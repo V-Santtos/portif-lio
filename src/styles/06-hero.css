@@ -203,11 +203,11 @@
     z-index: 0;
     left: 0;
     right: 0;
-    bottom: 0;
+    bottom: -20px;
     width: 100%;
     height: 62%;
     object-fit: cover;
-    object-position: center top;
+    object-position: -50% top;
     pointer-events: none;
     /* Tinge só o pixel opaco da foto (filtro SVG definido no JSX) — separa o
        preto da foto do preto do título sem pintar o retângulo transparente
