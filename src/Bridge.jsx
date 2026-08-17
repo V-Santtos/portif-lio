@@ -69,17 +69,20 @@ function Bridge() {
       const lines = phrase.querySelectorAll(".bridge__line:not(.bridge__line--accent)");
       const kicker = stage.querySelector(".bridge__kicker");
 
-      // Progresso em que a cortina COMEÇA a subir e em que termina de cobrir a
-      // tela inteira. A frase fica visível por uma janela longa (0 → ~0.5 —
-      // ela só começa a sair pelo topo perto da metade do trajeto), e a
-      // cortina precisa agir CEDO dentro dela: começar pouco depois de a
-      // frase se estabelecer na tela, e terminar de cobrir bem antes do topo
-      // da frase chegar perto de sair — senão o efeito lê como atrasado,
-      // "correndo atrás" de um texto que já está de saída (era o que
-      // acontecia com 0.4→0.56: o START ficava perto demais do ponto em que a
-      // frase já estava sendo cortada por cima).
-      const START = 0.12;
-      const END = 0.3;
+      // 🔴 A cortina é função do TOPO DO STAGE, não da frase. Os critérios que
+      // o Victor validou ao vivo são todos sobre a seção contra a tela ("nada
+      // do carrossel em cima, nada da Automation embaixo, cortina já 75–80%"),
+      // então medir a frase era medir a coisa errada — foi o que fez as três
+      // calibragens anteriores lerem como atrasadas.
+      //
+      // Ambos em fração da altura da tela, com o topo do stage como régua:
+      //   0.5  → topo do stage a meia tela (carrossel ainda aparecendo)
+      //  -0.105 → topo do stage já 10,5% acima da viewport
+      // Nessa janela, no instante em que o carrossel acaba de sair
+      // (topo do stage = 0), a cortina está ~78% preenchida — o alvo pedido.
+      // Depende do stage ter ~130svh (ver 10-bridge.css): os dois são um par.
+      const FILL_START = 0.5;
+      const FILL_END = -0.105;
 
       let lastWidth = window.innerWidth;
       let tl = null;
@@ -112,18 +115,13 @@ function Bridge() {
           .to(secondLetters, { yPercent: -50, duration: 0.9, stagger: 0.028 });
       };
 
-      // 0 quando a BASE da frase toca a base da tela; 1 quando o TOPO dela sai
-      // por cima. É a janela real de exibição da frase — ancorar no stage (como
-      // o desktop faz) começa a contar tarde, e o engolir cai fora da tela.
-      //
-      // Medido ao vivo, sem cache: `a` e `b` abaixo não dependem da altura da
-      // tela (só de geometria de layout), então nada aqui precisa ser
-      // recalculado quando a fonte assenta, a barra de URL recolhe ou o
-      // aparelho gira. Cachear isso foi o bug: o valor congelava pré-fonte.
-      const readProgress = () => {
-        const r = phrase.getBoundingClientRect();
+      // Medido ao vivo, sem cache — nada aqui precisa ser recalculado quando a
+      // fonte assenta, a barra de URL recolhe ou o aparelho gira. (Cachear foi
+      // um bug real antes: o valor congelava pré-fonte e a conta saía errada.)
+      const readFill = () => {
+        const top = stage.getBoundingClientRect().top;
         const vh = window.innerHeight;
-        return gsap.utils.clamp(0, 1, (vh - r.bottom) / (vh + r.height));
+        return gsap.utils.clamp(0, 1, (FILL_START * vh - top) / ((FILL_START - FILL_END) * vh));
       };
 
       const build = () => {
@@ -134,14 +132,12 @@ function Bridge() {
         // com o yPercent — a cortina nascia uma altura inteira abaixo do lugar.
         gsap.set(curtain, { y: 0, yPercent: 100 });
 
+        // A cortina é a ÚNICA coisa nessa timeline: ela é POSIÇÃO pura, então
+        // seguir o dedo faz sentido. O letter-swap roda à parte, no relógio
+        // dele (ver `playSwap`) — a janela [FILL_START, FILL_END] já cuida de
+        // "quando", então aqui a timeline é só o trajeto, 0 a 1.
         tl = gsap.timeline({ paused: true });
-        // Fixa a duração total em 1 unidade: sem isso o `progress()` mapearia
-        // contra o fim do último tween, e a janela [a, b] acima viraria outra
-        // escala. A cortina é a ÚNICA coisa nessa timeline — ela é posição
-        // pura, então escrubar faz sentido; o letter-swap roda à parte (ver
-        // `playSwap`), no relógio dele.
-        tl.to({}, { duration: 1 }, 0);
-        tl.fromTo(curtain, { y: 0, yPercent: 100 }, { yPercent: 0, duration: END - START, ease: "none" }, START);
+        tl.fromTo(curtain, { y: 0, yPercent: 100 }, { yPercent: 0, duration: 1, ease: "none" });
       };
 
       const setCrossed = (el, crossed) => el.classList.toggle("is-crossed", crossed);
@@ -150,20 +146,21 @@ function Bridge() {
         if (!tl) return;
         if (phrase.getBoundingClientRect().top > window.innerHeight) return; // ainda não chegou
 
-        const p = readProgress();
+        const fill = readFill();
         if (!swapped) {
-          // p já adiantado na primeira leitura = chegou aqui por salto (link do
-          // menu, restauração de scroll), não por rolagem natural — nada foi
-          // visto rodando, então pula direto pro estado final em vez de tocar
-          // a animação fora de hora.
-          playSwap(p > 0.15);
+          // Dispara assim que a frase começa a aparecer — bem antes da cortina,
+          // pra ela ter o máximo de pista possível. `fill` já adiantado na
+          // PRIMEIRA leitura = chegou por salto (link do menu, restauração de
+          // scroll) e não por rolagem: aí assume o estado final em vez de
+          // tocar a animação fora de hora.
+          playSwap(fill > 0.15);
         }
 
         // Um salto que pousa depois da Escada (link do menu) não precisa de
-        // tratamento especial pra cortina: o progresso é função pura da
+        // tratamento especial pra cortina: o preenchimento é função pura da
         // geometria, dá 1 sozinho, e a timeline já renderiza o estado final. É
         // o que dispensa o `bridge:skip` que o desktop precisa.
-        tl.progress(p);
+        tl.progress(fill);
 
         // Inversão de cor por comparação de rect, não por tempo: a linha vira
         // creme quando a borda da cortina passa da metade dela. Auto-corrige a

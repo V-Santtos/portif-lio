@@ -68,7 +68,11 @@
   position: relative;
   overflow: hidden;
   vertical-align: baseline;
-  height: 0.82em;
+  /* Casada com a altura de `.bridge__letter-face` (0.84em) — se ficar menor,
+     a moldura corta uns px do rodapé da letra mesmo em repouso. O flip
+     (yPercent:-50 em `.bridge__letter`) desloca exatamente uma altura de
+     face, então bater as duas medidas não abre fresta da face seguinte. */
+  height: 0.84em;
   line-height: 0.84;
   contain: paint;
 }
@@ -110,8 +114,18 @@
   .bridge__approach { height: 6rem; }
   .bridge-stage {
     height: auto;
-    min-height: 62svh;
-    padding: 3.5rem 5vw 4rem;
+    /* 🔴 A seção TEM que ser mais alta que a tela. Só assim existe um trecho
+       de scroll em que a viewport mostra SÓ a Escada — sem carrossel em cima
+       nem Automation embaixo, que é o enquadramento limpo que a frase pede
+       (o desktop consegue isso com 100vh + lock). Com padding em rem a seção
+       ficava ~558px numa tela de 844: NUNCA havia esse trecho, e a Automation
+       entrava em cena antes da frase se enquadrar.
+       42svh + conteúdo + 47svh ≈ 130svh → sobram ~30svh de janela limpa.
+       Os respiros são quase simétricos de propósito: dão o ar da transição de
+       um lado e do outro. Mexer neles muda a calibragem da cortina
+       (FILL_START/FILL_END em Bridge.jsx) — os dois são um par. */
+    min-height: 0;
+    padding: 42svh 5vw 47svh;
     justify-content: center;
     /* ancora a cortina; o `overflow: hidden` da base já a esconde parada */
     position: relative;

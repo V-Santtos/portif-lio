@@ -172,9 +172,14 @@
 /* ── Automation mobile — cards empilhados ── */
 @media (max-width: 767px) {
   .auto__hero {
-    /* respiro superior generoso — mesmo tratamento da frase da Bridge */
+    /* era 13rem, espelhando o respiro (também 13rem) que a Bridge tinha
+       embaixo — os dois amorteciam o corte seco creme→dark. Agora a Bridge
+       já traz 47svh (~25rem) de escuro embaixo da frase, coberto pela
+       cortina; repetir 13rem aqui empilhava dois buffers pro mesmo trabalho
+       e jogava o título da Automation pra longe. O vão escuro total
+       (47svh + este) fica perto dos 26rem originais, que eram validados. */
     min-height: 0;
-    padding: 13rem 5vw 4rem;
+    padding: 6rem 5vw 4rem;
   }
   /* Cadência mobile do título: TUDO O QUE SEGUE / UM PADRÃO PODE SER /
      [AUTOMATIZADO.] — fonte dimensionada pra linha mais longa caber e a
