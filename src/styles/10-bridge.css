@@ -96,18 +96,60 @@
   width: 0.28em;
 }
 
+/* Cortina dark — efeito exclusivo do mobile (ligada no @media abaixo) */
+.bridge__curtain { display: none; }
+
 /* ── Bridge mobile — sem lock: seção mais curta, respiros menores ── */
 @media (max-width: 767px) {
-  /* Respiro moderado e SIMÉTRICO em volta da frase — isola a mensagem
-     sem colar no carrossel (em cima) nem na Automation (embaixo) */
-  /* topo espelha o respiro de baixo: 3.5 (folga do card) + 6 + 3.5 = 13rem */
+  /* Respiro moderado em volta da frase — isola a mensagem sem colar no
+     carrossel (em cima). Embaixo o respiro ENCOLHEU (era 13rem, simétrico
+     com o topo da Automation): aqueles 13rem+13rem existiam pra amortecer o
+     corte seco creme→dark. A cortina agora FAZ esse amortecimento
+     visualmente — manter o buffer generoso vira preto morto depois que o
+     efeito já terminou, esperando à toa até o título da Automation aparecer. */
   .bridge__approach { height: 6rem; }
   .bridge-stage {
     height: auto;
     min-height: 62svh;
-    /* respiro generoso embaixo — área clara isola a frase antes da dark */
-    padding: 3.5rem 5vw 13rem;
+    padding: 3.5rem 5vw 4rem;
     justify-content: center;
+    /* ancora a cortina; o `overflow: hidden` da base já a esconde parada */
+    position: relative;
   }
   .bridge__kicker { margin-bottom: 2.5rem; }
+
+  /* ── Cortina: a Automation chega como chegada, sem pin e sem lock ──
+     Sobe do rodapé do stage e engole a frase; quando termina de cobrir, a
+     seção dark logo abaixo continua a MESMA cor — não há costura pra ver.
+     Estado parado (translateY 100%) mora no CSS: sem JS ou com
+     reduced-motion, a Escada fica idêntica ao que era antes. */
+  .bridge__curtain {
+    display: block;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 0;
+    background: var(--color-dark);
+    transform: translateY(100%);
+    will-change: transform;
+    pointer-events: none;
+  }
+
+  /* texto por cima da cortina — sem isso o absolute pinta acima do fluxo */
+  .bridge__kicker,
+  .bridge__phrase {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Atravessar a borda inverte a cor. `is-crossed` é decidido por comparação
+     de rect a cada frame (não por tempo), e a transition curta transforma o
+     snap num mergulho. Não colide com GSAP: ele não anima `color` aqui. */
+  .bridge__line { transition: color 0.2s linear; }
+  .bridge__line.is-crossed { color: var(--color-surface); }
+
+  .bridge__kicker { transition: opacity 0.2s linear; }
+  .bridge__kicker.is-crossed { opacity: 0; }
 }

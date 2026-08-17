@@ -28,6 +28,7 @@ function LetterSwapLine({ children, accent = false, sentence }) {
 function Bridge() {
   const stageRef = useRef(null);
   const phraseRef = useRef(null);
+  const curtainRef = useRef(null);
 
   useIsoLayoutEffect(() => {
     if (prefersReducedMotion()) return;
@@ -43,6 +44,178 @@ function Bridge() {
 
     const firstLetters = phrase.querySelectorAll('[data-sentence="1"] .bridge__letter');
     const secondLetters = phrase.querySelectorAll('[data-sentence="2"] .bridge__letter');
+
+    // ────────────────────────────────────────────────────────────────
+    // MOBILE — cortina escrubada. Caminho totalmente separado do desktop.
+    //
+    // Por que não é o efeito do desktop: o desktop TRAVA o scroll (smoother
+    // pausado) e roda a timeline sozinho. No touch essa briga é perdida — o
+    // scroll roda no compositor e qualquer tentativa de segurá-lo pela main
+    // thread trava/treme quando o usuário força.
+    //
+    // Aqui nada disputa o scroll. O progresso é função pura da geometria ao
+    // vivo, e o ÚNICO elemento que a main thread transforma é a cortina — que
+    // por definição precisa se mover em relação à página, então um frame de
+    // atraso nela não tem referência visual pra denunciar. A frase segue
+    // rolando pelo compositor, como texto normal. Forçar o scroll só atravessa
+    // o efeito mais rápido; não há nada pra quebrar nem pra dessincronizar.
+    // ────────────────────────────────────────────────────────────────
+    if (window.matchMedia("(max-width: 767px)").matches) {
+      const curtain = curtainRef.current;
+      if (!curtain) return;
+
+      // Linhas laranja NÃO entram: o accent é legível no creme e no dark, então
+      // atravessar a borda não pede troca de cor. Só as escuras invertem.
+      const lines = phrase.querySelectorAll(".bridge__line:not(.bridge__line--accent)");
+      const kicker = stage.querySelector(".bridge__kicker");
+
+      // Progresso em que a cortina COMEÇA a subir e em que termina de cobrir a
+      // tela inteira. A frase fica visível por uma janela longa (0 → ~0.5 —
+      // ela só começa a sair pelo topo perto da metade do trajeto), e a
+      // cortina precisa agir CEDO dentro dela: começar pouco depois de a
+      // frase se estabelecer na tela, e terminar de cobrir bem antes do topo
+      // da frase chegar perto de sair — senão o efeito lê como atrasado,
+      // "correndo atrás" de um texto que já está de saída (era o que
+      // acontecia com 0.4→0.56: o START ficava perto demais do ponto em que a
+      // frase já estava sendo cortada por cima).
+      const START = 0.12;
+      const END = 0.3;
+
+      let lastWidth = window.innerWidth;
+      let tl = null;
+      let swapTl = null;
+      let swapped = false;
+
+      // Flip por par-de-faces empilhadas (mesma técnica do desktop) é um efeito
+      // de DOIS ESTADOS — bonito em 0% ou 100%, fantasma em qualquer ponto no
+      // meio (a moldura mostra metade da face velha + metade da nova ao mesmo
+      // tempo). Amarrar isso ao progresso do scroll — como a cortina — deixa
+      // esse meio-do-caminho refém da velocidade do dedo: num scroll normal o
+      // usuário praticamente sempre pega o flip pausado ali, borrado. A saída
+      // não é a cortina (ela É posição, faz sentido escrubar); é rodar o flip
+      // no RELÓGIO da timeline, sempre a 0,9s+0,5s+0,9s, disparado uma vez só —
+      // em qualquer velocidade de dedo, ele conclui do mesmo jeito, sem parar
+      // no meio nunca.
+      const playSwap = (instant) => {
+        if (swapped) return;
+        swapped = true;
+        if (instant) {
+          // Entrou já com a cortina adiantada (salto de link, restauração de
+          // scroll) — nada foi visto rodando, então só assume o estado final.
+          gsap.set([...firstLetters, ...secondLetters], { yPercent: -50 });
+          return;
+        }
+        swapTl = gsap
+          .timeline({ defaults: { ease: "power3.inOut" } })
+          .to(firstLetters, { yPercent: -50, duration: 0.9, stagger: 0.028 })
+          .to({}, { duration: 0.5 })
+          .to(secondLetters, { yPercent: -50, duration: 0.9, stagger: 0.028 });
+      };
+
+      // 0 quando a BASE da frase toca a base da tela; 1 quando o TOPO dela sai
+      // por cima. É a janela real de exibição da frase — ancorar no stage (como
+      // o desktop faz) começa a contar tarde, e o engolir cai fora da tela.
+      //
+      // Medido ao vivo, sem cache: `a` e `b` abaixo não dependem da altura da
+      // tela (só de geometria de layout), então nada aqui precisa ser
+      // recalculado quando a fonte assenta, a barra de URL recolhe ou o
+      // aparelho gira. Cachear isso foi o bug: o valor congelava pré-fonte.
+      const readProgress = () => {
+        const r = phrase.getBoundingClientRect();
+        const vh = window.innerHeight;
+        return gsap.utils.clamp(0, 1, (vh - r.bottom) / (vh + r.height));
+      };
+
+      const build = () => {
+        if (tl) tl.kill();
+
+        // `y: 0` explícito: o `translateY(100%)` do CSS (estado parado, que
+        // segura o efeito sem JS) é lido pelo GSAP como `y` em px e SOMARIA
+        // com o yPercent — a cortina nascia uma altura inteira abaixo do lugar.
+        gsap.set(curtain, { y: 0, yPercent: 100 });
+
+        tl = gsap.timeline({ paused: true });
+        // Fixa a duração total em 1 unidade: sem isso o `progress()` mapearia
+        // contra o fim do último tween, e a janela [a, b] acima viraria outra
+        // escala. A cortina é a ÚNICA coisa nessa timeline — ela é posição
+        // pura, então escrubar faz sentido; o letter-swap roda à parte (ver
+        // `playSwap`), no relógio dele.
+        tl.to({}, { duration: 1 }, 0);
+        tl.fromTo(curtain, { y: 0, yPercent: 100 }, { yPercent: 0, duration: END - START, ease: "none" }, START);
+      };
+
+      const setCrossed = (el, crossed) => el.classList.toggle("is-crossed", crossed);
+
+      const render = () => {
+        if (!tl) return;
+        if (phrase.getBoundingClientRect().top > window.innerHeight) return; // ainda não chegou
+
+        const p = readProgress();
+        if (!swapped) {
+          // p já adiantado na primeira leitura = chegou aqui por salto (link do
+          // menu, restauração de scroll), não por rolagem natural — nada foi
+          // visto rodando, então pula direto pro estado final em vez de tocar
+          // a animação fora de hora.
+          playSwap(p > 0.15);
+        }
+
+        // Um salto que pousa depois da Escada (link do menu) não precisa de
+        // tratamento especial pra cortina: o progresso é função pura da
+        // geometria, dá 1 sozinho, e a timeline já renderiza o estado final. É
+        // o que dispensa o `bridge:skip` que o desktop precisa.
+        tl.progress(p);
+
+        // Inversão de cor por comparação de rect, não por tempo: a linha vira
+        // creme quando a borda da cortina passa da metade dela. Auto-corrige a
+        // qualquer mudança de layout e não tem constante pra calibrar.
+        const edge = curtain.getBoundingClientRect().top;
+        lines.forEach((line) => {
+          const r = line.getBoundingClientRect();
+          setCrossed(line, edge <= r.top + r.height * 0.5);
+        });
+        if (kicker) setCrossed(kicker, edge <= kicker.getBoundingClientRect().bottom);
+      };
+
+      const onResize = () => {
+        // A barra de URL do mobile dispara resize de altura durante o scroll —
+        // remontar ali daria salto. Só a largura conta como mudança real.
+        if (window.innerWidth === lastWidth) return;
+        lastWidth = window.innerWidth;
+
+        if (!window.matchMedia("(max-width: 767px)").matches) {
+          // Girou pra landscape/desktop: estaciona a cortina e para. Não tenta
+          // subir o caminho do desktop no meio da sessão.
+          if (tl) { tl.kill(); tl = null; }
+          gsap.set(curtain, { y: 0, yPercent: 100 });
+          lines.forEach((line) => setCrossed(line, false));
+          if (kicker) setCrossed(kicker, false);
+          return;
+        }
+        build();
+      };
+
+      build();
+      render();
+      gsap.ticker.add(render);
+      window.addEventListener("resize", onResize);
+
+      let fontsCancelled = false;
+      document.fonts?.ready.then(() => {
+        if (fontsCancelled) return;
+        build();
+        render();
+      });
+
+      return () => {
+        fontsCancelled = true;
+        gsap.ticker.remove(render);
+        window.removeEventListener("resize", onResize);
+        if (tl) tl.kill();
+        if (swapTl) swapTl.kill();
+        lines.forEach((line) => setCrossed(line, false));
+        if (kicker) setCrossed(kicker, false);
+      };
+    }
 
     // Com o ScrollSmoother ativo, a posição de scroll que importa é a DELE
     // (a visual). window.scrollY é o alvo nativo e o conteúdo chega nele
@@ -159,22 +332,6 @@ function Bridge() {
       window.removeEventListener("scroll", checkTrigger);
       gsap.ticker.remove(checkTrigger);
 
-      // Mobile: sem scroll-lock nem handoff — touch briga com lock (momentum
-      // do iOS). Só roda o letter-swap; a Automation entra rolando normal e
-      // recebe o evento pra animar o word-swap dela.
-      if (window.matchMedia("(max-width: 767px)").matches) {
-        tl = gsap.timeline({
-          defaults: { ease: "power3.inOut" },
-          onComplete: () => {
-            window.dispatchEvent(new CustomEvent("automation:word-swap"));
-          },
-        })
-          .to(firstLetters, { yPercent: -50, duration: 0.9, stagger: 0.028 })
-          .to({}, { duration: 0.5 })
-          .to(secondLetters, { yPercent: -50, duration: 0.9, stagger: 0.028 });
-        return;
-      }
-
       const automation = document.querySelector(".automation");
 
       lockScroll();
@@ -253,6 +410,9 @@ function Bridge() {
       <div className="bridge__approach" aria-hidden="true" />
 
       <div className="section bridge-stage" ref={stageRef}>
+        {/* Cortina dark — só existe no mobile (display:none no desktop) */}
+        <div className="bridge__curtain" ref={curtainRef} aria-hidden="true" />
+
         <div className="bridge__kicker">
           <span className="eyebrow">A escada</span>
           <img className="bridge__stair" src="/escada.png" alt="" aria-hidden="true" />
