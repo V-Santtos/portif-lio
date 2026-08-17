@@ -35,11 +35,20 @@ function App() {
   const [preHeroVisible, setPreHeroVisible] = useState(playOpening);
   const progressRef = useRef(null);
   const openingActive = loaderState.showInitialLoader || preHeroVisible;
+  // Espelha loaderState.showInitialLoader em tempo real pro effect do
+  // ScrollTrigger (abaixo) ler sem depender dele no array de dependências —
+  // ver o comentário junto do document.fonts.ready.then() mais abaixo.
+  const loaderActiveRef = useRef(loaderState.showInitialLoader);
   const handleInitialLoaderDone = useCallback(() => {
+    loaderActiveRef.current = false;
     setLoaderState({
       showInitialLoader: false,
       introUnlocked: true,
     });
+    // O loader só chega aqui depois de essentialsDone (fonts + logo prontos),
+    // entao o refresh de fonts.ready la embaixo ja foi pulado por estar
+    // loaderActiveRef ainda true — este e quem fecha a conta.
+    ScrollTrigger.refresh();
   }, []);
 
   const handlePreHeroDone = useCallback(() => {
@@ -155,7 +164,19 @@ function App() {
 
     ScrollTrigger.refresh();
     if (document.fonts && document.fonts.ready) {
-      document.fonts.ready.then(() => ScrollTrigger.refresh());
+      document.fonts.ready.then(() => {
+        // document.fonts.ready e o MESMO gatilho que o InitialLoader usa pra
+        // liberar o "rush" final do contador ate 100% (essentialsDone). Rodar
+        // este refresh() aqui tambem faz as duas coisas caírem no mesmo tick:
+        // o refresh recalcula posicao de TODOS os ScrollTriggers da pagina
+        // (pin do hero + pin do carrossel) e trava a main thread bem na hora
+        // em que o rAF do loader esta correndo o numero/barra pro fim — lido
+        // como um engasgo visual exatamente no 100%. Enquanto o loader estiver
+        // ativo, so pulamos: handleInitialLoaderDone chama o mesmo refresh()
+        // de novo assim que ele sai de cena, sem essa disputa.
+        if (loaderActiveRef.current) return;
+        ScrollTrigger.refresh();
+      });
     }
 
     return () => {

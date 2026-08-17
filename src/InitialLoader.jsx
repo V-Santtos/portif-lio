@@ -201,7 +201,7 @@ function InitialLoader({ onDone }) {
       className={`initial-loader${isLeaving ? " is-leaving" : ""}${isExiting ? " is-exiting" : ""}`}
       aria-label={`Carregando ${displayValue}%`}
       role="status"
-      style={{ "--loader-progress": `${progress}%` }}
+      style={{ "--loader-progress": progress / 100 }}
     >
       <div className="initial-loader__bar" aria-hidden="true">
         <div className="initial-loader__bar-fill"></div>

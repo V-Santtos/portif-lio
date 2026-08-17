@@ -33,11 +33,21 @@
   left: 0;
   bottom: 0;
   width: 100%;
-  height: var(--loader-progress);
+  height: 100%;
   background: var(--color-accent);
-  /* Sem transition de proposito: o valor que chega aqui (InitialLoader.jsx)
+  /* scaleY em vez de height: height e uma propriedade de layout — mudar ela a
+     cada frame (60x/s, na duracao inteira do loader) forca reflow sincrono
+     toda vez. Igual ao scroll-progress do App.jsx (width -> scaleX, medido
+     ~123x mais caro), so que aqui o custo so ficava visivel em hardware
+     mobile real (iPhone): no desktop simulando viewport mobile no DevTools a
+     CPU sobra e o engasgo nunca aparecia. scaleY com transform-origin:bottom
+     fica no compositor, sem layout, sem repintar o resto da subarvore.
+     Sem transition de proposito: o valor que chega aqui (InitialLoader.jsx)
      ja e suavizado por lerp a cada frame. Uma transition por cima ficava
      perseguindo um alvo que ja se move suave, e so atrasava a barra. */
+  transform: scaleY(var(--loader-progress));
+  transform-origin: bottom;
+  will-change: transform;
 }
 
 .initial-loader__counter {
@@ -46,8 +56,10 @@
      fonte nem viewport de proposito, e o unico numero que se mexe pra
      reposicionar o numeral inteiro. Piso tecnico: a barra mede 10px fixos
      em toda essa faixa (320-1023px) — abaixo disso o "1" volta a entrar
-     nela. Ajustado a mao com o Victor em 2026-08-16. */
-  --loader-num-offset: 20px;
+     nela. Ajustado a mao com o Victor em 2026-08-16, reduzido em 2026-08-17
+     pra aproximar o numero da barra (mantendo ~4px de folga do piso de 10px,
+     nunca encostando de fato). */
+  --loader-num-offset: 14px;
   position: fixed;
   left: clamp(2.6rem, 7.6vw, 9.5rem);
   bottom: max(clamp(2.8rem, 5.2vw, 5.9rem), env(safe-area-inset-bottom));
