@@ -161,7 +161,7 @@ public/previews/ecoscape/
   capsule.js
   assets/
     background-aerial.webp
-    thumbnail-exact.jpg
+    thumbnail-exact.webp
     logo.svg
     geist.woff2
     playfair-italic.woff2
@@ -173,7 +173,7 @@ Integração:
 
 - `src/LandingPages.jsx`: primeiro item possui `capsuleSrc`;
 - `src/CasePreviewFrame.jsx`: escala e ponte de scroll;
-- `src/LandingPreview.jsx`: miniatura EcoScape usa somente `thumbnail-exact.jpg`;
+- `src/LandingPreview.jsx`: miniatura EcoScape usa somente `thumbnail-exact.webp` (convertido de `.jpg` em 2026-08-18, -23% de peso, mesma imagem);
 - `src/styles/08-carrossel.css`: `.lp__thumb-target` sem borda;
 - `src/styles/09-previews.css`: imagem estática ocupa o canvas;
 - `public/previews/_shared/gsap.min.js`: motor compartilhado.

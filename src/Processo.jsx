@@ -4,7 +4,7 @@ import Seo from "./Seo.jsx";
 import { currentScrollY, fadeJump, gsap, prefersReducedMotion, scrollPageTo, ScrollTrigger, useIsoLayoutEffect } from "./lib.jsx";
 import { usePageTransition } from "./PageTransition.jsx";
 import { getStaticSeo } from "./seo.js";
-import processHeroPortrait from "../asset/process-hero-portrait.png";
+import processHeroPortrait from "../asset/process-hero-portrait.webp";
 
 const PROCESS_HERO_IMAGE = processHeroPortrait;
 

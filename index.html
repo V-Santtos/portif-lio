@@ -3,6 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <link rel="icon" type="image/svg+xml" href="/LOGO.svg" />
   <!-- SEM meta theme-color (experimento 2026-07-08): sem a dica, o Safari iOS
        amostra as bordas da página de forma independente — topo creme e base
        laranja do degradê do Hero (mesmo comportamento do site de referência).
@@ -59,8 +60,20 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Birthstone&family=Inter:wght@300;400;500;600;800;900&display=swap" rel="stylesheet" />
-  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Birthstone&family=Inter:wght@300;400;500;600;800;900&display=swap" />
+  <!-- Preload não-bloqueante: a ordem antiga tinha um <link rel="stylesheet">
+       ANTES do preload da MESMA url — nessa ordem o preload não fazia nada,
+       o stylesheet já tinha bloqueado a renderização (medido: 1.490ms no
+       PageSpeed). Troca pro padrão loadCSS: preload vira stylesheet só
+       quando termina de baixar; <noscript> cobre quem não roda JS. -->
+  <link
+    rel="preload"
+    as="style"
+    href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Birthstone&family=Inter:wght@300;400;500;600;800;900&display=swap"
+    onload="this.onload=null;this.rel='stylesheet'"
+  />
+  <noscript>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Birthstone&family=Inter:wght@300;400;500;600;800;900&display=swap" />
+  </noscript>
 
   <style>
     /* Boot em CREME (não escuro): o Safari iOS amostra os pixels da primeira

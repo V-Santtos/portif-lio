@@ -7,7 +7,7 @@
   font-family: "Anton Preview";
   font-style: normal;
   font-weight: 400;
-  font-display: block;
+  font-display: swap;
   src: url("../../previews/preview-04/assets/fonts/anton-latin.woff2") format("woff2");
 }
 

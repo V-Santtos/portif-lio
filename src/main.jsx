@@ -1,13 +1,20 @@
-import React, { useLayoutEffect } from "react";
+import React, { Suspense, lazy, useLayoutEffect } from "react";
 import { createRoot } from "react-dom/client";
-import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation, useParams } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import App from "./App.jsx";
-import Projetos from "./Projetos.jsx";
-import Case from "./Case.jsx";
-import Comecar from "./Comecar.jsx";
-import Processo from "./Processo.jsx";
 import { PageTransitionProvider } from "./PageTransition.jsx";
+
+// Code-split: só a Home (App) precisa estar no bundle inicial. As outras
+// rotas carregam sob demanda — a transitionTo() (PageTransition.jsx) já
+// cobre a tela por ~1,6s antes de navegar e mais ~0,75s depois, tempo de
+// sobra pra buscar o chunk sem flash visível. Quem chega direto por URL
+// (refresh, link externo) vê o fallback abaixo (null = nada, deixa o creme
+// de fundo aparecer, igual ao boot).
+const Projetos = lazy(() => import("./Projetos.jsx"));
+const Case = lazy(() => import("./Case.jsx"));
+const Comecar = lazy(() => import("./Comecar.jsx"));
+const Processo = lazy(() => import("./Processo.jsx"));
 import Navbar from "./Navbar.jsx";
 import { ScrollSmoother, prefersReducedMotion, useIsoLayoutEffect } from "./lib.jsx";
 import "../styles.css";
@@ -29,6 +36,16 @@ function ScrollToTop() {
     }
   }, [pathname]);
   return null;
+}
+
+// Força o Case a desmontar/remontar quando o slug muda. Sem isso, ir de um
+// case pro outro pelo botão "próximo projeto" mantém o MESMO componente vivo
+// (mesma rota, só o param muda) — e o SplitText do título + o pin do
+// ScrollTrigger mexem no DOM por fora do React, então título/tags/descrição
+// ficam presos no conteúdo do case anterior. `key` reseta tudo do zero.
+function CaseRoute() {
+  const { slug } = useParams();
+  return <Case key={slug} />;
 }
 
 // O ScrollSmoother exige que TODO o conteúdo rolável viva dentro de
@@ -73,13 +90,15 @@ createRoot(document.getElementById("root")).render(
           <ScrollToTop />
           <Navbar />
           <SmoothScroll>
-            <Routes>
-              <Route path="/"                        element={<App />} />
-              <Route path="/projetos"                element={<Projetos />} />
-              <Route path="/projetos/:slug"          element={<Case />} />
-              <Route path="/meu-processo"            element={<Processo />} />
-              <Route path="/comecar"                 element={<Comecar />} />
-            </Routes>
+            <Suspense fallback={null}>
+              <Routes>
+                <Route path="/"                        element={<App />} />
+                <Route path="/projetos"                element={<Projetos />} />
+                <Route path="/projetos/:slug"          element={<CaseRoute />} />
+                <Route path="/meu-processo"            element={<Processo />} />
+                <Route path="/comecar"                 element={<Comecar />} />
+              </Routes>
+            </Suspense>
           </SmoothScroll>
         </PageTransitionProvider>
       </BrowserRouter>

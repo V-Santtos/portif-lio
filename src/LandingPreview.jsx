@@ -5,15 +5,15 @@ import nexousBrandRight from "./preview-assets/nexous-brand-right.jpg";
 import nexousInnovativeLeft from "./preview-assets/nexous-innovative-left.jpg";
 import nexousTitleSmall from "./preview-assets/nexous-title-small.jpg";
 
-import rooforaWorker from "./preview-assets/roofora-worker.jpg";
+import rooforaWorker from "./preview-assets/roofora-worker.webp";
 import rooforaLogo from "../previews/preview-03/assets/roofora-logo.png";
 
 import dinevoChefPortrait from "./preview-assets/dinevo-chef-portrait.jpg";
 import dinevoChefSmall from "./preview-assets/dinevo-chef-small.jpg";
 import dinevoDishSmall from "../previews/preview-04/assets/dish-small.png";
-import dinevoPlate from "./preview-assets/dinevo-plate.jpg";
+import dinevoPlate from "./preview-assets/dinevo-plate.webp";
 import dinevoSignatureDish from "./preview-assets/dinevo-signature.jpg";
-import mintaHand from "./preview-assets/minta-hand.jpg";
+import mintaHand from "./preview-assets/minta-hand.webp";
 import mintaGrain from "./preview-assets/grain.png";
 
 import minasSwatches from "./preview-assets/minas-swatches.jpg";
@@ -53,7 +53,7 @@ function PreviewShell({ className, label, children }) {
   }, []);
 
   return (
-    <div className={`lp-preview ${className}`} aria-label={label} ref={rootRef}>
+    <div className={`lp-preview ${className}`} role="img" aria-label={label} ref={rootRef}>
       <div
         className="lp-preview__canvas"
         style={{
@@ -79,7 +79,7 @@ function EcoPreview() {
     <PreviewShell className="lp-preview--eco" label="Hero preview inspirado em EcoScape">
       <img
         className="eco-static-thumbnail"
-        src="/previews/ecoscape/assets/thumbnail-exact.jpg"
+        src="/previews/ecoscape/assets/thumbnail-exact.webp"
         alt=""
         loading="eager"
         draggable="false"
