@@ -183,7 +183,12 @@ function App() {
       cleanupProgress();
       triggers.forEach((trigger) => trigger.kill());
     };
-  }, [heroReady]);
+    // Sem heroReady nas deps de propósito: geometria de `.hero`/`.section` não
+    // muda com a cascata de abertura (só transform/opacity nos filhos).
+    // Depender disso fazia o efeito re-rodar — e re-chamar ScrollTrigger.refresh()
+    // — bem no instante em que a cascata começa a tocar (medido: ~22ms de atraso
+    // no 1º frame). Refresh pós-fontes continua coberto pelo fonts.ready abaixo.
+  }, []);
 
   return (
     <>
