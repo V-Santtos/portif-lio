@@ -1,8 +1,7 @@
 // Fonte de verdade única da ordem e visibilidade dos projetos.
 // Consumida por:
 //   • Projetos.jsx (listagem /projetos)
-//   • Hero.jsx      (dropdown do link PROJETOS no hover — desktop)
-//   • Case.jsx      (botão "próximo projeto" no fim do case)
+//   • Case.jsx     (botão "próximo projeto" no fim do case)
 //
 // Ocultar um projeto = comentar a linha aqui. Rota e dados do case
 // (casesData.js) seguem intactos; para voltar, basta descomentar.

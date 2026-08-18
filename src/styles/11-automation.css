@@ -171,6 +171,14 @@
 
 /* ── Automation mobile — cards empilhados ── */
 @media (max-width: 767px) {
+  /* Fecha o fiapo de 1px que aparece na costura Escada→Automation (a cortina
+     da Escada é animada; a Automation é estática — cobrir com a própria cor
+     em vez de tentar acertar o pixel exato da cortina, que muda a cada frame). */
+  .automation {
+    border-top: 2px solid var(--color-dark);
+    margin-top: -2px;
+  }
+
   .auto__hero {
     /* era 13rem, espelhando o respiro (também 13rem) que a Bridge tinha
        embaixo — os dois amorteciam o corte seco creme→dark. Agora a Bridge

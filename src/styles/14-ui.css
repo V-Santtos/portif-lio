@@ -1,4 +1,4 @@
-/* Scroll progress e text-roll — extraido do styles.css original, linhas 3871-3960.
+/* Scroll progress — extraido do styles.css original, linhas 3871-3960.
    A ORDEM importa: este arquivo entra na posicao indicada pelo numero do nome.
    Nao reordenar regras nem separar os @media do bloco a que pertencem. */
 
@@ -19,81 +19,3 @@
   z-index: 90;
   pointer-events: none;
 }
-
-/* Text Roll component - adapted from 21st.dev / Motion Primitives */
-.text-roll {
-  position: relative;
-  display: inline-block;
-  width: max-content;
-  max-width: 100%;
-  font-family: inherit;
-  font-weight: inherit;
-  font-size: inherit;
-  line-height: inherit;
-  letter-spacing: inherit;
-  text-transform: inherit;
-  isolation: isolate;
-}
-.text-roll__letter {
-  position: relative;
-  display: inline-block;
-  width: auto;
-  font: inherit;
-  line-height: inherit;
-  letter-spacing: inherit;
-  text-transform: inherit;
-  vertical-align: baseline;
-  perspective: 10000px;
-  transform-style: preserve-3d;
-  will-change: transform, opacity;
-}
-.text-roll__base,
-.text-roll__animated {
-  display: inline-block;
-  width: 100%;
-  font-family: inherit;
-  font-weight: inherit;
-  font-size: inherit;
-  line-height: inherit;
-  letter-spacing: inherit;
-  text-transform: inherit;
-  text-align: inherit;
-}
-.text-roll__base {
-  position: relative;
-  z-index: 1;
-}
-.text-roll__animated {
-  position: absolute;
-  inset: 0;
-  opacity: 0;
-  pointer-events: none;
-  z-index: 2;
-  will-change: opacity;
-}
-.text-roll__face {
-  position: absolute;
-  inset: 0 auto auto 0;
-  display: inline-block;
-  font: inherit;
-  line-height: inherit;
-  letter-spacing: inherit;
-  text-transform: inherit;
-  backface-visibility: hidden;
-  transform-style: preserve-3d;
-  will-change: transform, opacity;
-}
-.text-roll__face--enter {
-  transform-origin: 50% 25%;
-  transform: rotateX(0deg);
-  opacity: 1;
-}
-.text-roll__face--exit {
-  transform-origin: 50% 100%;
-  transform: rotateX(-90deg);
-  opacity: 0;
-}
-.text-roll__spacer {
-  visibility: hidden;
-}
-

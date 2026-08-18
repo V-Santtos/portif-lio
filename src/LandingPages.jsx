@@ -253,13 +253,21 @@ function LandingPages() {
       const SETTLE_VH = isMobile ? 0.24 : 0.18;
       const settleDist = Math.round(window.innerHeight * SETTLE_VH);
 
-      // Pista de desaceleração na SAÍDA (só mobile): um trecho de scroll no fim
-      // do pin onde tudo já terminou e está parado. Num flick forte o momentum
-      // QUEIMA aqui — o scroll nativo desacelera ao longo da distância — em vez
-      // de despejar velocidade na Bridge e o usuário passar batido. Sem lock,
+      // Pista de desaceleração na SAÍDA: um trecho de scroll no fim do pin
+      // onde tudo já terminou e está parado. Num flick forte o momentum QUEIMA
+      // aqui — o scroll nativo desacelera ao longo da distância — em vez de
+      // despejar velocidade na Bridge e o usuário passar batido. Sem lock,
       // sem brigar com o momentum do iOS. Calibrar pela fração da viewport:
       // maior = freia mais (mais dedo pra sair); menor = freia menos.
-      const EXIT_RUNWAY_VH = isMobile ? 0.7 : 0.22;
+      //
+      // No desktop o mesmo trecho também é atravessado ao VOLTAR da Escada —
+      // o pin é simétrico, então a mesma distância que seguia o flick de
+      // saída vira um respiro parado antes do carrossel reagir na entrada de
+      // volta (2026-08-18: tentativa de pular isso reativamente via
+      // onEnterBack + scroll forçado deu flick, por reentrância com o scrub
+      // ativo — revertida). Encolher o valor em vez de zerá-lo mantém a
+      // desaceleração da saída, só bem mais curta nos dois sentidos.
+      const EXIT_RUNWAY_VH = isMobile ? 0.7 : 0.08;
       const runway = Math.round(window.innerHeight * EXIT_RUNWAY_VH);
       const endDist = settleDist + scrollDist + runway;
 
@@ -461,7 +469,12 @@ function LandingPages() {
 
         const trigger = carouselTl?.scrollTrigger;
         if (!trigger) return;
-        animateScrollTo(trigger.start + settleDist + scrollDist);
+        // Mira o FIM do runway (endDist), não só o pouso do último card: um
+        // clique já solta pra Escada num deslize só, sem exigir mais um
+        // empurrão manual de scroll depois. A trava/desaceleração continua
+        // existindo — o tween só a atravessa de uma vez, em vez de parar
+        // bem antes dela.
+        animateScrollTo(trigger.start + endDist);
       };
     }
 
