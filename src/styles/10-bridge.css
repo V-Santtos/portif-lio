@@ -68,11 +68,15 @@
   position: relative;
   overflow: hidden;
   vertical-align: baseline;
-  /* Casada com a altura de `.bridge__letter-face` (0.84em) — se ficar menor,
-     a moldura corta uns px do rodapé da letra mesmo em repouso. O flip
+  /* Casada com a altura de `.bridge__letter-face` (0.84em) — o flip
      (yPercent:-50 em `.bridge__letter`) desloca exatamente uma altura de
-     face, então bater as duas medidas não abre fresta da face seguinte. */
-  height: 0.84em;
+     face, entao bater as duas medidas evita abrir fresta da face seguinte.
+     Os -2px são só a moldura de corte (não mudam o deslocamento do flip,
+     que segue relativo à altura de `.bridge__letter`): sem eles, letras
+     redondas (O, S, C) vazam um fio da face de baixo — overshoot óptico da
+     fonte desenha essas curvas um pouco além da caixa, e a moldura exata
+     não sobra margem pra esconder isso. */
+  height: calc(0.84em - 2px);
   line-height: 0.84;
   contain: paint;
 }

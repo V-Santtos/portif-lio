@@ -165,15 +165,14 @@ function App() {
     ScrollTrigger.refresh();
     if (document.fonts && document.fonts.ready) {
       document.fonts.ready.then(() => {
-        // document.fonts.ready e o MESMO gatilho que o InitialLoader usa pra
-        // liberar o "rush" final do contador ate 100% (essentialsDone). Rodar
-        // este refresh() aqui tambem faz as duas coisas caírem no mesmo tick:
-        // o refresh recalcula posicao de TODOS os ScrollTriggers da pagina
-        // (pin do hero + pin do carrossel) e trava a main thread bem na hora
-        // em que o rAF do loader esta correndo o numero/barra pro fim — lido
-        // como um engasgo visual exatamente no 100%. Enquanto o loader estiver
-        // ativo, so pulamos: handleInitialLoaderDone chama o mesmo refresh()
-        // de novo assim que ele sai de cena, sem essa disputa.
+        // document.fonts.ready (TODA fonte, inclusive a do carrossel) ainda
+        // pode disparar enquanto o loader esta na tela — ele libera cedo
+        // agora (so espera Bebas Neue + Inter). Rodar o refresh aqui recalcula
+        // posicao de TODOS os ScrollTriggers (pin do hero + pin do carrossel)
+        // depois que a fonte tardia do carrossel muda metricas de texto. Se o
+        // loader ainda estiver ativo nesse instante, so pulamos: handleInitialLoaderDone
+        // chama o mesmo refresh() de novo assim que ele sai de cena, sem
+        // disputa de main thread com o rAF do contador.
         if (loaderActiveRef.current) return;
         ScrollTrigger.refresh();
       });

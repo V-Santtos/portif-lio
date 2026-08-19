@@ -257,20 +257,26 @@ function About() {
         </h2>
 
         <div className="about__foot">
-          <h3 className="about__intro" data-reveal>Nunca fui de receita pronta.</h3>
+          <h3 className="about__intro" data-reveal>Opa, meu nome é Victor.</h3>
           <p className="about__body" data-reveal>
-            Meu nome é Victor. Sou desenvolvedor de produtos digitais e
-            trabalho diretamente com cada cliente para entender o que
-            realmente precisa ser resolvido e transformar ideias em sites ou
-            ferramentas mais claras, úteis e bem pensadas para cada negócio.
+            Uma das coisas que mais me chamam a atenção no que eu faço é
+            perceber quanta coisa pode ser resolvida ou até criada a partir de
+            uma necessidade. Necessidades para as quais, muitas vezes, sequer
+            imaginamos que poderia existir alguma ferramenta pensada
+            justamente para aquilo.
           </p>
           <p className="about__body" data-reveal>
-            Acredito que muitas empresas ainda não aproveitam o digital de uma
-            forma que realmente acompanhe sua realidade. Para mim, você ou seu
-            negócio não deveriam se esforçar para caber dentro de uma caixa.
-            Seja na forma como se apresenta ou nas ferramentas que utiliza no
-            dia a dia, a tecnologia deve se moldar ao que você precisa, e não
-            fazer você se moldar a ela.
+            Hoje existem inúmeras soluções para quase tudo, mas nem sempre
+            elas resolvem nossos problemas, isso quando não acabam piorando a
+            situação. Talvez por isso eu nunca tenha gostado muito de começar
+            por uma solução pronta. Prefiro entender primeiro a real
+            necessidade de cada pessoa e, a partir daí, criar algo em volta
+            dela.
+          </p>
+          <p className="about__body" data-reveal>
+            Para mim, a melhor parte de criar é quando aquilo deixa de ser
+            apenas um projeto e passa a resolver algo de verdade e a fazer
+            parte do dia a dia de alguém.
           </p>
         </div>
       </div>

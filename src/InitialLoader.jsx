@@ -44,6 +44,19 @@ function waitForImage(src) {
   });
 }
 
+// document.fonts.ready espera TODA fonte da pagina, inclusive a do carrossel
+// (Anton Preview, Geist Eco Preview) la embaixo, fora da tela nesse momento —
+// media 1,6s no caminho critico e prendia a abertura por causa de algo que o
+// loader/PreHero nem usam. Aqui so as duas fontes que aparecem antes do reveal
+// (Bebas Neue no contador, Inter no PreHero).
+function waitForEssentialFonts() {
+  if (!document.fonts?.load) return Promise.resolve();
+  return Promise.all([
+    document.fonts.load('400 1em "Bebas Neue"'),
+    document.fonts.load('400 1em "Inter"'),
+  ]).catch(() => {});
+}
+
 function waitForFrame(count = 2) {
   return new Promise((resolve) => {
     let remaining = count;
@@ -103,7 +116,7 @@ function InitialLoader({ onDone }) {
     document.body.style.overflow = "hidden";
 
     const essentials = Promise.all([
-      document.fonts?.ready || Promise.resolve(),
+      waitForEssentialFonts(),
       waitForImage("/LOGO.svg"),
       waitForFrame(2),
     ]);
