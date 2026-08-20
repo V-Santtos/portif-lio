@@ -13,6 +13,7 @@ import Seo from "./Seo.jsx";
 import { getStaticSeo } from "./seo.js";
 
 const SHOW_ABOUT_SECTION = true;
+const HERO_CASCADE_SAFE_MS = 1900;
 
 function shouldShowInitialLoader() {
   if (typeof window === "undefined") return true;
@@ -33,6 +34,7 @@ function App() {
   const playOpening = loaderState.showInitialLoader;
   const [heroReady, setHeroReady] = useState(!playOpening);
   const [preHeroVisible, setPreHeroVisible] = useState(playOpening);
+  const [pageGeometryReady, setPageGeometryReady] = useState(false);
   const progressRef = useRef(null);
   const openingActive = loaderState.showInitialLoader || preHeroVisible;
   // Espelha loaderState.showInitialLoader em tempo real pro effect do
@@ -59,12 +61,20 @@ function App() {
     setPreHeroVisible(false);
   }, []);
 
+  const handlePageGeometryReady = useCallback(() => {
+    setPageGeometryReady(true);
+  }, []);
+
   useIsoLayoutEffect(() => {
+    if (!pageGeometryReady) return;
     if ("scrollRestoration" in window.history) {
       window.history.scrollRestoration = "manual";
     }
+    // O boot cobre o refresh com o mesmo degradê do Hero enquanto o pin do
+    // carrossel fecha a altura real da página. Ao remover aqui, a scrollbar já
+    // nasce no tamanho definitivo e a animação da nav ainda nem começou.
     document.documentElement.removeAttribute("data-booting");
-  }, []);
+  }, [pageGeometryReady]);
 
   useIsoLayoutEffect(() => {
     document.documentElement.classList.toggle("is-opening-screen", openingActive);
@@ -90,6 +100,9 @@ function App() {
 
     const triggers = [];
     let cleanupProgress = () => {};
+    let cancelled = false;
+    let fontsRefreshTimer = 0;
+    const effectStartedAt = performance.now();
 
     // 🔴 No touch o scroll é NATIVO (o ScrollSmoother se desliga sozinho quando
     // smoothTouch:false) e roda no compositor. Mas o ScrollSmoother deixa
@@ -165,6 +178,7 @@ function App() {
     ScrollTrigger.refresh();
     if (document.fonts && document.fonts.ready) {
       document.fonts.ready.then(() => {
+        if (cancelled) return;
         // document.fonts.ready (TODA fonte, inclusive a do carrossel) ainda
         // pode disparar enquanto o loader esta na tela — ele libera cedo
         // agora (so espera Bebas Neue + Inter). Rodar o refresh aqui recalcula
@@ -174,11 +188,30 @@ function App() {
         // chama o mesmo refresh() de novo assim que ele sai de cena, sem
         // disputa de main thread com o rAF do contador.
         if (loaderActiveRef.current) return;
-        ScrollTrigger.refresh();
+
+        // No refresh sem loader, fonts.ready costuma resolver enquanto as
+        // palavras do Hero ainda sobem. Um refresh global nesse intervalo
+        // recalcula todos os pins e produz um frame brusco. Agenda para depois
+        // do fim conhecido da cascata. A flag/cleanup também elimina o callback
+        // órfão da primeira montagem de desenvolvimento (React StrictMode).
+        const elapsed = performance.now() - effectStartedAt;
+        const wait = Math.max(0, HERO_CASCADE_SAFE_MS - elapsed);
+        fontsRefreshTimer = window.setTimeout(() => {
+          if (cancelled) return;
+          const smootherY = ScrollSmoother.get()?.scrollTop() ?? 0;
+          // A geometria principal já foi fechada pelo build inicial do
+          // carrossel. Se o usuário saiu do topo, um refresh global tardio só
+          // disputa a main thread com a próxima cascata; nesse caso é mais
+          // seguro manter os triggers atuais.
+          if (Math.max(Math.abs(window.scrollY), Math.abs(smootherY)) > 2) return;
+          ScrollTrigger.refresh();
+        }, wait);
       });
     }
 
     return () => {
+      cancelled = true;
+      window.clearTimeout(fontsRefreshTimer);
       cleanupProgress();
       triggers.forEach((trigger) => trigger.kill());
     };
@@ -213,8 +246,8 @@ function App() {
         </>,
         document.body
       )}
-      <Hero ready={heroReady} />
-      <LandingPages />
+      <Hero ready={heroReady && pageGeometryReady} />
+      <LandingPages onGeometryReady={handlePageGeometryReady} />
       <Bridge />
       <Automation />
       {SHOW_ABOUT_SECTION && <About />}

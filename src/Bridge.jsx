@@ -219,6 +219,18 @@ function Bridge() {
     // depois, então medir por ali erraria o handoff.
     const smoother = () => ScrollSmoother.get();
     const getScroll = () => smoother()?.scrollTop() ?? window.scrollY;
+    // Em hard refresh, alguns navegadores ainda expõem por um instante o Y da
+    // página anterior antes do reset global. A Escada só pode ser armada depois
+    // que esta montagem realmente enxergou o topo; caso contrário ela entende
+    // o Y restaurado como chegada, trava o Hero e pousa direto na Automação.
+    let hasSeenBootTop =
+      document.documentElement.hasAttribute("data-scroll-reset-ready") &&
+      getScroll() <= 2;
+
+    const confirmBootTop = () => {
+      if (getScroll() <= 2) hasSeenBootTop = true;
+    };
+    window.addEventListener("app:scroll-reset-ready", confirmBootTop);
 
     function preventScroll(e) {
       if (locked) e.preventDefault();
@@ -320,6 +332,10 @@ function Bridge() {
 
     const checkTrigger = () => {
       if (hasPlayed || locked) return;
+      if (!hasSeenBootTop) {
+        if (getScroll() <= 2) hasSeenBootTop = true;
+        return;
+      }
       const rect = stage.getBoundingClientRect();
       // "bottom bottom": bottom of stage reaches bottom of viewport
       // Uses live rect so it's immune to ScrollTrigger spacer timing issues
@@ -394,6 +410,7 @@ function Bridge() {
     return () => {
       window.removeEventListener("scroll", checkTrigger);
       window.removeEventListener("bridge:skip", skipTrigger);
+      window.removeEventListener("app:scroll-reset-ready", confirmBootTop);
       gsap.ticker.remove(checkTrigger);
       if (tl) { tl.kill(); tl = null; }
       unlockScroll();

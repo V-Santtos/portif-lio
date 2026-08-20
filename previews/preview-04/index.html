@@ -3,52 +3,50 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Preview 04 - Hero Dinevo</title>
-  <link rel="stylesheet" href="./styles.css" />
+  <title>Preview 04 - Hero Fervor</title>
+  <link rel="stylesheet" href="./styles.css?v=20260819-10" />
+  <script src="../_shared/gsap.min.js" defer></script>
+  <script src="./preview.js?v=20260819-4" defer></script>
 </head>
 <body>
-  <main class="preview-frame" aria-label="Hero preview inspirado em Dinevo">
+  <main class="preview-frame" aria-label="Hero preview do restaurante Fervor">
     <section class="dinevo-hero">
-      <nav class="dinevo-nav" aria-label="Navegação do preview">
-        <a class="dinevo-brand" href="#">
-          <span class="dinevo-brand__mark" aria-hidden="true"></span>
-          <span>Dinevo</span>
-        </a>
+      <nav class="dinevo-nav" aria-label="Navegação visual do preview">
+        <button class="dinevo-brand" type="button" data-nav-home aria-label="Selecionar Início">
+          <span>Fervor</span>
+        </button>
 
         <div class="dinevo-nav__links">
-          <a class="is-active" href="#">Início</a>
-          <a href="#">Sobre</a>
-          <a href="#">Menu</a>
-          <a href="#">Páginas</a>
-          <a href="#">Contato</a>
+          <button class="dinevo-nav__link is-active" type="button" aria-pressed="true">Início</button>
+          <button class="dinevo-nav__link" type="button" aria-pressed="false">Sobre</button>
+          <button class="dinevo-nav__link" type="button" aria-pressed="false">Menu</button>
+          <button class="dinevo-nav__link" type="button" aria-pressed="false">Páginas</button>
+          <button class="dinevo-nav__link" type="button" aria-pressed="false">Contato</button>
         </div>
 
-        <a class="dinevo-nav__cta" href="#">
-          Reservar mesa
-          <span aria-hidden="true">↗</span>
-        </a>
+        <button class="dinevo-nav__cta" type="button">
+          <span class="dinevo-nav__cta-label">Reservar mesa</span>
+          <svg class="dinevo-nav__arrow" viewBox="0 0 18 18" aria-hidden="true" focusable="false">
+            <path d="M5 13 13 5" />
+            <path d="M7 5h6v6" />
+          </svg>
+        </button>
       </nav>
 
       <div class="dinevo-hero__media" aria-hidden="true">
-        <img src="./assets/hero-plate.png" alt="" />
+        <img src="./assets/sora-hero-pizza.jpg" alt="" />
         <div class="dinevo-hero__shade"></div>
       </div>
 
       <div class="dinevo-hero__content">
-        <p class="dinevo-hero__eyebrow" lang="ja">上質な時間を</p>
+        <p class="dinevo-hero__eyebrow">Do forno para a mesa,</p>
 
-        <h1>
+        <div class="dinevo-hero__title" role="heading" aria-level="2">
           <span>Onde a elegância</span>
           <span>encontra sabor</span>
-        </h1>
+        </div>
 
-        <div class="dinevo-social" aria-label="Clientes satisfeitos">
-          <div class="dinevo-social__avatars" aria-hidden="true">
-            <img src="./assets/dish-small.png" alt="" />
-            <img src="./assets/chef-small.png" alt="" />
-            <img src="./assets/chef-portrait.png" alt="" />
-            <span>10+</span>
-          </div>
+        <div class="dinevo-hero__support">
           <p>
             Transformamos cada refeição em uma experiência memorável.<br />
             Pratos marcantes preparados a cada serviço.
@@ -56,19 +54,29 @@
         </div>
 
         <div class="dinevo-hero__actions">
-          <a class="dinevo-hero__primary" href="#">
+          <button class="dinevo-hero__primary" type="button">
             Explorar menu
-            <span aria-hidden="true">↗</span>
-          </a>
+            <svg class="dinevo-hero__primary-arrow" viewBox="0 0 20 20" aria-hidden="true" focusable="false">
+              <path d="M3.5 16.5 16.5 3.5" />
+              <path d="M8 3.5h8.5V12" />
+            </svg>
+          </button>
         </div>
       </div>
 
       <aside class="dinevo-signature-card" aria-label="Prato em destaque">
         <header>
-          <strong>Experimente nossos pratos autorais</strong>
-          <span aria-hidden="true">↘</span>
+          <strong>Conheça nossos pratos autorais</strong>
+          <svg class="dinevo-signature-card__arrow" viewBox="0 0 20 15" aria-hidden="true" focusable="false">
+            <path d="M17.434 8.477 13.516 12.396 9.597 8.477" />
+            <path d="M13.511 12.392V5.677A4.477 4.477 0 0 0 9.034 1.2H1.2" />
+          </svg>
         </header>
-        <img src="./assets/signature-dish-b.jpg" alt="" />
+        <div class="dinevo-signature-card__media" aria-hidden="true">
+          <img class="dinevo-signature-card__dish" src="./assets/signature-pizza-classic.jpg" alt="" decoding="async" />
+          <img class="dinevo-signature-card__dish" src="./assets/signature-salmon-bowl.jpg" alt="" decoding="async" />
+          <img class="dinevo-signature-card__dish" src="./assets/signature-pizza-special.jpg" alt="" decoding="async" />
+        </div>
       </aside>
     </section>
   </main>

@@ -19,6 +19,16 @@ import Navbar from "./Navbar.jsx";
 import { ScrollSmoother, prefersReducedMotion, useIsoLayoutEffect } from "./lib.jsx";
 import "../styles.css";
 
+// Num hard refresh o navegador pode manter por alguns milissegundos a posição
+// da página anterior, mesmo com scrollRestoration manual. Os efeitos filhos
+// (especialmente o handoff da Escada) rodam antes do ScrollToTop e poderiam ler
+// esse Y antigo como uma chegada real ao fim da seção. Zerar antes de montar o
+// React garante que nenhum trigger nasça olhando a posição restaurada.
+if ("scrollRestoration" in window.history) {
+  window.history.scrollRestoration = "manual";
+}
+window.scrollTo(0, 0);
+
 // Rola pro topo a cada troca de rota (SPA não faz isso sozinha;
 // scrollRestoration está em "manual"). Roda enquanto a transição cobre a tela.
 // Com o ScrollSmoother ativo o salto tem que passar por ele: window.scrollTo
@@ -27,13 +37,57 @@ import "../styles.css";
 function ScrollToTop() {
   const { pathname } = useLocation();
   useLayoutEffect(() => {
-    const smoother = ScrollSmoother.get();
-    if (smoother) {
-      smoother.paused(false);
-      smoother.scrollTop(0);
-    } else {
-      window.scrollTo(0, 0);
-    }
+    let frame = 0;
+    let settleFrame = 0;
+    let finalizeFrame = 0;
+    let fallbackTimer = 0;
+    let finalized = false;
+    const root = document.documentElement;
+    root.removeAttribute("data-scroll-reset-ready");
+
+    const reset = () => {
+      const smoother = ScrollSmoother.get();
+      if (smoother) {
+        smoother.paused(false);
+        smoother.scrollTop(0);
+      } else {
+        window.scrollTo(0, 0);
+      }
+    };
+
+    const finalizeReset = () => {
+      if (finalized) return;
+      finalized = true;
+      reset();
+      finalizeFrame = window.requestAnimationFrame(() => {
+        reset();
+        root.setAttribute("data-scroll-reset-ready", "");
+        window.dispatchEvent(new CustomEvent("app:scroll-reset-ready"));
+      });
+    };
+
+    // O browser pode reaplicar o Y antigo depois dos primeiros layouts. Os dois
+    // frames limpam o estado inicial; `pageshow` fecha a conta DEPOIS da
+    // restauração de histórico. Em troca de rota SPA não há pageshow, então o
+    // fallback libera os triggers após a geometria inicial do carrossel.
+    reset();
+    frame = window.requestAnimationFrame(() => {
+      reset();
+      settleFrame = window.requestAnimationFrame(() => {
+        reset();
+      });
+    });
+    window.addEventListener("pageshow", finalizeReset, { once: true });
+    fallbackTimer = window.setTimeout(finalizeReset, 450);
+
+    return () => {
+      window.cancelAnimationFrame(frame);
+      window.cancelAnimationFrame(settleFrame);
+      window.cancelAnimationFrame(finalizeFrame);
+      window.clearTimeout(fallbackTimer);
+      window.removeEventListener("pageshow", finalizeReset);
+      root.removeAttribute("data-scroll-reset-ready");
+    };
   }, [pathname]);
   return null;
 }

@@ -44,50 +44,19 @@
     };
 
     const background = document.querySelector(".capsule__background");
-    const badge = document.querySelector(".capsule__badge");
     const titleCharacters = document.querySelectorAll(".title-char");
     const titleImages = document.querySelectorAll(".capsule__line img");
     const copy = document.querySelector(".capsule__copy");
     const cta = document.querySelector(".capsule__cta");
 
-    if (reducedMotion) {
-      gsap.set([background, badge, titleCharacters, titleImages, copy, cta], {
-        autoAlpha: 1,
-        y: 0,
-        scale: 1,
-        filter: "blur(0px)",
-      });
-    } else {
-      gsap.set(background, { autoAlpha: 0.72, scale: 1.025, transformOrigin: "50% 50%" });
-      gsap.set(badge, { autoAlpha: 0, y: 50 });
-      gsap.set(titleCharacters, { autoAlpha: 0, y: 10, filter: "blur(10px)" });
-      gsap.set(titleImages, { autoAlpha: 0, y: 50 });
-      gsap.set([copy, cta], { autoAlpha: 0, y: 32 });
-
-      gsap
-        .timeline()
-        .to(background, { autoAlpha: 1, scale: 1, duration: 1.45, ease: "power2.out" }, 0)
-        .to(badge, { autoAlpha: 1, y: 0, duration: 0.72, ease: "power3.out" }, 0.06)
-        .to(
-          titleCharacters,
-          {
-            autoAlpha: 1,
-            y: 0,
-            filter: "blur(0px)",
-            duration: 0.72,
-            stagger: 0.012,
-            ease: "power3.out",
-          },
-          0.15
-        )
-        .to(
-          titleImages,
-          { autoAlpha: 1, y: 0, duration: 0.78, stagger: 0.06, ease: "power3.out" },
-          0.28
-        )
-        .to(copy, { autoAlpha: 1, y: 0, duration: 0.72, ease: "power3.out" }, 0.56)
-        .to(cta, { autoAlpha: 1, y: 0, duration: 0.72, ease: "power3.out" }, 0.66);
-    }
+    // Sem entrada automática dentro do carrossel: texto, imagens e fundo já
+    // são montados no estado final. As respostas aos hovers permanecem.
+    gsap.set([background, titleCharacters, titleImages, copy, cta], {
+      autoAlpha: 1,
+      y: 0,
+      scale: 1,
+      filter: "blur(0px)",
+    });
 
     document.querySelectorAll(".nav-link:not(.nav-pages__trigger)").forEach((link) => {
       const activate = () =>
@@ -121,71 +90,6 @@
       action.addEventListener("blur", deactivate);
     });
 
-    const pages = document.querySelector(".nav-pages");
-    const pagesTrigger = pages?.querySelector(".nav-pages__trigger");
-    const pagesArrow = pagesTrigger?.querySelector("svg");
-    const pagesMenu = pages?.querySelector(".nav-pages__menu");
-
-    if (pages && pagesTrigger && pagesArrow && pagesMenu) {
-      gsap.set(pagesMenu, { autoAlpha: 0, y: 8, scale: 0.98, pointerEvents: "none" });
-
-      const openPages = () => {
-        pagesTrigger.setAttribute("aria-expanded", "true");
-        gsap.set(pagesMenu, { pointerEvents: "auto" });
-        animateTo(pagesTrigger, { color: orange, duration: 0.28, ease: "power2.out" });
-        animateTo(pagesArrow, { rotation: 180, duration: 0.38, ease: "power2.inOut" });
-        animateTo(pagesMenu, {
-          autoAlpha: 1,
-          y: 0,
-          scale: 1,
-          duration: 0.32,
-          ease: "power2.out",
-        });
-      };
-
-      const closePages = () => {
-        pagesTrigger.setAttribute("aria-expanded", "false");
-        animateTo(pagesTrigger, { color: white, duration: 0.28, ease: "power2.out" });
-        animateTo(pagesArrow, { rotation: 0, duration: 0.38, ease: "power2.inOut" });
-        animateTo(pagesMenu, {
-          autoAlpha: 0,
-          y: 8,
-          scale: 0.98,
-          duration: 0.24,
-          ease: "power2.in",
-          onComplete: () => gsap.set(pagesMenu, { pointerEvents: "none" }),
-        });
-      };
-
-      pages.addEventListener("pointerenter", openPages);
-      pages.addEventListener("pointerleave", closePages);
-      pagesTrigger.addEventListener("focus", openPages);
-      pages.addEventListener("focusout", (event) => {
-        if (!pages.contains(event.relatedTarget)) closePages();
-      });
-
-      pagesMenu.querySelectorAll("button").forEach((item) => {
-        const activate = () =>
-          animateTo(item, {
-            color: white,
-            backgroundColor: "rgba(244, 60, 0, 0.2)",
-            duration: 0.24,
-            ease: "power2.out",
-          });
-        const deactivate = () =>
-          animateTo(item, {
-            color: white,
-            backgroundColor: "rgba(0, 0, 0, 0)",
-            duration: 0.24,
-            ease: "power2.out",
-          });
-
-        item.addEventListener("pointerenter", activate);
-        item.addEventListener("pointerleave", deactivate);
-        item.addEventListener("focus", activate);
-        item.addEventListener("blur", deactivate);
-      });
-    }
   }
 
   window.addEventListener(

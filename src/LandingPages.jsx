@@ -18,7 +18,12 @@ const LP_ITEMS = [
     title: "Nexous",
   },
   { preview: "roofora", tag: "Serviços", title: "Roofora" },
-  { preview: "dinevo", tag: "Restaurante", title: "Dinevo" },
+  {
+    preview: "dinevo",
+    capsuleSrc: "/previews/fervor/index.html",
+    tag: "Restaurante",
+    title: "Fervor",
+  },
   { preview: "minta", tag: "Fintech", title: "Minta" },
 ];
 
@@ -26,7 +31,35 @@ const LP_ITEMS = [
 // pra linha principal — aparecem nas faixas satélites (ver STRIP_TOP/BOTTOM),
 // que estão deixando de ser placeholders pra virar sites reais mapeados.
 const LP_ITEMS_DESKTOP_EXTRA = [
-  { preview: "minas", tag: "Loja de tintas", title: "Minas Tintas" },
+  {
+    preview: "minas",
+    capsuleSrc: "/previews/minas/index.html",
+    tag: "Loja de tintas",
+    title: "Minas Tintas",
+  },
+];
+
+// Substituições exclusivamente do desktop. O item original continua em
+// LP_ITEMS (e seu componente/CSS/ativos seguem preservados), então reativar o
+// Roofora exige apenas retirar esta entrada do mapa.
+const LP_ITEMS_DESKTOP_REPLACEMENTS = {
+  roofora: {
+    preview: "aurea",
+    capsuleSrc: "/previews/aurea/index.html",
+    tag: "Imobiliária",
+    title: "Áurea",
+  },
+};
+
+// No desktop, o case aprovado do Fervor vem logo depois do Minas Tintas.
+// A lista base continua intacta para preservar a ordem do carrossel mobile.
+const LP_ITEMS_DESKTOP = [
+  LP_ITEMS[0],
+  ...LP_ITEMS_DESKTOP_EXTRA,
+  ...LP_ITEMS.filter((item) => item.preview === "dinevo"),
+  ...LP_ITEMS.slice(1)
+    .filter((item) => item.preview !== "dinevo")
+    .map((item) => LP_ITEMS_DESKTOP_REPLACEMENTS[item.preview] ?? item),
 ];
 
 // Placeholders das faixas satélites (mobile) — cards leves, só CSS,
@@ -74,13 +107,15 @@ function StripCard({ item }) {
   );
 }
 
-function PreviewCard({ item }) {
+function PreviewCard({ item, loadAllowed }) {
   return (
     <article className={`lp__preview-card${item.capsuleSrc ? " lp__preview-card--interactive" : ""}`}>
       {item.capsuleSrc ? (
         <CasePreviewFrame
           src={item.capsuleSrc}
+          posterSrc={`/previews/posters/${item.preview}.webp`}
           title={`Preview interativo do hero ${item.title}`}
+          loadAllowed={loadAllowed}
         />
       ) : item.preview ? (
         <LandingPreview variant={item.preview} />
@@ -91,7 +126,7 @@ function PreviewCard({ item }) {
   );
 }
 
-function LandingPages() {
+function LandingPages({ onGeometryReady }) {
   const sectionRef = useRef(null);
   const titleRef = useRef(null);
   const mobileTitleRef = useRef(null);
@@ -117,13 +152,19 @@ function LandingPages() {
   const [isMobileView, setIsMobileView] = useState(
     () => typeof window !== "undefined" && window.matchMedia("(max-width: 767px)").matches
   );
+  const [caseLoadingAllowed, setCaseLoadingAllowed] = useState(false);
   useEffect(() => {
     const mq = window.matchMedia("(max-width: 767px)");
     const onChange = (e) => setIsMobileView(e.matches);
     mq.addEventListener("change", onChange);
     return () => mq.removeEventListener("change", onChange);
   }, []);
-  const carouselItems = isMobileView ? LP_ITEMS : [...LP_ITEMS, ...LP_ITEMS_DESKTOP_EXTRA];
+  // Slot 1 é fixo: o EcoScape é a origem da transição Flip de entrada da seção.
+  // Do slot 2 pra frente a ordem é livre — os cases reais entram logo depois
+  // dele, na frente dos demos, pra serem validados um a um.
+  const carouselItems = isMobileView
+    ? LP_ITEMS
+    : LP_ITEMS_DESKTOP;
 
   // Mobile: gatilho mais tarde (70% da tela) — em 85% o título de 8 linhas
   // termina de animar antes do usuário chegar nele e o efeito passa batido.
@@ -133,15 +174,20 @@ function LandingPages() {
     trigger: titleRef,
     start: revealLater ? "top 70%" : "top 85%",
     stagger: revealLater ? 0.05 : 0.04,
+    onComplete: !isMobileView ? () => setCaseLoadingAllowed(true) : undefined,
   });
   useTitleReveal(mobileTitleRef, {
     trigger: mobileTitleRef,
     start: "top 70%",
     stagger: 0.05,
+    onComplete: isMobileView ? () => setCaseLoadingAllowed(true) : undefined,
   });
 
   useIsoLayoutEffect(() => {
-    if (prefersReducedMotion()) return;
+    if (prefersReducedMotion()) {
+      onGeometryReady?.();
+      return;
+    }
 
     const section = sectionRef.current;
     const target = targetRef.current;
@@ -152,7 +198,10 @@ function LandingPages() {
     const carouselViewport = carouselViewportRef.current;
     const carouselTrack = carouselTrackRef.current;
 
-    if (!section || !target || !settleTarget || !startWrapper || !endWrapper || !settleAnchor || !carouselViewport || !carouselTrack) return;
+    if (!section || !target || !settleTarget || !startWrapper || !endWrapper || !settleAnchor || !carouselViewport || !carouselTrack) {
+      onGeometryReady?.();
+      return;
+    }
 
     let scrollTl;
     let carouselTl;
@@ -478,9 +527,13 @@ function LandingPages() {
       };
     }
 
-    const delayedBuild = gsap.delayedCall(0.2, () => {
+    // Fecha o pin no primeiro frame em que o ScrollSmoother do pai já existe.
+    // O boot continua cobrindo a tela até este refresh terminar; portanto a
+    // altura da página e a scrollbar já estão definitivas quando o Hero surge.
+    const buildFrame = window.requestAnimationFrame(() => {
       build();
       ScrollTrigger.refresh();
+      onGeometryReady?.();
     });
 
     let lastW = window.innerWidth;
@@ -503,7 +556,7 @@ function LandingPages() {
       window.removeEventListener("touchstart", stopSkipTween);
       clearTimeout(resizeTimer);
       stopSkipTween();
-      delayedBuild.kill();
+      window.cancelAnimationFrame(buildFrame);
       if (scrollTl) { scrollTl.scrollTrigger?.kill(); scrollTl.kill(); }
       if (carouselTl) { carouselTl.scrollTrigger?.kill(); carouselTl.kill(); }
       stripMarquees.forEach((s) => s.destroy());
@@ -513,7 +566,7 @@ function LandingPages() {
       carouselSkipActionRef.current = null;
       carouselSkipRef.current?.classList.remove("is-visible", "is-left", "is-skipping");
     };
-  }, []);
+  }, [onGeometryReady]);
 
   const titleHtml = `
     <span class="lp__line">
@@ -620,7 +673,11 @@ function LandingPages() {
         <div className="lp__carousel-viewport" ref={carouselViewportRef}>
           <div className="lp__carousel-track" ref={carouselTrackRef}>
             {carouselItems.map((item, i) => (
-              <PreviewCard key={item.preview} item={item} />
+              <PreviewCard
+                key={item.preview}
+                item={item}
+                loadAllowed={caseLoadingAllowed}
+              />
             ))}
           </div>
         </div>

@@ -1,0 +1,219 @@
+@font-face {
+  font-family: "Anton Preview";
+  src: url("./assets/anton.woff2") format("woff2");
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Inter Preview";
+  src: url("./assets/inter.woff2") format("woff2");
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Inter Preview";
+  src: url("./assets/inter-500.woff2") format("woff2");
+  font-weight: 500;
+  font-display: swap;
+}
+
+:root {
+  --minas-red: #c8102e;
+  --minas-red-hover: #a80d25;
+  --minas-dark: #141210;
+  --minas-cream: #f7f5f2;
+  --minas-muted: #5c5753;
+  --minas-gradient: linear-gradient(90deg, #c8102e 0%, #a80d25 60%, #7a0919 100%);
+
+  /* Onde a diagonal cruza a tela, em % da largura total.
+     Topo mais à direita que a base = inclinação para a esquerda. */
+  --corte-topo: 68%;
+  --corte-base: 62%;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  width: 1440px;
+  height: 810px;
+  overflow: hidden;
+  background: var(--minas-cream);
+}
+
+/* Desenhado em 1920x1080 e reduzido inteiro por scale(0.75) para o canvas
+   1440x810 do carrossel. 1440x810 e 1920x1080 sao a MESMA proporcao (16:9),
+   entao encolher tudo junto preserva a composicao exata que foi validada.
+   Reajustar padding/corte em px no lugar disso desmonta o layout: os px nao
+   encolhem com o canvas, so a largura encolhe. */
+.capsule {
+  position: relative;
+  width: 1920px;
+  height: 1080px;
+  transform: scale(0.75);
+  transform-origin: 0 0;
+  display: flex;
+  overflow: hidden;
+  isolation: isolate;
+  background: var(--minas-cream);
+  color: var(--minas-dark);
+  font-family: "Inter Preview", Inter, system-ui, sans-serif;
+}
+
+/* ── Navbar: flutua absoluta sobre a costura dos dois painéis ── */
+.capsule__nav {
+  position: absolute;
+  z-index: 10;
+  top: 160px;
+  left: 30%;
+}
+
+.nav-list {
+  display: flex;
+  align-items: center;
+  gap: 56px;
+  list-style: none;
+}
+
+.nav-item { position: relative; padding-bottom: 6px; }
+
+.nav-item button {
+  all: unset;
+  cursor: pointer;
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--minas-dark);
+  transition: color 0.2s;
+}
+
+.nav-item.is-hovered button { color: var(--minas-red); }
+
+.nav-indicator {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--minas-gradient);
+  width: 100px;          /* base fixa: a largura real vem do scaleX (composited) */
+  transform-origin: left center;
+  transform: translateX(0) scaleX(0);
+}
+
+/* ── Painel esquerdo (60%) ── */
+.capsule__left {
+  position: relative;
+  z-index: 2;
+  width: 60%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 256px 64px 240px;
+}
+
+.capsule__logo { margin-bottom: 56px; }
+.capsule__logo img { height: 62px; width: auto; display: block; }
+
+.capsule__title {
+  font-family: "Anton Preview", Impact, sans-serif;
+  font-weight: 400;
+  font-size: 78px;
+  line-height: 1.25;
+  color: var(--minas-dark);
+}
+
+.capsule__accent {
+  background: var(--minas-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+.capsule__rule {
+  width: 100px;
+  height: 5px;
+  margin: 28px 0;
+  background: var(--minas-red);
+}
+
+.capsule__subtitle {
+  max-width: 540px;
+  font-size: 21px;
+  line-height: 32px;
+  color: var(--minas-muted);
+}
+
+.capsule__footer { width: 100%; }
+
+.capsule__contacts {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 110px;
+  /* fit-content: sem isso o flex block preenche a largura toda do painel
+     (1024px) e o scale amplia esse retângulo vazio, não o conteúdo real —
+     foi o que vazou pra dentro da diagonal. */
+  width: fit-content;
+  transform: scale(1.5);
+  transform-origin: left center;
+}
+
+.contact {
+  all: unset;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-size: 12px;
+  color: var(--minas-muted);
+}
+.contact--static { cursor: default; }
+
+.contact__icon {
+  display: flex;
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  margin-right: 8px;
+  color: var(--minas-dark);
+}
+.contact__icon svg { width: 100%; height: 100%; }
+
+/* ── Painel direito — camada absoluta cobrindo a tela inteira ──
+   Não é mais flex child com margem: assim a diagonal sangra de topo a base.
+   O clip-path é medido em % da TELA (não do painel), então --corte-topo e
+   --corte-base controlam sozinhos onde a diagonal cruza. */
+.capsule__media {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.wipe {
+  position: absolute;
+  inset: 0;
+  clip-path: polygon(
+    var(--corte-topo) 0,
+    100% 0,
+    100% 100%,
+    var(--corte-base) 100%
+  );
+}
+
+.wipe--black { background: var(--minas-dark); }
+.wipe--red { background: var(--minas-red); }
+.wipe--cream { background: #efece8; }
+
+/* A camada cobre a tela toda (pro clip-path ser medido em % da tela), mas a
+   FOTO é limitada à largura da faixa da diagonal e ancorada à direita.
+   Sem isso o cover escalaria a imagem pela tela inteira e ampliaria demais. */
+.wipe--photo img {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 42%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 45%;
+}

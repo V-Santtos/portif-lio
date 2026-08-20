@@ -86,7 +86,19 @@
     html[data-booting] #__boot {
       position: fixed;
       inset: 0;
-      background: #FEF8E8;
+      /* Mesmo wash do Hero desktop, comprimido para a viewport inteira.
+         No refresh recorrente este e o primeiro frame: nada de creme chapado
+         antes do React montar e fechar a geometria dos pins. */
+      background:
+        linear-gradient(to top,
+          #f05235 0%,
+          rgba(240, 82, 53, 0.86) 10.44%,
+          rgba(240, 82, 53, 0.55) 22.04%,
+          rgba(240, 82, 53, 0.28) 33.64%,
+          rgba(240, 82, 53, 0.10) 46.4%,
+          rgba(240, 82, 53, 0) 58%
+        ),
+        #FEF8E8;
       z-index: 99;
       pointer-events: none;
     }

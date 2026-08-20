@@ -35,7 +35,6 @@
   --nexous-orange: #f43c00;
   --nexous-white: #fff;
   --nexous-muted: rgba(255, 255, 255, 0.68);
-  --nexous-border: rgba(255, 255, 255, 0.16);
   font-family: "Inter Display", Arial, sans-serif;
   color: var(--nexous-white);
   background: var(--nexous-black);
@@ -125,7 +124,7 @@ button:not(:disabled) {
   margin: 0 auto;
   column-gap: 54px;
   font-size: 18px;
-  font-weight: 700;
+  font-weight: 500;
 }
 
 .capsule__nav-group {
@@ -231,7 +230,7 @@ button:not(:disabled) {
   border-radius: 54px;
   color: var(--nexous-white);
   background: var(--nexous-orange);
-  font-weight: 700;
+  font-weight: 500;
 }
 
 .capsule-action__label {
@@ -287,28 +286,13 @@ button:not(:disabled) {
   position: relative;
   z-index: 2;
   width: 1035px;
-  margin: 133px auto 0;
+  margin: 167px auto 0;
   text-align: center;
 }
 
-.capsule__badge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 43px;
-  margin: 0 0 25px;
-  padding: 0 23px;
-  border: 1px solid var(--nexous-border);
-  border-radius: 50px;
-  color: rgba(255, 255, 255, 0.84);
-  background: rgba(255, 255, 255, 0.03);
-  font-size: 16px;
-  font-weight: 700;
-  letter-spacing: -0.035em;
-  backdrop-filter: blur(12px);
-}
-
 .capsule__title {
+  position: relative;
+  top: -18px;
   margin: 0;
   color: var(--nexous-white);
   font-size: 78.5px;

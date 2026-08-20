@@ -8,11 +8,6 @@ import nexousTitleSmall from "./preview-assets/nexous-title-small.jpg";
 import rooforaWorker from "./preview-assets/roofora-worker.webp";
 import rooforaLogo from "../previews/preview-03/assets/roofora-logo.png";
 
-import dinevoChefPortrait from "./preview-assets/dinevo-chef-portrait.jpg";
-import dinevoChefSmall from "./preview-assets/dinevo-chef-small.jpg";
-import dinevoDishSmall from "../previews/preview-04/assets/dish-small.png";
-import dinevoPlate from "./preview-assets/dinevo-plate.webp";
-import dinevoSignatureDish from "./preview-assets/dinevo-signature.jpg";
 import mintaHand from "./preview-assets/minta-hand.webp";
 import mintaGrain from "./preview-assets/grain.png";
 
@@ -118,7 +113,7 @@ function NexousPreview() {
         <div className="nexous-hero__content">
           <p className="nexous-hero__badge">Agencia criativa digital</p>
 
-          <h1 className="nexous-hero__title">
+          <div className="nexous-hero__title" role="heading" aria-level="2">
             <span className="nexous-hero__line nexous-hero__line--top">
               <img src={nexousInnovativeLeft} alt="" loading="lazy" />
               <span>SOLUCOES</span>
@@ -131,7 +126,7 @@ function NexousPreview() {
               <span>MARCA</span>
               <img src={nexousBrandRight} alt="" loading="lazy" />
             </span>
-          </h1>
+          </div>
 
           <p className="nexous-hero__copy">
             Da criacao ao desempenho, desenvolvemos estrategias que geram crescimento
@@ -177,10 +172,10 @@ function RooforaPreview() {
           </div>
 
           <div className="roofora-hero__content">
-            <h1>
+            <div className="roofora-hero__title" role="heading" aria-level="2">
               <span>Especialistas confiaveis</span>
               <span>para reparos em casa</span>
-            </h1>
+            </div>
             <p>
               Solucoes para telhados feitas para durar, protegendo sua casa com
               tecnica especializada e qualidade consistente.
@@ -217,76 +212,6 @@ function RooforaPreview() {
   );
 }
 
-function DinevoPreview() {
-  return (
-    <PreviewShell className="lp-preview--dinevo" label="Hero preview inspirado em Dinevo">
-      <section className="dinevo-hero">
-        <nav className="dinevo-nav" aria-label="Navegacao do preview">
-          <PreviewLink className="dinevo-brand">
-            <span className="dinevo-brand__mark" aria-hidden="true" />
-            <span>Dinevo</span>
-          </PreviewLink>
-
-          <div className="dinevo-nav__links">
-            <span className="is-active">Inicio</span>
-            <span>Sobre</span>
-            <span>Menu</span>
-            <span>Paginas</span>
-            <span>Contato</span>
-          </div>
-
-          <PreviewLink className="dinevo-nav__cta">
-            Reservar mesa
-            <span aria-hidden="true">↗</span>
-          </PreviewLink>
-        </nav>
-
-        <div className="dinevo-hero__media" aria-hidden="true">
-          <img src={dinevoPlate} alt="" loading="lazy" />
-          <div className="dinevo-hero__shade" />
-        </div>
-
-        <div className="dinevo-hero__content">
-          <p className="dinevo-hero__eyebrow">上質な時間を</p>
-
-          <h1>
-            <span>Onde a elegancia</span>
-            <span>encontra sabor</span>
-          </h1>
-
-          <div className="dinevo-social" aria-label="Clientes satisfeitos">
-            <div className="dinevo-social__avatars" aria-hidden="true">
-              <img src={dinevoDishSmall} alt="" loading="lazy" />
-              <img src={dinevoChefSmall} alt="" loading="lazy" />
-              <img src={dinevoChefPortrait} alt="" loading="lazy" />
-              <span>10+</span>
-            </div>
-            <p>
-              Transformamos cada refeicao em uma experiencia memoravel.<br />
-              Pratos marcantes preparados a cada servico.
-            </p>
-          </div>
-
-          <div className="dinevo-hero__actions">
-            <PreviewLink className="dinevo-hero__primary">
-              Explorar menu
-              <span aria-hidden="true">↗</span>
-            </PreviewLink>
-          </div>
-        </div>
-
-        <aside className="dinevo-signature-card" aria-label="Prato em destaque">
-          <header>
-            <strong>Experimente nossos pratos autorais</strong>
-            <span aria-hidden="true">↙</span>
-          </header>
-          <img src={dinevoSignatureDish} alt="" loading="lazy" />
-        </aside>
-      </section>
-    </PreviewShell>
-  );
-}
-
 function MintaPreview() {
   return (
     <PreviewShell className="lp-preview--minta" label="Hero preview inspirado em Minta">
@@ -309,10 +234,10 @@ function MintaPreview() {
         </nav>
 
         <div className="minta-hero__content">
-          <h1>
+          <div className="minta-hero__title" role="heading" aria-level="2">
             <span>Entre na luz.</span>
             <span>Seu futuro ja espera.</span>
-          </h1>
+          </div>
           <p>
             A Minta e a carteira cripto inteligente que guia voce do primeiro
             deposito aos primeiros grandes resultados.
@@ -345,10 +270,10 @@ function MinasPreview() {
             <header className="minas-hero__logo">
               <img src={minasLogo} alt="Minas Tintas" loading="lazy" />
             </header>
-            <h1 className="minas-hero__title">
+            <div className="minas-hero__title" role="heading" aria-level="2">
               Tudo começa<br />
               com a <span className="minas-hero__accent">cor</span> certa.
-            </h1>
+            </div>
             <span className="minas-hero__divider" aria-hidden="true" />
             <p className="minas-hero__copy">
               Linha completa em tintas imobiliárias,<br />
@@ -401,7 +326,6 @@ const PREVIEWS = {
   eco: EcoPreview,
   nexous: NexousPreview,
   roofora: RooforaPreview,
-  dinevo: DinevoPreview,
   minta: MintaPreview,
   minas: MinasPreview,
 };

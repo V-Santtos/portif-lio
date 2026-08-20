@@ -1,11 +1,12 @@
-# Preview 04 - Dinevo Hero
+# Preview 04 - Fervor Hero
 
 Pacote isolado de extração e reconstrução do Hero do site `https://dinevo.framer.website/`.
 
 ## Mapa da Pasta
 
-- `index.html` - scaffold HTML estático do Hero em português.
+- `index.html` - preview fluido do Hero em português.
 - `styles.css` - CSS isolado para aproximar composição, cores, tipografia e camadas visuais.
+- `preview.js` - ciclo GSAP local do card de pratos.
 - `assets/` - ativos públicos baixados do site de referência.
 - `data/hero-summary.json` - resumo estruturado do Hero usado na reconstrução.
 - `extraction/raw/dinevo-home.html` - HTML bruto preservado da página de origem.
@@ -31,22 +32,23 @@ Pacote isolado de extração e reconstrução do Hero do site `https://dinevo.fr
 - A tradução/adaptação em português usa:
   - nav: `Início`, `Sobre`, `Menu`, `Páginas`, `Contato`;
   - CTA: `Reservar mesa`;
-  - eyebrow japonês original: `上質な時間を`;
+  - eyebrow adaptado: `Do forno para a mesa,`;
   - título: `Onde a elegância encontra sabor`;
   - apoio: texto curto de restaurante premium;
   - CTA secundário visual: `Explorar menu`.
-- O logotipo foi recriado como texto + marca geométrica em CSS, porque o site usa SVG inline no Framer.
-- O card branco da direita foi alinhado à referência `Experience Our Signature Dishes`, usando a imagem `signature-dish-b.jpg`.
-- A prova social com avatares e `10+` foi recriada como scaffold estático.
+- A adaptação usa provisoriamente o nome `Fervor`, somente em texto e sem símbolo, até a definição da marca final.
+- O fundo da adaptação usa `assets/sora-hero-pizza.jpg`, derivado da fotografia fornecida localmente `ivan-torres-MQUqbmszGGM-unsplash.jpg` e otimizado para 2400 × 1600 px.
+- O card branco da direita foi alinhado à referência `Experience Our Signature Dishes`, usando as três fotografias fornecidas para a adaptação Fervor. Elas avançam a cada 3 segundos e o prato ativo amplia levemente no hover.
+- A referência original usa prova social com avatares e `10+`; a adaptação Fervor remove esse bloco e alinha o texto de apoio diretamente à esquerda.
 - A fonte Anton foi salva localmente em `assets/fonts/anton-latin.woff2` para evitar alternância visual entre fallback e webfont.
 - O bloco textual foi reposicionado um pouco mais para baixo para preencher melhor a composição.
-- As camadas e cards flutuantes são aproximações visuais do Hero, não uma cópia do runtime original.
+- As camadas e cards flutuantes são aproximações visuais do Hero; o ciclo do card de pratos foi reconstruído localmente com GSAP.
 
 ## Parcial ou Inferido
 
 - A fonte original parece usar Anton/Inter via Framer. O preview carrega uma fonte pública do próprio Framer e mantém fallback local.
-- O comportamento de animação do Framer não foi portado.
-- A distribuição espacial foi ajustada para funcionar como preview estático e responsivo.
+- O ciclo das três fotografias e o hover correspondente foram portados; as demais animações de entrada do Framer continuam fora de escopo.
+- A distribuição espacial foi ajustada para funcionar como preview fluido e responsivo.
 
 ## Bloqueado ou Não Portado
 

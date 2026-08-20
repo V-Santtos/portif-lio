@@ -12,9 +12,11 @@
     "title": "Where Elegance Meets Flavor"
   },
   "portugueseAdaptation": {
+    "brand": "Fervor",
+    "heroImage": "./assets/sora-hero-pizza.jpg",
     "nav": ["Início", "Sobre", "Menu", "Páginas", "Contato"],
     "cta": "Reservar mesa",
-    "eyebrow": "上質な時間を",
+    "eyebrow": "Do forno para a mesa,",
     "title": "Onde a elegância encontra sabor",
     "subtitle": "Transformamos cada refeição em uma experiência memorável. Pratos marcantes preparados a cada serviço.",
     "secondaryCta": "Explorar menu"
@@ -38,11 +40,18 @@
       "width": 176,
       "height": 176
     },
-    "signatureDish": {
+    "signatureDishSource": {
       "sourcePath": "https://framerusercontent.com/images/pHJmUKJsFBrZf1F1BIRczPV4S0.jpg",
-      "localPath": "./assets/signature-dish-b.jpg",
-      "width": 1920,
-      "height": 1280
+      "width": 1024,
+      "height": 768
+    },
+    "signatureDishCycle": {
+      "intervalMs": 3000,
+      "localPaths": [
+        "./assets/signature-pizza-classic.jpg",
+        "./assets/signature-salmon-bowl.jpg",
+        "./assets/signature-pizza-special.jpg"
+      ]
     }
   },
   "confirmedColors": {
@@ -53,7 +62,9 @@
   },
   "notes": [
     "Preview remains isolated under Victor/previews and is not linked to the production carousel.",
+    "The adapted preview uses the provisional text-only name Fervor while the source evidence remains documented as Dinevo.",
+    "The adapted hero background uses the locally provided Ivan Torres pizza photograph, optimized to 2400x1600 JPEG.",
     "Generated scaffold recreates the Hero visually from confirmed Framer HTML and assets.",
-    "Original Framer runtime and animation system were not ported."
+    "The three-image card cycle and its hover scale were recreated locally with GSAP; other Framer entrance effects remain out of scope."
   ]
 }

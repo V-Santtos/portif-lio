@@ -200,7 +200,10 @@ export function SplitHeading({ as: Tag = "h1", text, className = "", accentMatch
   return <Tag className={className} dangerouslySetInnerHTML={{ __html: html }} />;
 }
 
-export function useTitleReveal(ref, { trigger, start = "top 80%", delay = 0, stagger = 0.08 } = {}) {
+export function useTitleReveal(
+  ref,
+  { trigger, start = "top 80%", delay = 0, stagger = 0.08, onComplete } = {}
+) {
   useIsoLayoutEffect(() => {
     if (!ref.current) return;
 
@@ -209,6 +212,7 @@ export function useTitleReveal(ref, { trigger, start = "top 80%", delay = 0, sta
 
     if (prefersReducedMotion()) {
       gsap.set(spans, { y: 0, yPercent: 0, clearProps: "transform" });
+      onComplete?.();
       return;
     }
 
@@ -224,6 +228,7 @@ export function useTitleReveal(ref, { trigger, start = "top 80%", delay = 0, sta
       ease: "power3.out",
       stagger,
       delay,
+      onComplete,
     };
 
     const triggerEl = trigger && "current" in trigger ? trigger.current : trigger;
