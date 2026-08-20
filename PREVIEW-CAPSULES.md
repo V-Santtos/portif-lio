@@ -4,11 +4,15 @@ Este é o procedimento validado para transformar um site, landing page ou DOM j�
 
 ## Resultado esperado
 
-Para Nexous e todos os próximos cases, cada trabalho produz **um único artefato**:
+Para cada case real, o carrossel produz dois artefatos coordenados:
 
-1. **Hero Capsule interativa:** hero real isolado num iframe, com hovers e movimentos confirmados da origem, mas sem navegação.
+1. **Hero Capsule interativa:** hero real isolado num iframe, com hovers confirmados da origem, mas sem navegação.
+2. **Poster estático exato:** captura da composição final em
+   `public/previews/posters/<slug>.webp`, usada enquanto o iframe está sendo
+   preparado fora da viewport.
 
-**Exceção já encerrada:** somente o primeiro EcoScape possui miniatura estática, porque ela participa da transição inicial da seção para o carrossel. Não criar miniatura para Nexous ou qualquer card seguinte.
+**Exceção do EcoScape:** além do poster de fallback, ele possui uma miniatura
+separada para a transição Flip de entrada da seção.
 
 ## 0. Bancada de validação (localhost:3001)
 
@@ -70,6 +74,30 @@ Contrato:
 - isolamento pelo iframe de `CasePreviewFrame.jsx`;
 - iframe com `loading="lazy"`;
 - `prefers-reduced-motion` respeitado.
+
+### Regra crítica — passagem rápida nunca pode trocar o conteúdo visível
+
+O carrossel precisa funcionar igual em scroll lento ou rápido. O poster não é
+um estado de erro: ele é a composição estática garantida do card. Portanto:
+
+1. Nunca criar o iframe somente quando o próximo card já está se aproximando
+   horizontalmente. Ao aproximar da seção, liberar todos os cases para montagem
+   em segundo plano; não depender do `onComplete` da cascata do título, pois
+   ele pode ser atravessado por um scroll rápido.
+2. Cada cápsula deve carregar `../_shared/preview-ready.js`. Esse script só
+   envia `case-preview:ready` depois de fontes, imagens visíveis e duas pinturas
+   completas.
+3. `CasePreviewFrame.jsx` só pode trocar o poster pelo iframe quando o card
+   estiver **fora da viewport**. Se o usuário passar rápido e o iframe terminar
+   tarde, ele vê apenas o poster estático nessa passagem; o iframe assume fora
+   da tela e entra pronto no retorno, com os hovers preservados.
+4. Nunca revelar por `iframe.onload` sozinho: esse evento não garante que a
+   imagem tenha sido decodificada e que a primeira pintura interna estabilizou.
+
+Validação obrigatória: atravessar a seção rapidamente do primeiro ao último
+card. Durante qualquer card visível, `src`, opacidade e classe `is-ready` do
+iframe não podem mudar. Em 2026-08-20, essa verificação encontrou o flick que
+aparecia primeiro no Minas Tintas.
 
 O item em `LandingPages.jsx` recebe:
 
@@ -181,6 +209,8 @@ Interação:
 - wheel mantém a mesma suavidade antes, sobre e depois do preview.
 - ao sair da seção e retornar, todo o conteúdo continua no estado final visível,
   mesmo se o navegador tiver recarregado o iframe fora da tela.
+- em scroll rápido, nenhum card visível troca do poster para o iframe; o card
+  precisa permanecer estático até sair da viewport.
 
 Técnico:
 

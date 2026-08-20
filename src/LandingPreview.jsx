@@ -74,8 +74,10 @@ function EcoPreview() {
     <PreviewShell className="lp-preview--eco" label="Hero preview inspirado em EcoScape">
       <img
         className="eco-static-thumbnail"
-        src="/previews/ecoscape/assets/thumbnail-exact.webp"
+        src="/previews/ecoscape/assets/thumbnail-exact-1280.webp"
         alt=""
+        width="1280"
+        height="720"
         loading="eager"
         draggable="false"
       />
@@ -222,13 +224,12 @@ function MintaPreview() {
 
         <nav className="minta-nav" aria-label="Navegacao do preview">
           <PreviewLink className="minta-brand">
-            <span className="minta-brand__mark" aria-hidden="true" />
             minta
           </PreviewLink>
           <div className="minta-nav__links">
-            <span>Recursos</span>
-            <span>Planos</span>
-            <span>Blog</span>
+            <PreviewLink className="minta-nav__link">Recursos</PreviewLink>
+            <PreviewLink className="minta-nav__link">Planos</PreviewLink>
+            <PreviewLink className="minta-nav__link">Blog</PreviewLink>
           </div>
           <PreviewLink className="minta-nav__cta">Acesso antecipado</PreviewLink>
         </nav>

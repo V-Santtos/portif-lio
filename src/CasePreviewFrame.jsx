@@ -15,6 +15,7 @@ function CasePreviewFrame({ src, posterSrc, title, loadAllowed = true }) {
   const iframeRef = useRef(null);
   const [fit, setFit] = useState({ scale: 1, x: 0, y: 0 });
   const [shouldLoad, setShouldLoad] = useState(false);
+  const [contentReady, setContentReady] = useState(false);
   const [frameReady, setFrameReady] = useState(false);
 
   useLayoutEffect(() => {
@@ -40,41 +41,48 @@ function CasePreviewFrame({ src, posterSrc, title, loadAllowed = true }) {
     return () => observer.disconnect();
   }, []);
 
-  // `loading="lazy"` sozinho não segura as cápsulas. Além da proximidade, a
-  // seção pai libera a carga só depois que a cascata do título terminou — dois
-  // documentos completos montando durante os spans eram a travada da seção 2.
-  // Se alguém atravessar a seção muito rápido, o card ainda pode se liberar ao
-  // ficar realmente visível; assim não trocamos a travada por um quadro vazio.
+  // Todos os cases só começam depois da cascata do título. A partir daí eles
+  // montam JUNTOS, ainda fora da área do carrossel. A política anterior de
+  // acordar apenas o próximo card deixava um iframe nascer enquanto ele já
+  // entrava na tela durante uma rolagem rápida, causando o reposicionamento
+  // perceptível que este fallback existe justamente para evitar.
   useEffect(() => {
     const root = rootRef.current;
     if (!root) return undefined;
 
-    if (!("IntersectionObserver" in window)) {
+    if (loadAllowed) {
       setShouldLoad(true);
       return undefined;
     }
 
+    return undefined;
+  }, [loadAllowed]);
+
+  // Nenhum frame troca o poster enquanto o card esta na viewport. Se a pessoa
+  // atravessar o carrossel em alta velocidade, ela ve a arte estatica (ja
+  // posicionada) durante toda a passagem; o iframe termina em segundo plano e
+  // so assume fora da tela, pronto para a proxima aproximacao e para os hovers.
+  useEffect(() => {
+    const root = rootRef.current;
+    if (!root || !contentReady || frameReady) return undefined;
+
+    if (!("IntersectionObserver" in window)) {
+      setFrameReady(true);
+      return undefined;
+    }
+
     const observer = new IntersectionObserver(
-      (entries) => {
-        if (!entries.some((entry) => entry.isIntersecting)) return;
-        setShouldLoad(true);
+      ([entry]) => {
+        if (entry?.isIntersecting) return;
+        setFrameReady(true);
         observer.disconnect();
       },
-      {
-        // Depois do título, 45% de margem horizontal acorda exatamente o
-        // próximo card ainda fora da tela. Ele termina de montar antes de sua
-        // ponta aparecer, sem liberar dois ou três iframes distantes juntos.
-        root: document.querySelector("#smooth-wrapper"),
-        rootMargin: loadAllowed
-          ? `${Math.round(window.innerHeight)}px 45%`
-          : "0px -12%",
-        threshold: loadAllowed ? 0 : 0.5,
-      }
+      { threshold: 0 }
     );
 
     observer.observe(root);
     return () => observer.disconnect();
-  }, [loadAllowed]);
+  }, [contentReady, frameReady]);
 
   useEffect(() => {
     let pendingWheelDelta = 0;
@@ -98,11 +106,21 @@ function CasePreviewFrame({ src, posterSrc, title, loadAllowed = true }) {
       const frameWindow = iframeRef.current?.contentWindow;
       if (
         event.source !== frameWindow ||
-        event.origin !== window.location.origin ||
-        event.data?.type !== "case-preview:wheel"
+        event.origin !== window.location.origin
       ) {
         return;
       }
+
+      // O poster e o frame foram produzidos para a mesma composicao. Mesmo
+      // assim, so revelamos o iframe quando ele confirma que imagens, fontes e
+      // dois frames de pintura ja fecharam. Isso impede qualquer reposicionamento
+      // perceptivel durante a passagem veloz pelo carrossel.
+      if (event.data?.type === "case-preview:ready") {
+        setContentReady(true);
+        return;
+      }
+
+      if (event.data?.type !== "case-preview:wheel") return;
 
       const deltaY = Number(event.data.deltaY);
       if (!Number.isFinite(deltaY) || deltaY === 0) return;
@@ -123,7 +141,8 @@ function CasePreviewFrame({ src, posterSrc, title, loadAllowed = true }) {
       const expected = new URL(src, window.location.href);
       const location = iframeRef.current?.contentWindow?.location;
       if (location?.origin !== expected.origin || location?.pathname !== expected.pathname) return;
-      setFrameReady(true);
+      // A revelacao fica por conta de preview-ready.js dentro do iframe. O
+      // evento load sozinho nao espera a decodificacao visual das imagens.
     } catch {
       // O poster continua visível se o documento real não puder ser validado.
     }

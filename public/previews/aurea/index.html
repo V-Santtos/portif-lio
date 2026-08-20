@@ -15,9 +15,19 @@
     <main class="capsule" aria-label="Preview do hero da imobiliária Áurea">
       <section class="hero" id="inicio">
         <div class="hero__media" aria-hidden="true">
-          <video class="hero__video" muted playsinline preload="none" poster="./assets/poster-residencia.jpg">
-            <source src="./assets/residencia-aurea.mp4" type="video/mp4" />
-          </video>
+          <!-- O case no carrossel e deliberadamente estatico. Um <video>, mesmo
+               pausado e com preload="none", ainda inicializa o pipeline de
+               poster/codec ao montar o iframe e podia trocar sutilmente a imagem
+               que ja estava visivel no card. A imagem final elimina essa troca. -->
+          <img
+            class="hero__video"
+            src="./assets/poster-residencia.jpg"
+            alt=""
+            width="1920"
+            height="1080"
+            fetchpriority="high"
+            draggable="false"
+          />
           <div class="hero__veil"></div>
           <div class="hero__grain"></div>
         </div>
@@ -102,5 +112,6 @@
 
     <script src="../_shared/gsap.min.js"></script>
     <script src="./capsule.js"></script>
+    <script src="../_shared/preview-ready.js"></script>
   </body>
 </html>

@@ -72,6 +72,7 @@ button {
 }
 
 .hero__video {
+  display: block;
   width: 103%;
   height: 103%;
   margin: -1.5%;

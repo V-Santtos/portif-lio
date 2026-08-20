@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { Flip, ScrollTrigger, currentScrollY, gsap, prefersReducedMotion, scrollPageTo, useIsoLayoutEffect, useTitleReveal } from "./lib.jsx";
 import CasePreviewFrame from "./CasePreviewFrame.jsx";
@@ -153,6 +153,7 @@ function LandingPages({ onGeometryReady }) {
     () => typeof window !== "undefined" && window.matchMedia("(max-width: 767px)").matches
   );
   const [caseLoadingAllowed, setCaseLoadingAllowed] = useState(false);
+  const unlockCaseLoading = useCallback(() => setCaseLoadingAllowed(true), []);
   useEffect(() => {
     const mq = window.matchMedia("(max-width: 767px)");
     const onChange = (e) => setIsMobileView(e.matches);
@@ -174,14 +175,43 @@ function LandingPages({ onGeometryReady }) {
     trigger: titleRef,
     start: revealLater ? "top 70%" : "top 85%",
     stagger: revealLater ? 0.05 : 0.04,
-    onComplete: !isMobileView ? () => setCaseLoadingAllowed(true) : undefined,
+    onComplete: !isMobileView ? unlockCaseLoading : undefined,
   });
   useTitleReveal(mobileTitleRef, {
     trigger: mobileTitleRef,
     start: "top 70%",
     stagger: 0.05,
-    onComplete: isMobileView ? () => setCaseLoadingAllowed(true) : undefined,
+    onComplete: isMobileView ? unlockCaseLoading : undefined,
   });
+
+  // A cascata do titulo continua sendo o caminho normal. Este gatilho cobre
+  // quem salta a pagina com wheel/touch muito rapido: nesse caso o callback de
+  // conclusao da animacao pode nao ganhar um frame antes do carrossel aparecer.
+  // Os posters continuam na tela ate cada iframe terminar fora da viewport.
+  useEffect(() => {
+    if (caseLoadingAllowed) return undefined;
+    const section = sectionRef.current;
+    if (!section || !("IntersectionObserver" in window)) {
+      unlockCaseLoading();
+      return undefined;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry?.isIntersecting) return;
+        unlockCaseLoading();
+        observer.disconnect();
+      },
+      {
+        root: document.querySelector("#smooth-wrapper"),
+        rootMargin: "0px 0px 100% 0px",
+        threshold: 0,
+      }
+    );
+
+    observer.observe(section);
+    return () => observer.disconnect();
+  }, [caseLoadingAllowed, unlockCaseLoading]);
 
   useIsoLayoutEffect(() => {
     if (prefersReducedMotion()) {
