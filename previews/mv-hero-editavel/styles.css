@@ -1,0 +1,577 @@
+/* ============================================================
+   BANCADA FASE 1 — Hero MV Estética Automotiva (fluido, tela real)
+   Port fiel da origem (somente leitura) em MV-OFICIAL/site-mv:
+     · src/components/sections/Hero.module.css
+     · src/components/layout/Navbar.module.css   (estado hero apenas)
+     · src/components/ui/Button.module.css       (primary + light)
+     · src/styles/tokens.css + src/app/globals.css (só o que o hero usa)
+
+   Fase 1 = FLUIDO. Nada de canvas 1440×810 aqui — a conversão pra cápsula
+   é geométrica (scale), depois da aprovação. Ver PREVIEW-CAPSULES.md §0.
+   ============================================================ */
+
+/* ---------- Fonte (local, sem request de terceiro) ---------- */
+/* Inter variável latin — o MESMO arquivo que o next/font serve na origem. */
+@font-face {
+  font-family: "Inter Preview";
+  src: url("assets/inter-var-latin.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ---------- Tokens (recorte do tokens.css da origem) ---------- */
+:root {
+  --bg-0: #1c1c1c;
+  --text-1: #ffffff;
+  --accent: #3965c8;
+  --accent-glint: #6e93e6;
+  --accent-deep: #274b99;
+
+  --duration-fast: 150ms;
+  --duration-base: 250ms;
+  --easing-out: cubic-bezier(0.16, 1, 0.3, 1);
+
+  --font-display: "Inter Preview", system-ui, sans-serif;
+  --font-body: "Inter Preview", system-ui, sans-serif;
+
+  /* Fora do iPhone vale 0 — desktop inalterado. */
+  --safe-top: env(safe-area-inset-top, 0px);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  /* Na origem só o eixo X é cortado: o vazamento VERTICAL (luz do chão + base
+     do carro) é intencional e atravessa pra seção 2.
+     ⚠️ AQUI a seção 2 não existe (escopo = só o hero), então esse vazamento
+     não tem pra onde ir: vira scroll vertical, a scrollbar aparece e a largura
+     útil cai de 1920 pra 1905. Isso FALSEARIA a Fase 2 — a conversão pra
+     cápsula é `scale(1440/1920)`, e validar em 1905 embute 15px de erro.
+     Cortar os dois eixos reproduz exatamente o quadro da dobra e já casa com o
+     contrato da cápsula ("documento sem scroll próprio"). */
+  overflow: clip;
+}
+
+body {
+  background: var(--bg-0);
+  color: var(--text-1);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ============================================================
+   NAVBAR — estado HERO (absoluta, transparente)
+   ============================================================ */
+
+.nav {
+  position: absolute;
+  inset: 0 0 auto 0;
+  z-index: 50;
+  padding: calc(0.9rem + var(--safe-top)) 1.5rem 0.9rem;
+}
+
+.nav__inner {
+  position: relative;
+  z-index: 1;
+  max-width: 80rem;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  /* A forma da pílula fica reservada mesmo transparente — é assim na origem. */
+  padding: 0.9rem 1.75rem;
+  border-radius: 999px;
+  border: 1px solid transparent;
+}
+
+.nav__logo {
+  display: flex;
+  align-items: center;
+}
+
+.nav__logo-img {
+  height: 38px;
+  width: auto;
+  display: block;
+  /* Logo toda branca (Victor, 2026-07-15) — o PNG original tem o azul cru. */
+  filter: brightness(0) invert(1);
+}
+
+.nav__links {
+  display: none;
+  gap: 2.75rem;
+  list-style: none;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  margin: 0;
+  padding: 0;
+}
+
+/* HOVER dos links: cor NÃO pode ser o sinal — a barra vive sobre o glow azul,
+   e azul sobre azul apaga. Sinal em dupla: (A) risquinho branco que se desenha
+   da esquerda e recolhe pela direita; (B) spotlight, os irmãos recuam. */
+.nav__link {
+  position: relative;
+  display: inline-block;
+  color: #fff;
+  font-size: 1.05rem;
+  font-weight: 300;
+  letter-spacing: 0.02em;
+  text-decoration: none;
+  transition: color 0.3s var(--easing-out);
+}
+
+.nav__link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -0.45rem;
+  height: 1px;
+  background: #fff;
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.35s var(--easing-out);
+}
+
+.nav__link:hover::after,
+.nav__link:focus-visible::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+.nav__links:hover .nav__link:not(:hover) {
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.nav__cta {
+  display: none;
+  margin-left: auto;
+}
+
+.nav__cta-btn {
+  padding: 0.6rem 1.6rem;
+  font-size: 0.95rem;
+}
+
+/* Hambúrguer — SEM pastilha, só os três traços brancos (Victor, 2026-07-23).
+   A caixa de 44px continua: some o visual, não o alvo de toque. */
+.nav__burger {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+  margin-left: auto;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  transition:
+    opacity var(--duration-base) var(--easing-out),
+    transform var(--duration-fast) var(--easing-out);
+}
+
+.nav__burger:active {
+  opacity: 0.6;
+  transform: scale(0.92);
+}
+
+.nav__burger-line {
+  display: block;
+  width: 26px;
+  height: 2px;
+  border-radius: 2px;
+  background: #ffffff;
+}
+
+@media (min-width: 768px) {
+  .nav__links,
+  .nav__cta {
+    display: flex;
+    align-items: center;
+  }
+
+  .nav__burger {
+    display: none;
+  }
+}
+
+@media (max-width: 767px) {
+  .nav {
+    padding: calc(0.9rem + var(--safe-top)) 1.25rem 0.9rem;
+  }
+
+  .nav__logo-img {
+    height: 30px;
+  }
+}
+
+/* ============================================================
+   BOTÃO
+   ============================================================ */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  padding: 0.95rem 2.4rem;
+  border: 0;
+  border-radius: 999px;
+  font-family: inherit;
+  font-size: 1.05rem;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  text-decoration: none;
+  white-space: nowrap;
+  transition:
+    transform var(--duration-fast) var(--easing-out),
+    box-shadow var(--duration-base) var(--easing-out),
+    background-color var(--duration-base) var(--easing-out);
+}
+
+/* Correção ÓPTICA: com padding simétrico, o lado da seta parece mais vazio. */
+.btn--arrow {
+  padding-right: 1.9rem;
+}
+
+/* Seta: repouso ↗ (rotate(-45deg)), no hover gira pra → e aponta pra ação. */
+.btn__arrow {
+  display: inline-flex;
+  transform: rotate(-45deg);
+  transform-origin: center;
+  transition: transform var(--duration-base) var(--easing-out);
+}
+
+.btn:hover .btn__arrow {
+  transform: rotate(0deg);
+}
+
+.btn:focus-visible {
+  outline: 2px solid var(--accent-glint);
+  outline-offset: 3px;
+}
+
+/* Primary — pílula chapada no azul da marca (Figma: #3965C8 flat).
+   O refinamento vem das camadas sutis: luz de topo 1px, hairline interna,
+   sombra ESCURA de assentamento (halo azul foi cortado — glow azul debaixo
+   do glow azul do hero era redundante) e text-shadow do label. */
+.btn--primary {
+  color: #ffffff;
+  background: var(--accent);
+  text-shadow: 0 2px 5px rgba(0, 0, 0, 0.45);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.22),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.06),
+    0 12px 30px -12px rgba(0, 0, 0, 0.55),
+    0 2px 8px rgba(0, 0, 0, 0.35);
+}
+
+.btn--primary:hover {
+  transform: translateY(-1px);
+  background: var(--accent-glint);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.28),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.08),
+    0 16px 36px -12px rgba(0, 0, 0, 0.6),
+    0 3px 10px rgba(0, 0, 0, 0.35);
+}
+
+.btn--primary:active {
+  transform: translateY(0);
+  background: var(--accent-deep);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.05),
+    0 6px 16px -10px rgba(0, 0, 0, 0.5),
+    0 1px 4px rgba(0, 0, 0, 0.4);
+}
+
+/* Light — pílula branca c/ texto escuro (Contato da navbar). Mesmo craft,
+   esquema de luz INVERTIDO: o volume vem da meia-sombra na borda de baixo. */
+.btn--light {
+  color: #111111;
+  background: #ffffff;
+  box-shadow:
+    inset 0 -1px 0 rgba(0, 0, 0, 0.14),
+    inset 0 0 0 1px rgba(0, 0, 0, 0.05),
+    0 12px 32px -12px rgba(255, 255, 255, 0.28),
+    0 2px 8px rgba(0, 0, 0, 0.35);
+}
+
+.btn--light:hover {
+  transform: translateY(-1px);
+  background: #f4f6fb;
+  box-shadow:
+    inset 0 -1px 0 rgba(0, 0, 0, 0.16),
+    inset 0 0 0 1px rgba(0, 0, 0, 0.06),
+    0 16px 40px -12px rgba(255, 255, 255, 0.34),
+    0 3px 10px rgba(0, 0, 0, 0.35);
+}
+
+.btn--light:active {
+  transform: translateY(0);
+  background: #e8ebf2;
+  box-shadow:
+    inset 0 -1px 0 rgba(0, 0, 0, 0.1),
+    inset 0 0 0 1px rgba(0, 0, 0, 0.05),
+    0 6px 18px -10px rgba(255, 255, 255, 0.2),
+    0 1px 4px rgba(0, 0, 0, 0.4);
+}
+
+/* ============================================================
+   HERO — cenário do Figma ("Página", node 475:143).
+   TODO efeito é elipse + layer blur lidos do arquivo (valores exatos):
+     · glow azul   — 1652×982  #3965C8, blur 374px, noise preto 25%
+     · luz do chão — 2318×219  #919191 50%,  blur 134px
+     · sombra      — 1159×53   #0C0C0C,      blur 15.5px
+   Conversão: px do frame 1920 → vw  (1px = 0.05208vw).
+   ============================================================ */
+
+.hero {
+  position: relative;
+  z-index: 1;
+  height: 100svh; /* UMA tela, como a referência */
+  min-height: 620px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.hero__fx {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.hero__car-group {
+  position: absolute;
+  inset: 0;
+  transform-origin: 50% 100%;
+}
+
+/* Glow azul do topo (Figma: Ellipse 3). ~72% da elipse fica ACIMA da tela;
+   só a franja difusa entra no quadro. Alargado além do node (86vw → 104vw):
+   no render da ref os cantos superiores ainda recebem azul. */
+.hero__glow {
+  position: absolute;
+  left: -2vw;
+  top: -37.08vw;
+  width: 104vw;
+  height: 51.15vw;
+  border-radius: 50%;
+  background: #3965c8;
+  /* Figma layer blur 374px → CSS blur usa stdDeviation = radius/2 (187px @1920). */
+  filter: blur(9.74vw);
+  transform: translateZ(0);
+}
+
+/* Noise do glow (Figma: NOISE monotone preto 25% sobre a Ellipse 3).
+   Grain restrito à área do glow via mask — também mata banding do gradiente. */
+.hero__grain {
+  position: absolute;
+  left: -2vw;
+  top: -37.08vw;
+  width: 104vw;
+  height: 51.15vw;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 240px 240px;
+  mix-blend-mode: soft-light;
+  opacity: 0.3;
+  -webkit-mask-image: radial-gradient(50% 50% at 50% 50%, #000 35%, transparent 75%);
+  mask-image: radial-gradient(50% 50% at 50% 50%, #000 35%, transparent 75%);
+}
+
+/* Luz branca do chão (Figma: Ellipse 2). Ancorada no rodapé da dobra;
+   o halo do blur atravessa p/ a seção 2 — vazamento intencional. */
+.hero__floor-light {
+  position: absolute;
+  left: -10.36vw;
+  bottom: -4.06vw;
+  width: 120.73vw;
+  height: 11.41vw;
+  border-radius: 50%;
+  background: rgba(145, 145, 145, 0.5);
+  filter: blur(3.49vw);
+  transform: translateZ(0);
+}
+
+/* Sombra de contato do carro (Figma: Ellipse 1). Estreita e nítida,
+   POR CIMA da luz branca e POR BAIXO do carro. */
+.hero__car-shadow {
+  position: absolute;
+  left: 18.91vw;
+  bottom: 1.04vw;
+  width: 60.36vw;
+  height: 2.76vw;
+  border-radius: 50%;
+  background: #0c0c0c;
+  filter: blur(0.4vw);
+  transform: translateZ(0);
+}
+
+/* Carro (Figma: carr1). O PNG tem espaço vazio embaixo de propósito: a caixa
+   desce 599px (31.2vw) além da dobra p/ as rodas assentarem exatamente sobre
+   a sombra, na borda da tela. */
+.hero__car {
+  position: absolute;
+  left: 12.4vw;
+  bottom: -31.2vw;
+  width: 71.56vw;
+  aspect-ratio: 2748 / 2429;
+}
+
+.hero__car img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+/* ---------- Texto ---------- */
+
+.hero__inner {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 60rem;
+  margin: 0 auto;
+  /* Título em ~24% da altura da dobra (ref. Figma: headline y=258 no frame 1080). */
+  padding: clamp(5.5rem, 23.5svh, 16rem) 1.5rem 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.hero__headline {
+  margin: 0;
+  max-width: 27ch;
+  font-family: var(--font-display);
+  font-weight: 400; /* Inter Regular — peso exato do Figma; leve = premium */
+  font-size: clamp(2rem, 3.4vw, 4.1rem); /* 65px @1920 */
+  line-height: 1.02;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+  color: var(--text-1);
+  white-space: pre-line; /* respeita a quebra definida na copy */
+}
+
+.hero__subtitle {
+  margin: clamp(0.875rem, 3.5svh, 2.5rem) 0 0;
+  max-width: 46ch;
+  font-size: clamp(0.95rem, 1vw, 1.16rem); /* 18.6px @1920 */
+  line-height: 1.55;
+  font-weight: 300;
+  /* era 0.55 (ref) — subido na lapidação: 55% lia lamacento sobre o glow */
+  color: rgba(255, 255, 255, 0.65);
+  text-wrap: balance;
+}
+
+.hero__ctas {
+  margin-top: clamp(1.25rem, 3.2svh, 2.25rem);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
+}
+
+/* ============================================================
+   MOBILE (Victor, 2026-07-23) — carro INTEIRO, apoiado, com chão embaixo.
+
+   🐞 ESTE BLOCO FICA NO FIM DO ARQUIVO — NÃO MOVER PRA CIMA.
+   Ele já esteve no meio e, com a MESMA especificidade, a regra posterior
+   vencia: os ajustes de texto do mobile NUNCA aplicavam.
+
+   🚫 O `transform: scale(1.75)` no car-group FOI REMOVIDO. Era ele que
+   espremia e cortava o carro.
+
+   🔑 A CONTA DO `bottom`: a linha das rodas fica a ~51% da altura da CAIXA.
+   Com `width: 94vw` a caixa tem 83vw → rodas a 42,3vw da base.
+   `bottom: -21vw` deixa ~21,3vw de chão visível.
+   ============================================================ */
+@media (max-width: 48rem) {
+  .hero__car {
+    left: 3vw;
+    width: 94vw;
+    bottom: -21vw;
+  }
+
+  .hero__car-shadow {
+    left: 9vw;
+    width: 82vw;
+    height: 3.8vw;
+    bottom: 20.5vw;
+  }
+
+  .hero__floor-light {
+    left: -14vw;
+    width: 128vw;
+    height: 16vw;
+    bottom: 13vw;
+    filter: blur(7vw);
+  }
+
+  .hero__glow {
+    left: -30vw;
+    top: -58vw;
+    width: 160vw;
+    height: 128vw;
+    filter: blur(20vw);
+  }
+
+  .hero__grain {
+    left: -30vw;
+    top: -58vw;
+    width: 160vw;
+    height: 128vw;
+  }
+
+  /* RITMO VERTICAL (medido em 390×790). O bloco tem que AGRUPAR, não
+     distribuir igual: título + subtítulo são UMA unidade (a afirmação);
+     o CTA é OUTRA (a ação). A razão de ~1:2 abaixo é o que faz o olho ler
+     dois grupos em vez de três coisas soltas. Não igualar de novo. */
+  .hero__inner {
+    padding-top: 24.5svh;
+  }
+
+  /* ⚠️ TETO DE 8.4vw: acima de ~8.6vw "MERECE O MELHOR" estoura e o título
+     vira 3 linhas, empurrando o bloco pra cima do carro. */
+  .hero__headline {
+    font-size: clamp(2rem, 8.4vw, 2.35rem);
+  }
+
+  .hero__subtitle {
+    max-width: 32ch;
+    margin-top: clamp(1.15rem, 3.3svh, 2rem);
+  }
+
+  .hero__ctas {
+    margin-top: clamp(2.5rem, 7.8svh, 4.5rem);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn,
+  .btn__arrow,
+  .nav__link,
+  .nav__link::after {
+    transition: none;
+  }
+
+  .btn:hover .btn__arrow {
+    transform: rotate(-45deg);
+  }
+}

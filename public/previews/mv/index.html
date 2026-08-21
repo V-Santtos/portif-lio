@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1440, initial-scale=1" />
+    <meta name="color-scheme" content="dark" />
+    <title>Preview do hero MV Estética Automotiva</title>
+    <link rel="preload" href="./assets/hero-car.webp" as="image" type="image/webp" />
+    <link rel="preload" href="./assets/inter-var-latin.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="stylesheet" href="./capsule.css" />
+  </head>
+  <body>
+    <main class="capsule" aria-label="Preview do hero da MV Estética Automotiva">
+      <nav class="nav" aria-label="Navegação visual do preview">
+        <div class="nav__inner">
+          <a href="#hero" class="nav__logo" aria-label="MV Estética Automotiva — início">
+            <img class="nav__logo-img" src="./assets/logo.png" alt="MV Estética Automotiva" width="120" height="38" />
+          </a>
+
+          <ul class="nav__links">
+            <li><a class="nav__link" href="#hero">Início</a></li>
+            <li><a class="nav__link" href="#servicos">Serviços</a></li>
+            <li><a class="nav__link" href="#processo">Processo</a></li>
+            <li><a class="nav__link" href="#quem-somos">Quem somos</a></li>
+          </ul>
+
+          <div class="nav__cta">
+            <a class="btn btn--light nav__cta-btn" href="#contato">Contato</a>
+          </div>
+
+          <button type="button" class="nav__burger" aria-label="Abrir menu" tabindex="-1">
+            <span class="nav__burger-line"></span>
+            <span class="nav__burger-line"></span>
+            <span class="nav__burger-line"></span>
+          </button>
+        </div>
+      </nav>
+
+      <section id="hero" aria-label="Hero principal" class="hero">
+        <div class="hero__fx" aria-hidden="true">
+          <div class="hero__car-group">
+            <div class="hero__floor-light"></div>
+            <div class="hero__car-shadow"></div>
+            <div class="hero__car">
+              <img src="./assets/hero-car.webp" alt="" width="2048" height="1810" />
+            </div>
+          </div>
+          <div class="hero__glow"></div>
+          <div class="hero__grain"></div>
+        </div>
+
+        <div class="hero__inner">
+          <h1 class="hero__headline">Seu veículo
+merece o melhor</h1>
+
+          <p class="hero__subtitle">
+            Serviços completos de estética automotiva, com produtos de qualidade e acabamento de precisão.
+          </p>
+
+          <div class="hero__ctas">
+            <a class="btn btn--primary btn--arrow" href="#contato">
+              Avaliação gratuita
+              <span class="btn__arrow" aria-hidden="true">
+                <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M5 12h14" />
+                  <path d="m13 6 6 6-6 6" />
+                </svg>
+              </span>
+            </a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script src="../_shared/gsap.min.js"></script>
+    <script src="./capsule.js"></script>
+    <script src="../_shared/preview-ready.js"></script>
+  </body>
+</html>

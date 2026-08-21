@@ -4,12 +4,47 @@ import { Flip, ScrollTrigger, currentScrollY, gsap, prefersReducedMotion, scroll
 import CasePreviewFrame from "./CasePreviewFrame.jsx";
 import LandingPreview from "./LandingPreview.jsx";
 
+// Linha principal do carrossel — MESMA lista no desktop e no mobile
+// (Victor, 2026-08-21). Até então o mobile rodava uma lista própria e os cases
+// reais só entravam no desktop, via um mapa de substituições; com todos os seis
+// validados, a bifurcação deixou de ter motivo e foi removida.
+//
+// Slot 1 é fixo: o EcoScape é a origem da transição Flip de entrada da seção.
+// Do slot 2 pra frente a ordem é livre.
+//
+// Roofora e Minta NÃO foram deletados: saíram desta linha e viraram cards das
+// faixas satélites (ver STRIP_TOP/STRIP_BOTTOM). Componentes, CSS e ativos dos
+// dois seguem preservados em LandingPreview.jsx — devolver qualquer um deles
+// pra cá é só recolocar a entrada nesta lista.
 const LP_ITEMS = [
   {
     preview: "eco",
+    // `poster` diverge de `preview` de propósito: o arquivo em
+    // public/previews/posters/ chama ecoscape.webp, não eco.webp (a chave
+    // interna do preview React). Sem este campo, o pedido cai no fallback de
+    // SPA do dev server/Vercel (200 com o index.html, não 404) e a imagem
+    // falha calada — só não aparecia porque o iframe cobria por cima
+    // (achado ao preparar a troca pra imagem no mobile, 2026-08-21).
+    poster: "ecoscape",
     capsuleSrc: "/previews/ecoscape/index.html",
     tag: "Jardinagem",
     title: "EcoScape",
+  },
+  {
+    preview: "minas",
+    capsuleSrc: "/previews/minas/index.html",
+    tag: "Loja de tintas",
+    title: "Minas Tintas",
+  },
+  {
+    preview: "dinevo",
+    // Mesmo caso do EcoScape acima: a chave interna ficou "dinevo" (nome
+    // provisório anterior ao Fervor), mas o poster publicado chama
+    // fervor.webp.
+    poster: "fervor",
+    capsuleSrc: "/previews/fervor/index.html",
+    tag: "Restaurante",
+    title: "Fervor",
   },
   {
     preview: "nexous",
@@ -17,62 +52,36 @@ const LP_ITEMS = [
     tag: "Agência",
     title: "Nexous",
   },
-  { preview: "roofora", tag: "Serviços", title: "Roofora" },
   {
-    preview: "dinevo",
-    capsuleSrc: "/previews/fervor/index.html",
-    tag: "Restaurante",
-    title: "Fervor",
-  },
-  { preview: "minta", tag: "Fintech", title: "Minta" },
-];
-
-// Cases reais entram na linha principal SÓ no desktop. No mobile eles não vão
-// pra linha principal — aparecem nas faixas satélites (ver STRIP_TOP/BOTTOM),
-// que estão deixando de ser placeholders pra virar sites reais mapeados.
-const LP_ITEMS_DESKTOP_EXTRA = [
-  {
-    preview: "minas",
-    capsuleSrc: "/previews/minas/index.html",
-    tag: "Loja de tintas",
-    title: "Minas Tintas",
-  },
-];
-
-// Substituições exclusivamente do desktop. O item original continua em
-// LP_ITEMS (e seu componente/CSS/ativos seguem preservados), então reativar o
-// Roofora exige apenas retirar esta entrada do mapa.
-const LP_ITEMS_DESKTOP_REPLACEMENTS = {
-  roofora: {
     preview: "aurea",
     capsuleSrc: "/previews/aurea/index.html",
     tag: "Imobiliária",
     title: "Áurea",
   },
-};
-
-// No desktop, o case aprovado do Fervor vem logo depois do Minas Tintas.
-// A lista base continua intacta para preservar a ordem do carrossel mobile.
-const LP_ITEMS_DESKTOP = [
-  LP_ITEMS[0],
-  ...LP_ITEMS_DESKTOP_EXTRA,
-  ...LP_ITEMS.filter((item) => item.preview === "dinevo"),
-  ...LP_ITEMS.slice(1)
-    .filter((item) => item.preview !== "dinevo")
-    .map((item) => LP_ITEMS_DESKTOP_REPLACEMENTS[item.preview] ?? item),
+  {
+    preview: "mv",
+    capsuleSrc: "/previews/mv/index.html",
+    tag: "Estética automotiva",
+    title: "MV Estética Automotiva",
+  },
 ];
 
-// Placeholders das faixas satélites (mobile) — cards leves, só CSS,
-// espelhando o tamanho/gap do carrossel central. Trocar pelos reais depois.
+// Faixas satélites (só mobile) — cards leves espelhando o tamanho/gap do
+// carrossel central. Os que têm `preview` são reais (renderizam o preview React
+// de verdade); os demais ainda são placeholders só-CSS, a trocar pelos reais.
+//
+// Roofora e Minta desceram da linha principal pra cá em 2026-08-21, quando
+// desktop e mobile passaram a mostrar os mesmos seis cases. A Minas Tintas fez
+// o caminho inverso na mesma passagem: era o card real desta faixa e subiu pra
+// linha principal, agora como cápsula.
 const STRIP_TOP = [
-  // Minas Tintas: site real. No desktop ele vive no carrossel central; no mobile
-  // migra pra cá exibindo o MESMO preview (não é placeholder de texto).
-  { preview: "minas", tag: "Loja de tintas", title: "Minas Tintas" },
+  { preview: "roofora", tag: "Serviços", title: "Roofora" },
   { tag: "Clínica", title: "Vitalis", theme: "light" },
   { tag: "Imobiliária", title: "Alta Vista", theme: "dark" },
   { tag: "Advocacia", title: "Priori", theme: "light" },
 ];
 const STRIP_BOTTOM = [
+  { preview: "minta", tag: "Fintech", title: "Minta" },
   { tag: "Restaurante", title: "Braseiro", theme: "light" },
   { tag: "Academia", title: "Forja", theme: "dark" },
   { tag: "Petshop", title: "Aumigo", theme: "light" },
@@ -113,7 +122,7 @@ function PreviewCard({ item, loadAllowed }) {
       {item.capsuleSrc ? (
         <CasePreviewFrame
           src={item.capsuleSrc}
-          posterSrc={`/previews/posters/${item.preview}.webp`}
+          posterSrc={`/previews/posters/${item.poster ?? item.preview}.webp`}
           title={`Preview interativo do hero ${item.title}`}
           loadAllowed={loadAllowed}
         />
@@ -145,10 +154,10 @@ function LandingPages({ onGeometryReady }) {
   const stripTopTrackRef = useRef(null);
   const stripBottomTrackRef = useRef(null);
 
-  // Linha principal: no desktop inclui os cases reais (Minas etc.); no mobile
-  // fica só com os 5 demos — os reais migram pras faixas satélites. Estado
-  // reativo pra trocar a lista ao cruzar o breakpoint (o pin GSAP se refaz
-  // sozinho no resize, lendo os children ao vivo).
+  // A linha principal NÃO depende mais deste estado (desde 2026-08-21 desktop e
+  // mobile mostram a mesma LP_ITEMS). Ele segue vivo para o resto da
+  // coreografia, que continua diferente nos dois: qual título destrava o
+  // carregamento dos cases, e as faixas satélites, que só existem no mobile.
   const [isMobileView, setIsMobileView] = useState(
     () => typeof window !== "undefined" && window.matchMedia("(max-width: 767px)").matches
   );
@@ -160,13 +169,6 @@ function LandingPages({ onGeometryReady }) {
     mq.addEventListener("change", onChange);
     return () => mq.removeEventListener("change", onChange);
   }, []);
-  // Slot 1 é fixo: o EcoScape é a origem da transição Flip de entrada da seção.
-  // Do slot 2 pra frente a ordem é livre — os cases reais entram logo depois
-  // dele, na frente dos demos, pra serem validados um a um.
-  const carouselItems = isMobileView
-    ? LP_ITEMS
-    : LP_ITEMS_DESKTOP;
-
   // Mobile: gatilho mais tarde (70% da tela) — em 85% o título de 8 linhas
   // termina de animar antes do usuário chegar nele e o efeito passa batido.
   const revealLater =
@@ -702,7 +704,7 @@ function LandingPages({ onGeometryReady }) {
 
         <div className="lp__carousel-viewport" ref={carouselViewportRef}>
           <div className="lp__carousel-track" ref={carouselTrackRef}>
-            {carouselItems.map((item, i) => (
+            {LP_ITEMS.map((item, i) => (
               <PreviewCard
                 key={item.preview}
                 item={item}

@@ -330,3 +330,48 @@ do Roofora por `capsuleSrc: "/previews/aurea/index.html"` por meio do mapa
 
 Estado: **layout fluido aprovado e cápsula desktop integrada e validada em
 2026-08-19**.
+
+## Case integrado após aprovação fluida: MV Estética Automotiva
+
+O Hero da estética automotiva (Simonésia, MG) foi aprovado na bancada fluida
+`previews/mv-hero-editavel/` e convertido para a cápsula autocontida em
+`public/previews/mv/`. No desktop, `src/LandingPages.jsx` substitui o slot
+da Minta por `capsuleSrc: "/previews/mv/index.html"` por meio do mapa
+`LP_ITEMS_DESKTOP_REPLACEMENTS`.
+
+- origem: `C:\Users\victo\Desktop\MV-OFICIAL\site-mv` (Next.js), tratada como
+  somente leitura — só o Hero foi extraído (cenário do carro + navbar + CTA),
+  nada de rotas, analytics ou seções abaixo da dobra;
+- Minta permanece preservada em `LP_ITEMS`, `LandingPreview.jsx`, CSS e
+  ativos; a substituição é exclusiva do desktop. Espelhar pro mobile (Minta
+  virando satélite, como já é o caso do Roofora) é um passo futuro, ainda não
+  feito — Victor pediu explicitamente validar desktop primeiro;
+- prancheta lógica aprovada em `1920 × 1080`, reduzida inteira por
+  `transform: scale(0.75)` para o canvas `1440 × 810`; nenhuma medida foi
+  reajustada à mão — toda a folha de estilo da bancada usa `vw`/`svh`, que
+  na cápsula viraram `cqw`/`cqh` com o **mesmo número** (o container
+  `.capsule` tem `container-type: size` e é 1920×1080, então a conta bate
+  1:1 com a bancada);
+- ⚠️ a bancada fluida tinha uma folga vertical abaixo do carro (o vazamento
+  do cenário que na origem escorre pra uma "seção 2" inexistente aqui). Não
+  precisou de correção: o wrapper `.capsule` já é `overflow: hidden` travado
+  em 1080px de altura, então a folga é cortada por definição do canvas, sem
+  gambiarra na bancada;
+- **sem cascata de entrada dentro da cápsula** — mesmo padrão do Nexous: o
+  conteúdo (título, subtítulo, CTA, navbar) já nasce no estado final via CSS,
+  não via GSAP. Isso evita ter que implementar `case-preview:restore` (não
+  existe pose inicial pra restaurar) e garante que uma passagem rápida pelo
+  carrossel nunca troca o que está visível. A cascata de entrada original só
+  faz sentido acoplada à intro real do site MV, que não faz parte do escopo;
+- hover da navbar (risquinho + spotlight) e do CTA (seta girando) seguem em
+  CSS puro (`:hover`/`:focus-visible`), sem JS — funcionam nativamente dentro
+  do iframe sem precisar de handlers GSAP;
+- imagem do carro convertida de PNG (1,53 MB) para WebP (164 KB) via canvas
+  do Chromium headless (`.convert-webp.mjs`, sem dependência nova — reusa o
+  puppeteer já presente no projeto); logo e fonte Inter variável (48 KB,
+  cobre os 3 pesos usados) também locais;
+- `click`, `auxclick` e `submit` bloqueados, com ponte de wheel preservada;
+- nenhuma miniatura adicional criada.
+
+Estado: **layout fluido aprovado e cápsula desktop integrada e validada em
+2026-08-21 — aprovado pelo Victor sem pedido de ajuste**.

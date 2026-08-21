@@ -5,12 +5,45 @@ const CAPSULE_CANVAS = {
   height: 810,
 };
 
+// Mesmo limiar que já zera pointer-events no iframe via CSS
+// (.case-preview-frame, @media (max-width: 767px), (hover: none) em
+// src/styles/09-previews.css) — quem cai aqui já não conseguia tocar no
+// case, então nunca teve motivo pra pagar o carregamento dele.
+const STATIC_QUERY = "(max-width: 767px), (hover: none)";
+
+/**
+ * Nesses dispositivos o card nunca foi interativo (ver STATIC_QUERY acima).
+ * Carregar um documento completo — GSAP, fontes, imagens, e no caso da
+ * Áurea um vídeo de 1,7 MB — pra ele ficar parado embaixo do poster é
+ * desperdício puro: medido em 2026-08-21, os 6 iframes do carrossel somavam
+ * 6,63 MB contra 201 KB só de posters. Aqui é só a arte final, sem iframe,
+ * sem GSAP, sem ponte de wheel.
+ */
+function StaticCasePreview({ posterSrc, title }) {
+  return (
+    <div className="case-preview-frame is-ready">
+      {posterSrc && (
+        <img
+          className="case-preview-frame__poster"
+          src={posterSrc}
+          alt={title ?? ""}
+          loading="lazy"
+          decoding="async"
+          draggable="false"
+        />
+      )}
+    </div>
+  );
+}
+
 /**
  * Moldura reutilizavel para cases reais isolados em /public/previews.
  * O iframe preserva o CSS do case sem contaminar o portfolio; a ponte de
  * wheel devolve o scroll ao documento principal para o carrossel continuar.
+ * Uso exclusivo de telas com hover real (ver STATIC_QUERY) — quem não tem
+ * cai em StaticCasePreview antes de qualquer hook aqui rodar.
  */
-function CasePreviewFrame({ src, posterSrc, title, loadAllowed = true }) {
+function InteractiveCasePreview({ src, posterSrc, title, loadAllowed = true }) {
   const rootRef = useRef(null);
   const iframeRef = useRef(null);
   const [fit, setFit] = useState({ scale: 1, x: 0, y: 0 });
@@ -173,6 +206,29 @@ function CasePreviewFrame({ src, posterSrc, title, loadAllowed = true }) {
         }}
       />
     </div>
+  );
+}
+
+/**
+ * Decide a variante uma única vez por montagem e reage a mudanças reais de
+ * dispositivo (girar a tela, redimensionar a janela) — não a cada render.
+ */
+function CasePreviewFrame(props) {
+  const [isStatic, setIsStatic] = useState(
+    () => typeof window !== "undefined" && window.matchMedia(STATIC_QUERY).matches
+  );
+
+  useEffect(() => {
+    const mq = window.matchMedia(STATIC_QUERY);
+    const onChange = (event) => setIsStatic(event.matches);
+    mq.addEventListener("change", onChange);
+    return () => mq.removeEventListener("change", onChange);
+  }, []);
+
+  return isStatic ? (
+    <StaticCasePreview posterSrc={props.posterSrc} title={props.title} />
+  ) : (
+    <InteractiveCasePreview {...props} />
   );
 }
 

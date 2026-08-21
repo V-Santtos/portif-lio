@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="MV Estética Automotiva — Simonésia, MG." />
+    <title>MV Estética Automotiva — Seu veículo merece o melhor</title>
+    <link rel="preload" href="assets/inter-var-latin.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <!-- Navbar em estado HERO: absoluta, transparente, rola junto. O estado
+         `.revealed` (pílula #2e2e2e fixa) não existe aqui: só o hero foi
+         importado, então nunca há scroll pra disparar a troca. -->
+    <nav class="nav" aria-label="Navegação principal">
+      <div class="nav__inner">
+        <a href="#hero" class="nav__logo" aria-label="MV Estética Automotiva — início" data-reveal>
+          <img class="nav__logo-img" src="assets/logo.png" alt="MV Estética Automotiva" width="120" height="38" />
+        </a>
+
+        <ul class="nav__links">
+          <li data-reveal><a class="nav__link" href="#hero">Início</a></li>
+          <li data-reveal><a class="nav__link" href="#servicos">Serviços</a></li>
+          <li data-reveal><a class="nav__link" href="#processo">Processo</a></li>
+          <li data-reveal><a class="nav__link" href="#quem-somos">Quem somos</a></li>
+        </ul>
+
+        <div class="nav__cta" data-reveal>
+          <a class="btn btn--light nav__cta-btn" href="#contato">Contato</a>
+        </div>
+
+        <button type="button" class="nav__burger" aria-label="Abrir menu" aria-expanded="false" data-reveal>
+          <span class="nav__burger-line"></span>
+          <span class="nav__burger-line"></span>
+          <span class="nav__burger-line"></span>
+        </button>
+      </div>
+    </nav>
+
+    <section id="hero" aria-label="Hero principal" class="hero">
+      <!-- Cenário (ref. Figma 475:143) — ordem de pintura de baixo p/ cima:
+           luz do chão → sombra do carro → carro → glow azul → grain.
+           SEM animação de entrada: o cenário já está na cena quando abre;
+           a cascata é só do conteúdo. Tudo decorativo e sem pointer-events. -->
+      <div class="hero__fx" aria-hidden="true">
+        <div class="hero__car-group">
+          <div class="hero__floor-light"></div>
+          <div class="hero__car-shadow"></div>
+          <div class="hero__car">
+            <img src="assets/hero-car.png" alt="" />
+          </div>
+        </div>
+        <div class="hero__glow"></div>
+        <div class="hero__grain"></div>
+      </div>
+
+      <div class="hero__inner">
+        <h1 class="hero__headline" data-reveal>Seu veículo
+merece o melhor</h1>
+
+        <p class="hero__subtitle" data-reveal>
+          Serviços completos de estética automotiva, com produtos de qualidade e acabamento de precisão.
+        </p>
+
+        <div class="hero__ctas" data-reveal>
+          <a class="btn btn--primary btn--arrow" href="#contato">
+            Avaliação gratuita
+            <span class="btn__arrow" aria-hidden="true">
+              <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M5 12h14" />
+                <path d="m13 6 6 6-6 6" />
+              </svg>
+            </span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <script src="/_shared/gsap.min.js"></script>
+    <script src="script.js"></script>
+  </body>
+</html>

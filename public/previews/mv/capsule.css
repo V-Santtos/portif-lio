@@ -1,0 +1,432 @@
+/* ============================================================
+   Cápsula MV Estética Automotiva — conversão geométrica exata da
+   bancada fluida aprovada (previews/mv-hero-editavel/, 1920×1080).
+
+   Contrato (Regras/09 item 10 + PREVIEW-CAPSULES.md §0):
+     .capsule = prancheta lógica 1920×1080, reduzida por scale(0.75)
+     pro canvas do carrossel 1440×810. Nenhum padding/fonte/posição foi
+     reajustado à mão — é a MESMA folha da Fase 1, só trocando a unidade
+     de medida: vw→cqw, svh→cqh (mesmos números), porque dentro da
+     cápsula o viewport real do documento é 1440×810 (html/body fixos),
+     não 1920×1080 — quem tem 1920×1080 é o container `.capsule.
+     cq*resolve contra ELE (container-type:size), vw/svh resolveriam
+     contra o viewport errado e dessincronizariam a composição do
+     transform:scale aplicado por fora.
+
+   Layout TRAVADO (Victor, 2026-08-21): sem media query de mobile — a
+   cápsula é uma composição única, não responsiva.
+   ============================================================ */
+
+@font-face {
+  font-family: "Inter Preview";
+  src: url("./assets/inter-var-latin.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --bg-0: #1c1c1c;
+  --text-1: #ffffff;
+  --accent: #3965c8;
+  --accent-glint: #6e93e6;
+  --accent-deep: #274b99;
+
+  --duration-fast: 150ms;
+  --duration-base: 250ms;
+  --easing-out: cubic-bezier(0.16, 1, 0.3, 1);
+
+  --font-display: "Inter Preview", system-ui, sans-serif;
+  --font-body: "Inter Preview", system-ui, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  width: 1440px;
+  height: 810px;
+  margin: 0;
+  overflow: hidden;
+  background: var(--bg-0);
+  color: var(--text-1);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+img {
+  display: block;
+  max-width: none;
+}
+
+/* Prancheta 1920×1080, escalada inteira pro canvas 1440×810 (16:9→16:9,
+   fator 0.75). `overflow:hidden` aqui é o que CORTA a folga vertical que
+   existia na bancada fluida (lá o vazamento pra "seção 2" era intencional
+   — aqui não existe seção 2, e o card não pode ter scroll). */
+.capsule {
+  position: relative;
+  width: 1920px;
+  height: 1080px;
+  overflow: hidden;
+  isolation: isolate;
+  container-type: size;
+  transform: scale(0.75);
+  transform-origin: 0 0;
+  background: var(--bg-0);
+}
+
+/* ============================================================
+   NAVBAR — estado HERO (absoluta, transparente). A cápsula nunca rola,
+   então o estado "revelado" (pílula fixa #2e2e2e) da origem não existe
+   aqui: é sempre o topo, sempre transparente.
+   ============================================================ */
+
+.nav {
+  position: absolute;
+  inset: 0 0 auto 0;
+  z-index: 50;
+  padding: 0.9rem 1.5rem;
+}
+
+.nav__inner {
+  position: relative;
+  z-index: 1;
+  max-width: 80rem;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  padding: 0.9rem 1.75rem;
+  border-radius: 999px;
+  border: 1px solid transparent;
+}
+
+.nav__logo {
+  display: flex;
+  align-items: center;
+}
+
+.nav__logo-img {
+  height: 38px;
+  width: auto;
+  display: block;
+  filter: brightness(0) invert(1);
+}
+
+.nav__links {
+  display: flex;
+  gap: 2.75rem;
+  list-style: none;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  margin: 0;
+  padding: 0;
+}
+
+.nav__link {
+  position: relative;
+  display: inline-block;
+  color: #fff;
+  font-size: 1.05rem;
+  font-weight: 300;
+  letter-spacing: 0.02em;
+  text-decoration: none;
+  transition: color 0.3s var(--easing-out);
+}
+
+.nav__link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -0.45rem;
+  height: 1px;
+  background: #fff;
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.35s var(--easing-out);
+}
+
+.nav__link:hover::after,
+.nav__link:focus-visible::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+.nav__links:hover .nav__link:not(:hover) {
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.nav__cta {
+  margin-left: auto;
+}
+
+.nav__cta-btn {
+  padding: 0.6rem 1.6rem;
+  font-size: 0.95rem;
+}
+
+/* Hambúrguer preservado no DOM por fidelidade estrutural, mas a cápsula
+   é a composição DESKTOP (1920px lógicos) — nunca aparece nela. */
+.nav__burger {
+  display: none;
+}
+
+/* ============================================================
+   BOTÃO
+   ============================================================ */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  padding: 0.95rem 2.4rem;
+  border: 0;
+  border-radius: 999px;
+  font-family: inherit;
+  font-size: 1.05rem;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  text-decoration: none;
+  white-space: nowrap;
+  transition:
+    transform var(--duration-fast) var(--easing-out),
+    box-shadow var(--duration-base) var(--easing-out),
+    background-color var(--duration-base) var(--easing-out);
+}
+
+.btn--arrow {
+  padding-right: 1.9rem;
+}
+
+.btn__arrow {
+  display: inline-flex;
+  transform: rotate(-45deg);
+  transform-origin: center;
+  transition: transform var(--duration-base) var(--easing-out);
+}
+
+.btn:hover .btn__arrow {
+  transform: rotate(0deg);
+}
+
+.btn:focus-visible {
+  outline: 2px solid var(--accent-glint);
+  outline-offset: 3px;
+}
+
+.btn--primary {
+  color: #ffffff;
+  background: var(--accent);
+  text-shadow: 0 2px 5px rgba(0, 0, 0, 0.45);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.22),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.06),
+    0 12px 30px -12px rgba(0, 0, 0, 0.55),
+    0 2px 8px rgba(0, 0, 0, 0.35);
+}
+
+.btn--primary:hover {
+  transform: translateY(-1px);
+  background: var(--accent-glint);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.28),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.08),
+    0 16px 36px -12px rgba(0, 0, 0, 0.6),
+    0 3px 10px rgba(0, 0, 0, 0.35);
+}
+
+.btn--primary:active {
+  transform: translateY(0);
+  background: var(--accent-deep);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.05),
+    0 6px 16px -10px rgba(0, 0, 0, 0.5),
+    0 1px 4px rgba(0, 0, 0, 0.4);
+}
+
+.btn--light {
+  color: #111111;
+  background: #ffffff;
+  box-shadow:
+    inset 0 -1px 0 rgba(0, 0, 0, 0.14),
+    inset 0 0 0 1px rgba(0, 0, 0, 0.05),
+    0 12px 32px -12px rgba(255, 255, 255, 0.28),
+    0 2px 8px rgba(0, 0, 0, 0.35);
+}
+
+.btn--light:hover {
+  transform: translateY(-1px);
+  background: #f4f6fb;
+  box-shadow:
+    inset 0 -1px 0 rgba(0, 0, 0, 0.16),
+    inset 0 0 0 1px rgba(0, 0, 0, 0.06),
+    0 16px 40px -12px rgba(255, 255, 255, 0.34),
+    0 3px 10px rgba(0, 0, 0, 0.35);
+}
+
+.btn--light:active {
+  transform: translateY(0);
+  background: #e8ebf2;
+  box-shadow:
+    inset 0 -1px 0 rgba(0, 0, 0, 0.1),
+    inset 0 0 0 1px rgba(0, 0, 0, 0.05),
+    0 6px 18px -10px rgba(255, 255, 255, 0.2),
+    0 1px 4px rgba(0, 0, 0, 0.4);
+}
+
+/* ============================================================
+   HERO — cenário (glow, luz de chão, sombra, carro) + texto.
+   Toda medida em cqw/cqh preserva o MESMO número que a bancada em vw/svh
+   (a bancada validava a 1920×1080; o container aqui também é 1920×1080) —
+   conversão geométrica, não recomposição.
+   ============================================================ */
+
+.hero {
+  position: relative;
+  z-index: 1;
+  height: 100cqh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.hero__fx {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.hero__car-group {
+  position: absolute;
+  inset: 0;
+  transform-origin: 50% 100%;
+}
+
+.hero__glow {
+  position: absolute;
+  left: -2cqw;
+  top: -37.08cqw;
+  width: 104cqw;
+  height: 51.15cqw;
+  border-radius: 50%;
+  background: #3965c8;
+  filter: blur(9.74cqw);
+  transform: translateZ(0);
+}
+
+.hero__grain {
+  position: absolute;
+  left: -2cqw;
+  top: -37.08cqw;
+  width: 104cqw;
+  height: 51.15cqw;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 240px 240px;
+  mix-blend-mode: soft-light;
+  opacity: 0.3;
+  -webkit-mask-image: radial-gradient(50% 50% at 50% 50%, #000 35%, transparent 75%);
+  mask-image: radial-gradient(50% 50% at 50% 50%, #000 35%, transparent 75%);
+}
+
+.hero__floor-light {
+  position: absolute;
+  left: -10.36cqw;
+  bottom: -4.06cqw;
+  width: 120.73cqw;
+  height: 11.41cqw;
+  border-radius: 50%;
+  background: rgba(145, 145, 145, 0.5);
+  filter: blur(3.49cqw);
+  transform: translateZ(0);
+}
+
+.hero__car-shadow {
+  position: absolute;
+  left: 18.91cqw;
+  bottom: 1.04cqw;
+  width: 60.36cqw;
+  height: 2.76cqw;
+  border-radius: 50%;
+  background: #0c0c0c;
+  filter: blur(0.4cqw);
+  transform: translateZ(0);
+}
+
+.hero__car {
+  position: absolute;
+  left: 12.4cqw;
+  bottom: -31.2cqw;
+  width: 71.56cqw;
+  aspect-ratio: 2748 / 2429;
+}
+
+.hero__car img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.hero__inner {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 60rem;
+  margin: 0 auto;
+  padding: clamp(5.5rem, 23.5cqh, 16rem) 1.5rem 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.hero__headline {
+  margin: 0;
+  max-width: 27ch;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(2rem, 3.4cqw, 4.1rem);
+  line-height: 1.02;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+  color: var(--text-1);
+  white-space: pre-line;
+}
+
+.hero__subtitle {
+  margin: clamp(0.875rem, 3.5cqh, 2.5rem) 0 0;
+  max-width: 46ch;
+  font-size: clamp(0.95rem, 1cqw, 1.16rem);
+  line-height: 1.55;
+  font-weight: 300;
+  color: rgba(255, 255, 255, 0.65);
+  text-wrap: balance;
+}
+
+.hero__ctas {
+  margin-top: clamp(1.25rem, 3.2cqh, 2.25rem);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn,
+  .btn__arrow,
+  .nav__link,
+  .nav__link::after {
+    transition: none;
+  }
+
+  .btn:hover .btn__arrow {
+    transform: rotate(-45deg);
+  }
+}
