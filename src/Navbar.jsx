@@ -156,7 +156,10 @@ function Navbar() {
       const cols = btn.querySelectorAll(".nav-roll__col");
       const enter = () =>
         gsap.to(cols, {
-          yPercent: -50,
+          // A camada de baixo tem uma pequena zona de seguranca para a tinta
+          // do acento do Í nao invadir a mascara em repouso. Usa a posicao
+          // real dela para o flip terminar exatamente no mesmo lugar.
+          y: (_, col) => -col.querySelector(".nav-roll__bot").offsetTop,
           duration: 0.45,
           ease: "power3.out",
           stagger: 0.03,
@@ -164,7 +167,7 @@ function Navbar() {
         });
       const leave = () =>
         gsap.to(cols, {
-          yPercent: 0,
+          y: 0,
           duration: 0.45,
           ease: "power3.out",
           stagger: 0.03,

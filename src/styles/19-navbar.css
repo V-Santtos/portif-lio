@@ -150,6 +150,11 @@
 .nav-roll__char {
   display: inline-block;
   overflow: hidden;
+  /* O .nav-roll__col tem will-change: transform, ou seja, e um descendente
+     compositado — e overflow: hidden sozinho nao clipa camada compositada em
+     Chrome/Safari. O clip-path aplica o corte no compositor, garantindo que
+     nada da copia creme apareca fora da janela. */
+  clip-path: inset(0);
   height: 1.15em;
   line-height: 1.15;
   vertical-align: top;
@@ -168,12 +173,19 @@
      vazava esse pedaço pra dentro da janela do .nav-roll__char e aparecia
      como um risco branco sob a palavra, parado, sem hover. */
   overflow: hidden;
+  /* overflow sozinho nao segurou a tinta do acento; o clip-path corta no
+     compositor e mata o risco creme de vez. */
+  clip-path: inset(0);
 }
 .nav-roll__top {
   color: var(--color-foreground);
 }
 .nav-roll__bot {
   color: var(--color-surface);
+  /* Mantem a tinta superior do glifo seguinte (especialmente o acento do Í)
+     fora da janela da primeira linha. O JS desloca a coluna pelo offset real
+     desta camada, então o espaçamento desaparece por completo no hover. */
+  margin-top: 0.16em;
 }
 
 /* Hambúrguer do hero — só existe no mobile */
