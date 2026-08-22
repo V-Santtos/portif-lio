@@ -191,12 +191,12 @@ function Automation() {
     let widths = applyStartWidth();
     let setupCancelled = false;
 
-    // Timeline REVERSÍVEL do swap MELHORADO→AUTOMATIZADO, montada uma vez e
+    // Timeline REVERSÍVEL do swap MAPEADO→AUTOMATIZADO, montada uma vez e
     // pausada no início. A entrada automática dá play() (comportamento atual,
     // intacto). O clique na tarja alterna play() ↔ reverse() — o reverse é o
     // inverso exato da animação (mesmos caminhos), sem 2ª animação.
     let swapTl = null;
-    let atEnd = false; // false = "melhorado" visível · true = "automatizado."
+    let atEnd = false; // false = "mapeado" visível · true = "automatizado."
 
     const buildSwap = () => {
       widths = measureBoxWidths();
@@ -375,7 +375,7 @@ function Automation() {
       <div className="auto__hero">
         {/* Quebras controladas por breakpoint: desktop = "um padrão pode / ser [caixa]";
             mobile = "um padrão pode ser / [caixa]" — a caixa mora SOZINHA na última
-            linha pra o swap MELHORADO→AUTOMATIZADO. nunca re-quebrar o parágrafo. */}
+            linha pra o swap MAPEADO→AUTOMATIZADO. nunca re-quebrar o parágrafo. */}
         {/* Palavras em máscara pro reveal de entrada (assinatura dos títulos
             do site). A tarja também entra mascarada e o swap roda DEPOIS da
             entrada, em sequência. */}
@@ -394,7 +394,7 @@ function Automation() {
           <span className="word word--box"><span>
           <span className="word-box" ref={wordBoxRef}>
             <span className="word-out" ref={wordOutRef}>
-              {"melhorado".split("").map((ch, i) => (
+              {"mapeado".split("").map((ch, i) => (
                 <span key={i} className="auto-char-wrap"><span className="auto-char">{ch}</span></span>
               ))}
             </span>
