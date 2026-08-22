@@ -6,6 +6,20 @@
 /* Case — Hawk Street                                               */
 /* ──────────────────────────────────────────────────────────────── */
 
+/* Toda seção do case (exceto o hero) sobrepõe 1px a de cima. Todas dividem o
+   mesmo fundo (--color-surface) e têm position:relative — cada uma vira sua
+   própria camada de composição no Chrome, e a fronteira entre duas camadas
+   opacas da MESMA cor cai em subpixel (as alturas são fluidas, em rem/vw) e
+   pinta uma linha cinza de 1px, sempre reta, na costura. Isso é visível o
+   tempo todo (não só quando alguma sombra some perto da borda) — quem
+   encostou nisso antes confundiu com sombra vazando; não é. z-index/ordem no
+   DOM garantem que a seção de baixo pinta por cima do pixel sobreposto,
+   escondendo a costura. Prova: mover o fundo pro pai comum também some com a
+   linha — confirma que é costura entre camadas, não sombra. */
+.case-hawk .section:not(.case-hawk__hero) {
+  margin-top: -1px;
+}
+
 /* ── Seção 1: Hero ─────────────────────────────────────────────── */
 .case-hawk__hero {
   min-height: 100vh;
@@ -158,13 +172,19 @@
 .case-shot__img--framed {
   border-radius: clamp(14px, 1.6vw, 22px);
   /* Escada de 5 camadas: quanto mais longe da borda, mais difusa e mais fraca.
-     É o que separa sombra crível de borrão único. */
+     É o que separa sombra crível de borrão único.
+     Alcance máximo (camada mais externa) propositalmente < 64px: é o piso
+     do padding-bottom da .case-shot (clamp trava em 4rem no mobile). Shadow
+     que ultrapassa esse piso é cortado pela seção seguinte, que tem fundo
+     opaco e o mesmo z-index — vira uma linha reta visível. Mantendo o
+     alcance sempre abaixo do piso, a sombra nunca alcança a borda, em
+     nenhuma largura. */
   box-shadow:
     0 1px 2px rgba(72, 56, 31, 0.1),
     0 5px 8px -2px rgba(72, 56, 31, 0.1),
     0 14px 22px -8px rgba(72, 56, 31, 0.13),
-    0 34px 52px -20px rgba(72, 56, 31, 0.18),
-    0 70px 100px -48px rgba(72, 56, 31, 0.32);
+    0 24px 36px -14px rgba(72, 56, 31, 0.16),
+    0 50px 70px -34px rgba(72, 56, 31, 0.26);
 }
 .case-shot__caption {
   display: block;
