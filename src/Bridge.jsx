@@ -124,8 +124,24 @@ function Bridge() {
         return gsap.utils.clamp(0, 1, (FILL_START * vh - top) / ((FILL_START - FILL_END) * vh));
       };
 
+      // Amortecimento da cortina. O lerp entra ENTRE o cálculo e o progress —
+      // `readFill()` acima não muda uma linha, e FILL_START/FILL_END seguem
+      // intocados (com eles, o par com os ~130svh do stage). A janela do
+      // letter-swap também continua lendo o valor CRU: Regras/05 — o que é
+      // posição escruba, o que é troca de estado roda no relógio. Aqui só o
+      // TRAJETO da cortina é suavizado.
+      // Menor = mais deslize e mais atraso. Maior = mais colado no dedo.
+      // Calibrado com o Victor no aparelho em 2026-08-21.
+      const CURTAIN_DAMP = 0.09;
+      // Limiar de "chegou" — garante pouso exato, não é ponto de calibragem.
+      const CURTAIN_EPS = 0.0005;
+      let curtainFill = null; // null = ainda não leu nenhuma vez
+
       const build = () => {
         if (tl) tl.kill();
+        // Um rebuild (giro de tela) recomeça do zero: sem isto, o valor velho
+        // faria a cortina animar até a posição nova em vez de já nascer nela.
+        curtainFill = null;
 
         // `y: 0` explícito: o `translateY(100%)` do CSS (estado parado, que
         // segura o efeito sem JS) é lido pelo GSAP como `y` em px e SOMARIA
@@ -142,7 +158,9 @@ function Bridge() {
 
       const setCrossed = (el, crossed) => el.classList.toggle("is-crossed", crossed);
 
-      const render = () => {
+      // `deltaTime` com default porque o `render` também é chamado direto, sem
+      // argumentos, logo antes do `gsap.ticker.add(render)` lá embaixo.
+      const render = (time, deltaTime = 16.7) => {
         if (!tl) return;
         if (phrase.getBoundingClientRect().top > window.innerHeight) return; // ainda não chegou
 
@@ -160,7 +178,21 @@ function Bridge() {
         // tratamento especial pra cortina: o preenchimento é função pura da
         // geometria, dá 1 sozinho, e a timeline já renderiza o estado final. É
         // o que dispensa o `bridge:skip` que o desktop precisa.
-        tl.progress(fill);
+        //
+        // 🔴 Por isso a PRIMEIRA leitura assume o valor em vez de animar até
+        // ele. Quem chega por salto entra aqui com o fill já em 1 — com lerp e
+        // sem esta guarda, a cortina subiria 0→1 na frente do usuário, que é
+        // exatamente o que o parágrafo acima diz que não acontece.
+        if (curtainFill === null) {
+          curtainFill = fill;
+        } else if (curtainFill !== fill) {
+          const dt = Math.min(deltaTime, 100) / 1000;
+          const k = 1 - Math.pow(1 - CURTAIN_DAMP, dt * 60);
+          curtainFill += (fill - curtainFill) * k;
+          if (Math.abs(fill - curtainFill) < CURTAIN_EPS) curtainFill = fill;
+        }
+
+        tl.progress(curtainFill);
 
         // Inversão de cor por comparação de rect, não por tempo: a linha vira
         // creme quando a borda da cortina passa da metade dela. Auto-corrige a

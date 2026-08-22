@@ -240,6 +240,10 @@ function LandingPages({ onGeometryReady }) {
     let skipTween;
     let resizeTimer;
     let stripMarquees = [];
+    // Amortecimento da miniatura no mobile. Ticker próprio, separado do das
+    // faixas satélites de propósito: são duas responsabilidades sem relação, e
+    // fundir os callbacks só acoplaria o que não precisa andar junto.
+    let flipDamper = null;
 
     const setSkipButton = (direction, visible) => {
       const button = carouselSkipRef.current;
@@ -284,26 +288,42 @@ function LandingPages({ onGeometryReady }) {
     function build() {
       if (scrollTl) { scrollTl.scrollTrigger?.kill(); scrollTl.kill(); }
       if (carouselTl) { carouselTl.scrollTrigger?.kill(); carouselTl.kill(); }
+      if (flipDamper) { flipDamper.destroy(); flipDamper = null; }
 
       gsap.set(target, { clearProps: "all" });
       gsap.set(settleTarget, { clearProps: "transform,borderRadius" });
       gsap.set(carouselViewport, { opacity: 0, pointerEvents: "none" });
 
       // Mobile: gesto de touch percorre muito mais pixels que a roda do mouse
-      // — sem ajuste, um flick engole 3-4 cards de uma vez. Mais distância
-      // por card + snap + scrub amortecido deixam a arrastada proporcional.
+      // — sem ajuste, um flick engole 3-4 cards de uma vez. Mais distância por
+      // card + o amortecimento por frame (abaixo) deixam a arrastada proporcional.
       const isMobile = window.matchMedia("(max-width: 767px)").matches;
 
-      scrollTl = gsap.timeline({
-        scrollTrigger: {
-          trigger: startWrapper,
-          start: "center center",
-          endTrigger: endWrapper,
-          end: "center center",
-          scrub: isMobile ? 0.8 : 0.45,
-          invalidateOnRefresh: true,
-        },
-      });
+      // 🔴 MOBILE — sem `scrub` numérico aqui, de propósito. Scrub numérico é
+      // uma tween BASEADA EM TEMPO: o playhead dela avança pelo relógio. Num
+      // flick o scroll nativo dispara no compositor, o rAF passa fome
+      // (starvation) e essa tween PULA — são as "travadinhas" da miniatura.
+      // Mesma armadilha que fez as faixas satélites derivarem posição de
+      // progresso em vez de tween por tempo (Regras/02). Aqui o ScrollTrigger
+      // só MEDE progresso; quem amortece é o lerp por frame lá embaixo, que é
+      // função do deltaTime — perdendo frame ele anda a distância proporcional
+      // e CHEGA no lugar certo, em vez de saltar.
+      // Desktop mantém o scrub numérico: lá o smoother está ativo, o rAF não
+      // passa fome do mesmo jeito, e o efeito está validado.
+      scrollTl = gsap.timeline(
+        isMobile
+          ? { paused: true }
+          : {
+              scrollTrigger: {
+                trigger: startWrapper,
+                start: "center center",
+                endTrigger: endWrapper,
+                end: "center center",
+                scrub: 0.45,
+                invalidateOnRefresh: true,
+              },
+            }
+      );
       // Stop just short of the final card geometry. The pinned landing then
       // completes the remaining 2% in the same direction, with no recoil.
       const LANDING_START_SCALE = 0.98;
@@ -319,6 +339,64 @@ function LandingPages({ onGeometryReady }) {
         setRadius(baseRadius / (carrierScale * settleScale));
       };
       scrollTl.eventCallback("onUpdate", syncVisualState);
+
+      if (isMobile) {
+        // Menor = mais deslize e mais atraso. Maior = mais colado no dedo.
+        // Testado com o Victor no aparelho: a tremidinha residual num flick
+        // pesado não vem daqui (investigado e descartado — não é a
+        // compensação de border-radius, que é a única escrita não-composited
+        // desta timeline; o resto é só translate/scale). É limite de
+        // percepção/hardware, não bug. Valor calibrado por meio-termo entre o
+        // exagero sentido (0.05) e o original conservador (0.14).
+        const FLIP_DAMP = 0.08;
+        // Limiar de "chegou". Não é ponto de calibragem: um lerp converge
+        // assintoticamente e nunca chega — sem isto a miniatura ficaria
+        // eternamente a fração de pixel do destino em vez de sentar exata.
+        const FLIP_EPS = 0.0001;
+
+        let current = 0;
+
+        const flipST = ScrollTrigger.create({
+          trigger: startWrapper,
+          start: "center center",
+          endTrigger: endWrapper,
+          end: "center center",
+          invalidateOnRefresh: true,
+          // Espelha o `invalidateOnRefresh` que a timeline tinha quando o
+          // ScrollTrigger era dela: remede o Flip e repinta na posição
+          // amortecida atual, em vez de deixar o valor velho.
+          onRefresh: () => {
+            scrollTl.invalidate();
+            scrollTl.progress(current);
+          },
+        });
+
+        current = flipST.progress;
+        scrollTl.progress(current);
+
+        const onFlipTick = (time, deltaTime) => {
+          const target = flipST.progress;
+          // 🔴 A guarda é por VALOR, nunca por `flipST.isActive`. As faixas
+          // satélites podem sair cedo porque param na borda; a miniatura não —
+          // num flick que atravesse a seção inteira, sair cedo congelaria
+          // `current` no meio e o Flip ficaria num estado intermediário.
+          // Parado, isto custa uma comparação de float.
+          if (current === target) return;
+          const dt = Math.min(deltaTime, 100) / 1000;
+          const k = 1 - Math.pow(1 - FLIP_DAMP, dt * 60);
+          current += (target - current) * k;
+          if (Math.abs(target - current) < FLIP_EPS) current = target;
+          scrollTl.progress(current);
+        };
+
+        gsap.ticker.add(onFlipTick);
+        flipDamper = {
+          destroy: () => {
+            gsap.ticker.remove(onFlipTick);
+            flipST.kill();
+          },
+        };
+      }
 
       const cards = carouselTrack.children;
       const cardCount = cards.length;
@@ -591,6 +669,7 @@ function LandingPages({ onGeometryReady }) {
       window.cancelAnimationFrame(buildFrame);
       if (scrollTl) { scrollTl.scrollTrigger?.kill(); scrollTl.kill(); }
       if (carouselTl) { carouselTl.scrollTrigger?.kill(); carouselTl.kill(); }
+      if (flipDamper) { flipDamper.destroy(); flipDamper = null; }
       stripMarquees.forEach((s) => s.destroy());
       gsap.set(target, { clearProps: "all" });
       gsap.set(settleTarget, { clearProps: "transform,borderRadius" });
