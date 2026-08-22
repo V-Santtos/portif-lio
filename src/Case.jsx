@@ -95,12 +95,22 @@ function Case() {
 
     if (prefersReducedMotion()) return;
 
+    // 🔴 `pinType: "fixed"` no mobile — mesma correção do Hero da home
+    // (App.jsx). Sem ela, o ScrollSmoother registra scroller:#smooth-wrapper
+    // e o pin cai em pinType "transform", reposicionado por JS na main
+    // thread; durante o momentum nativo (que roda no compositor) o
+    // contra-transform chega atrasado e o hero pinado TREME. No mobile o
+    // #smooth-content não tem transform, então position:fixed ancora na
+    // viewport de verdade e o compositor segura o pin sozinho.
+    const isMobile = window.matchMedia("(max-width: 767px)").matches;
+
     const pin = ScrollTrigger.create({
       trigger: hero,
       start: "top top",
       end: "bottom top",
       pin: true,
       pinSpacing: false,
+      ...(isMobile && { pinType: "fixed" }),
     });
 
     ScrollTrigger.refresh();

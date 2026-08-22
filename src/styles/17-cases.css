@@ -74,6 +74,17 @@
   display: inline-block;
 }
 
+/* As 3 tags numa linha só ("E-COMMERCE"/"STREETWEAR"/"2026") cabem no limite
+   no mobile — sem margem real, a última cortava na borda da tela em
+   aparelhos reais (headless mediu só 3px de sobra em 375px). Quebra pra
+   2 linhas centralizadas em vez de vazar. */
+@media (max-width: 767px) {
+  .case-hawk__tags {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+}
+
 .case-hawk__title {
   font-family: var(--font-display);
   /* escala pelo nº de caracteres (--title-len) p/ não estourar nomes longos */
@@ -134,30 +145,16 @@
    o shot do Minas é um PNG recortado e ganharia uma caixa em volta.
 
    A tela é quase preta e o fundo é creme quente (#FEF8E8), sem nenhum tom
-   entre os dois — por isso ela "cola" por cima da página. Duas peças resolvem:
-   a poça de luz difusa embaixo (::before) e a escada de sombras.
-   Ambas em MARROM QUENTE, não preto: sombra neutra sobre creme lê como
-   sujeira cinza; a quente lê como luz de verdade. */
-.case-shot__figure--framed {
-  position: relative;
-  isolation: isolate; /* prende o z-index:-1 do ::before dentro da figure */
-}
-.case-shot__figure--framed::before {
-  content: "";
-  position: absolute;
-  z-index: -1;
-  left: -3%;
-  right: -3%;
-  bottom: -5%;
-  height: 45%;
-  background: radial-gradient(
-    58% 100% at 50% 100%,
-    rgba(72, 56, 31, 0.2),
-    rgba(72, 56, 31, 0) 72%
-  );
-  filter: blur(26px);
-  pointer-events: none;
-}
+   entre os dois — por isso ela "cola" por cima da página. A escada de
+   sombras abaixo (em MARROM QUENTE, não preto — sombra neutra sobre creme lê
+   como sujeira cinza) resolve sozinha.
+
+   Havia também um ::before de "poça de luz" (gradiente radial + blur) atrás
+   da imagem, pra reforçar a dissolução. Removido em 2026-08-21: extrapolar
+   pra fora da imagem (offsets negativos + blur 26px) vazava como mancha
+   solta no creme vazio; contido dentro da imagem, ficava 100% escondido
+   atrás dela (z-index:-1) e não aparecia nada. Nas duas versões o resultado
+   era pior que só a box-shadow abaixo. */
 .case-shot__img--framed {
   border-radius: clamp(14px, 1.6vw, 22px);
   /* Escada de 5 camadas: quanto mais longe da borda, mais difusa e mais fraca.
