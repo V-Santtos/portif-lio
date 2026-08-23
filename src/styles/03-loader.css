@@ -6,6 +6,12 @@
 /* Pre-hero                                                          */
 /* ──────────────────────────────────────────────────────────────── */
 /* Initial loader                                                    */
+/* A coreografia (barra, rolo dos digitos, saida) e toda do GSAP, em
+   InitialLoader.jsx. O que mora aqui e so o estado inicial e a caixa: se uma
+   propriedade e animada la, ela NAO pode ter transition aqui — os dois
+   disputariam o mesmo transform e a janela de 1em passaria a mostrar duas
+   linhas cortadas ao mesmo tempo. A unica transition do arquivo e a do fade
+   do overlay (.is-exiting), que o GSAP nao toca. */
 .initial-loader {
   position: fixed;
   inset: 0;
@@ -19,6 +25,8 @@
 }
 .initial-loader.is-exiting { opacity: 0; }
 
+/* Barra: a caixa e quem recolhe pra cima na saida (scaleY com origem no topo,
+   pelo GSAP); o fill e quem sobe durante as paradas. */
 .initial-loader__bar {
   position: fixed;
   left: 0;
@@ -27,6 +35,7 @@
   width: clamp(10px, 0.85vw, 16px);
   background: transparent;
   overflow: hidden;
+  will-change: transform;
 }
 .initial-loader__bar-fill {
   position: absolute;
@@ -35,141 +44,99 @@
   width: 100%;
   height: 100%;
   background: var(--color-accent);
-  /* scaleY em vez de height: height e uma propriedade de layout — mudar ela a
-     cada frame (60x/s, na duracao inteira do loader) forca reflow sincrono
-     toda vez. Igual ao scroll-progress do App.jsx (width -> scaleX, medido
-     ~123x mais caro), so que aqui o custo so ficava visivel em hardware
-     mobile real (iPhone): no desktop simulando viewport mobile no DevTools a
-     CPU sobra e o engasgo nunca aparecia. scaleY com transform-origin:bottom
-     fica no compositor, sem layout, sem repintar o resto da subarvore.
-     Sem transition de proposito: o valor que chega aqui (InitialLoader.jsx)
-     ja e suavizado por lerp a cada frame. Uma transition por cima ficava
-     perseguindo um alvo que ja se move suave, e so atrasava a barra. */
-  transform: scaleY(var(--loader-progress));
+  /* scaleY em vez de height: height e uma propriedade de layout — anima-la
+     forca reflow sincrono a cada frame. Igual ao scroll-progress do App.jsx
+     (width -> scaleX, medido ~123x mais caro), so que aqui o custo so ficava
+     visivel em hardware mobile real (iPhone): no desktop simulando viewport
+     mobile no DevTools a CPU sobra e o engasgo nunca aparecia. scaleY com
+     transform-origin:bottom fica no compositor, sem layout.
+     O 0 aqui e so o estado antes do primeiro tick do GSAP, pra barra nao
+     piscar cheia no primeiro frame. */
+  transform: scaleY(0);
   transform-origin: bottom;
   will-change: transform;
 }
 
 .initial-loader__counter {
-  /* So usada abaixo de 1024px (blocos @media mais abaixo): distancia fixa
-     entre a borda da tela e o "1" do 100%, em px reais — nao escala com
-     fonte nem viewport de proposito, e o unico numero que se mexe pra
-     reposicionar o numeral inteiro. Piso tecnico: a barra mede 10px fixos
-     em toda essa faixa (320-1023px) — abaixo disso o "1" volta a entrar
-     nela. Ajustado a mao com o Victor em 2026-08-16, reduzido em 2026-08-17
-     pra aproximar o numero da barra (mantendo ~4px de folga do piso de 10px,
-     nunca encostando de fato). */
-  --loader-num-offset: 14px;
+  /* Um unico numero posiciona o contador inteiro, em px reais, sem depender
+     do tamanho da fonte. Isso so e possivel porque a centena voltou pro fluxo
+     (ver .initial-loader__digit abaixo): enquanto o "1" morava fora da caixa
+     em position:absolute, o `left` precisava compensar a largura dele — uma
+     conta acoplada ao clamp da fonte, refeita em dois @media, que era de onde
+     saiam os bugs do "1" caindo atras da barra.
+     Piso de 14px validado a mao com o Victor em 2026-08-16/17: a barra mede
+     10px nessa faixa, entao sobram ~4px de folga e o numeral nunca encosta. */
   position: fixed;
-  left: clamp(2.6rem, 7.6vw, 9.5rem);
+  left: clamp(14px, 1.9vw, 36px);
   bottom: max(clamp(2.8rem, 5.2vw, 5.9rem), env(safe-area-inset-bottom));
+  /* O contador nasce invisivel e quem acende e o primeiro set do GSAP. NAO
+     trocar isso por um transform inicial: o GSAP LE o transform do CSS, salva
+     como `y` em px e aplica o yPercent POR CIMA — os dois se somam. O "1" da
+     centena e o "%" ficavam presos uma altura abaixo da mascara a animacao
+     inteira, e a dezena/unidade rolavam duas linhas fora de sincronia (era o
+     digito solto sem porcentagem). visibility e o que a referencia usa, e nao
+     participa da matematica de transform. */
+  visibility: hidden;
   display: flex;
   align-items: flex-start;
   gap: clamp(0.16rem, 0.34vw, 0.38rem);
   font-family: var(--font-display);
-  line-height: 0.76;
   font-variant-numeric: tabular-nums;
   letter-spacing: 0;
   user-select: none;
 }
-/* Numero em "rolo": cada digito e uma janela de 1em (overflow hidden) com
-   uma pilha estatica de linhas (0-9), deslocada por transform a cada tique
-   pausado do loop em InitialLoader.jsx (nao mais a cada frame — por isso o
-   transition aqui, diferente da barra: o valor agora salta por passos
-   espacados, e a transition e o que transforma o salto num flip). */
+
+/* Numero em "rolo": cada digito e uma janela de 1em (overflow hidden) com uma
+   pilha de 10 linhas por baixo, movida por yPercent pelo GSAP. */
 .initial-loader__number {
-  position: relative;
   display: flex;
   align-items: flex-start;
   font-size: clamp(8.8rem, 15.4vw, 18rem);
 }
+/* A centena e um digito normal na fila, so mascarado — o slot dela fica
+   reservado a abertura inteira (largura de um "1") e o numeral sobe pra
+   dentro so no ultimo passo. E o que evita o layout shift quando o 100
+   entra, sem tirar a centena do fluxo. */
 .initial-loader__digit {
-  display: block;
+  display: flex;
+  flex-direction: column;
   height: 1em;
   overflow: hidden;
-}
-/* O "1" da centena mora fora do fluxo, encostado a esquerda da dezena+unidade
-   — assim ele nao empurra os outros dois digitos a vida toda, so aparece
-   deslizando de baixo pra cima no fim. */
-.initial-loader__digit--hundreds {
-  position: absolute;
-  right: 100%;
-  top: 0;
-}
-.initial-loader__digit--hundreds .initial-loader__digit-row {
-  transition: transform 80ms ease-out, opacity 80ms ease-out;
 }
 .initial-loader__digit-track {
   display: flex;
   flex-direction: column;
   will-change: transform;
-  /* Sem transition aqui de proposito: o valor ja chega quantizado (inteiro) e
-     com tempo minimo de tela. Uma transition por cima ficaria sempre em voo
-     entre dois passos e a janela de 1em voltaria a mostrar duas linhas
-     cortadas ao mesmo tempo — exatamente o numero "quebrado" de antes. */
 }
+/* A linha precisa medir exatamente 1em: e isso que faz cada 10% de yPercent
+   valer uma linha inteira na pilha de 10. Mexeu aqui, quebrou o alinhamento
+   do rolo — o digito passa a parar no meio de duas linhas. */
 .initial-loader__digit-row {
   height: 1em;
   line-height: 1;
   display: block;
 }
-.initial-loader__percent {
-  margin-top: 0.06em;
-  font-size: clamp(3rem, 4.1vw, 5rem);
-}
 
-/* Saida: o numero nao some inteiro de uma vez. Cada numeral rola pra cima e
-   sai um de cada vez (centena -> dezena -> unidade -> %), e so depois o
-   overlay apaga (.is-exiting). O delay em cascata e o que faz o "um por vez";
-   o LEAVE_MS do InitialLoader.jsx cobre o ultimo delay + a duracao. */
-.initial-loader__digit,
+.initial-loader__percent-mask {
+  display: flex;
+  overflow: hidden;
+  margin-top: 0.06em;
+}
 .initial-loader__percent {
-  transition: transform 360ms cubic-bezier(0.65, 0, 0.35, 1), opacity 300ms ease;
+  display: block;
+  font-size: clamp(3rem, 4.1vw, 5rem);
+  line-height: 1;
+  will-change: transform;
 }
-.initial-loader.is-leaving .initial-loader__digit,
-.initial-loader.is-leaving .initial-loader__percent {
-  transform: translateY(-120%);
-  opacity: 0;
-}
-.initial-loader.is-leaving .initial-loader__digit--hundreds { transition-delay: 0ms; }
-.initial-loader.is-leaving .initial-loader__digit--tens { transition-delay: 95ms; }
-.initial-loader.is-leaving .initial-loader__digit--units { transition-delay: 190ms; }
-.initial-loader.is-leaving .initial-loader__percent { transition-delay: 275ms; }
 
 @media (max-width: 767px) {
   .initial-loader__counter {
-    /* O "1" da centena mora FORA desta caixa (right:100%, ver acima), entao a
-       borda visual em 100% nao e o `left` — e `left - 0.4em` do numero (0.4em
-       = avanco de um digito na Bebas Neue, medido). Aqui a fonte e 31vw, o
-       dobro do desktop, entao esse recuo passa de 12vw: maior que qualquer
-       `left` fixo razoavel, e o "1" caia fora da tela por cima da barra.
-       Por isso o left NAO e um valor solto — e --loader-num-offset (acima)
-       MAIS a largura do digito pendurado. Amarrado assim, o "1" pousa sempre
-       na mesma distancia da borda, fonte em qualquer ponto do clamp (os dois
-       clamps nao precisam mais conversar entre si). Mexeu na fonte? O left
-       segue. */
-    --loader-num-size: clamp(6.2rem, 31vw, 9.6rem);
-    left: calc(var(--loader-num-offset) + 0.4 * var(--loader-num-size));
     bottom: max(clamp(2.25rem, 10vh, 4rem), env(safe-area-inset-bottom));
   }
   .initial-loader__number {
-    font-size: var(--loader-num-size);
+    font-size: clamp(6.2rem, 31vw, 9.6rem);
   }
   .initial-loader__percent {
     font-size: clamp(2.2rem, 9vw, 3.2rem);
-  }
-}
-
-/* Tablet (768-1023px): mesmo bug do mobile, raiz diferente. Aqui a fonte
-   (clamp acima, 8.8rem-18rem) trava no PISO ate ~914px, enquanto o `left`
-   desktop (7.6vw) ainda esta subindo devagar demais pra acompanhar — o "1"
-   fica atras da barra ate essa largura. Mesma correcao do bloco mobile:
-   left derivado do proprio tamanho da fonte, so que aqui pro clamp desktop
-   (nao reaproveita --loader-num-size porque so existe dentro do @media
-   mobile acima; index intocado). Acima de 1024px isso para de se aplicar e
-   o `left` original (ja validado) volta a mandar. */
-@media (min-width: 768px) and (max-width: 1023px) {
-  .initial-loader__counter {
-    left: calc(var(--loader-num-offset) + 0.4 * clamp(8.8rem, 15.4vw, 18rem));
   }
 }

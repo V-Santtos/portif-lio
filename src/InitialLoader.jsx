@@ -1,35 +1,35 @@
 import { useEffect, useRef, useState } from "react";
+import { gsap, prefersReducedMotion } from "./lib.jsx";
 
 export const INITIAL_LOADER_KEY = "victor-initial-loader-seen-v1";
 
-const MIN_VISIBLE_MS = 2500;
+// Teto do gate de assets: se fonte ou logo travarem, a abertura nao fica refem
+// deles.
 const MAX_WAIT_MS = 3600;
+
+// Fade do overlay depois que os numerais saem. Precisa bater com a transition
+// do .initial-loader.is-exiting em 03-loader.css.
 const EXIT_MS = 520;
 
-// Tempo minimo que CADA numero fica na tela. O contador continua seguindo o
-// progresso eased do getStagedProgress (com as pausas em 33 e 65) — o que
-// muda e que, quando o progresso corre rapido, ele PULA valores em vez de
-// trocar a cada frame. Ler "12, 19, 26" e melhor que ver os 100 numeros
-// borrados a 60fps; contar 1 a 1 num ritmo fixo tambem nao serve, vira
-// metralhadora e mata as pausas do staging.
-const MIN_STEP_MS = 90;
+// Duracao de cada parada e da saida. A referencia (bogdankolomiyets.com) usa
+// 1.2s por parada, o que soma ~6,3s de abertura com o slide final dela.
+// Encurtado com o Victor em 2026-08-22: mesma mecanica, menos tempo.
+const STOP_DUR = 0.85;
+const OUT_DUR = 0.7;
 
-// Teto do salto por passo. Sem isso a rampa final (lerp rapido) faz o numero
-// pular 66 -> 87 de uma vez, que le como erro e nao como progresso. Com o
-// teto ele desfia 66, 74, 82, 90... — rapido, mas ainda contando.
-const MAX_STEP = 8;
+// Ordem da pilha de digitos: 1..9 e o ZERO POR ULTIMO. Nao e escolha de
+// estilo — as contas de rowOf/yFor dependem dela, e a virada final (9 -> 0,
+// pra formar o "100") so rola pra FRENTE porque o zero fecha a pilha em vez
+// de abrir. Com a pilha em 0..9 o ultimo passo volta pro topo e o 100 entra
+// dando um pulo pra tras.
+const DIGITS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0];
+const ROW = 100 / DIGITS.length;
 
-// Saida coreografada: o 100 fica um instante parado, depois cada numeral sai
-// um de cada vez (stagger no CSS), e so entao o overlay apaga.
-const HOLD_100_MS = 340;
-const LEAVE_MS = 700;
-
-// Pilhas estaticas do "rolo" de digito: cada linha i mostra i%10. Precisam
-// cobrir a faixa inteira (0-100 unidades, 0-10 dezenas) sem repetir o ciclo
-// 0-9 uma unica vez — senao o wrap (9 -> 0) da um pulo seco no meio da
-// animacao em vez de rolar liso.
-const UNITS_ROWS = Array.from({ length: 101 }, (_, i) => i % 10);
-const TENS_ROWS = Array.from({ length: 11 }, (_, i) => i % 10);
+// Digito -> linha da pilha -> deslocamento em % da PROPRIA pilha. yPercent (e
+// nao em) de proposito: sendo relativo a altura do proprio elemento, a mesma
+// conta serve pra pilha de 10 linhas e pra da centena, que tem so uma.
+const rowOf = (d) => (d === 0 ? DIGITS.length - 1 : d - 1);
+const yFor = (d) => -rowOf(d) * ROW;
 
 function delay(ms) {
   return new Promise((resolve) => window.setTimeout(resolve, ms));
@@ -72,63 +72,25 @@ function waitForFrame(count = 2) {
   });
 }
 
-function easeOutCubic(t) {
-  return 1 - Math.pow(1 - t, 3);
-}
-
-function getStagedProgress(elapsed, canFinish) {
-  if (canFinish) return 100;
-
-  if (elapsed < 650) {
-    return 1 + easeOutCubic(elapsed / 650) * 32;
-  }
-
-  if (elapsed < 1150) {
-    return 33;
-  }
-
-  if (elapsed < 1850) {
-    return 33 + easeOutCubic((elapsed - 1150) / 700) * 32;
-  }
-
-  return 65;
-}
-
 function InitialLoader({ onDone }) {
-  const [progress, setProgress] = useState(1);
-  const [displayValue, setDisplayValue] = useState(1);
-  const [isLeaving, setIsLeaving] = useState(false);
   const [isExiting, setIsExiting] = useState(false);
-  const progressRef = useRef(1);
-  const displayValueRef = useRef(1);
-  const lastTickAtRef = useRef(0);
-  const calledDoneRef = useRef(false);
+  const rootRef = useRef(null);
+  const doneRef = useRef(false);
 
   useEffect(() => {
-    let cancelled = false;
-    let rafId = 0;
-    let exitTimer = 0;
-    let holdTimer = 0;
-    let leaveTimer = 0;
-    const startedAt = performance.now();
-    const previousOverflow = document.body.style.overflow;
+    const root = rootRef.current;
+    if (!root) return undefined;
 
+    let cancelled = false;
+    let exitTimer = 0;
+    let tl = null;
+
+    const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
 
-    const essentials = Promise.all([
-      waitForEssentialFonts(),
-      waitForImage("/LOGO.svg"),
-      waitForFrame(2),
-    ]);
-
-    let essentialsDone = false;
-    Promise.race([essentials, delay(MAX_WAIT_MS)]).then(() => {
-      essentialsDone = true;
-    });
-
     const finish = () => {
-      if (cancelled || calledDoneRef.current) return;
-      calledDoneRef.current = true;
+      if (cancelled || doneRef.current) return;
+      doneRef.current = true;
       window.sessionStorage.setItem(INITIAL_LOADER_KEY, "1");
       setIsExiting(true);
       exitTimer = window.setTimeout(() => {
@@ -137,84 +99,106 @@ function InitialLoader({ onDone }) {
       }, EXIT_MS);
     };
 
-    // Chegou em 100: segura um instante, manda os numerais saírem um a um
-    // (o stagger e do CSS) e so depois apaga o overlay.
-    const startLeave = () => {
-      if (cancelled || calledDoneRef.current) return;
-      setIsLeaving(true);
-      leaveTimer = window.setTimeout(finish, LEAVE_MS);
-    };
+    // O unico "carregamento" real do loader. O resto e coreografia.
+    const gate = Promise.race([
+      Promise.all([waitForEssentialFonts(), waitForImage("/LOGO.svg"), waitForFrame(2)]),
+      delay(MAX_WAIT_MS),
+    ]);
 
-    const tick = (now) => {
-      if (cancelled) return;
+    if (prefersReducedMotion()) {
+      gate.then(finish);
+    } else {
+      const q = gsap.utils.selector(root);
+      const barTrack = q(".initial-loader__bar");
+      const barFill = q(".initial-loader__bar-fill");
+      const hundreds = q(".initial-loader__digit--hundreds .initial-loader__digit-track");
+      const tens = q(".initial-loader__digit--tens .initial-loader__digit-track");
+      const units = q(".initial-loader__digit--units .initial-loader__digit-track");
+      const tracks = q(".initial-loader__digit-track");
+      const percent = q(".initial-loader__percent");
+      const counter = q(".initial-loader__counter");
 
-      const elapsed = now - startedAt;
-      const canFinish = essentialsDone && elapsed >= MIN_VISIBLE_MS;
-      const target = getStagedProgress(elapsed, canFinish);
+      // Os dois patamares sao sorteados, igual a referencia: o loader e
+      // ficticio dos dois lados — nao existe progresso pra medir. O que vende
+      // a leitura de "carregando" e a SILHUETA da subida (dois degraus antes
+      // do 100), nao o valor. Contador frame a frame foi o que estava aqui
+      // antes e era justamente o que travava: dois patamares mortos (33 e 65)
+      // e uma rampa final lerpada em ~1,4s, com o digito trocando por corte
+      // seco porque a pilha nao tinha animacao nenhuma.
+      const tens1 = gsap.utils.random([2, 3, 4]);
+      const units1 = gsap.utils.random([1, 5]);
+      const tens2 = gsap.utils.random([5, 6]);
+      const units2 = gsap.utils.random([7, 8, 9]);
 
-      progressRef.current += (target - progressRef.current) * (canFinish ? 0.045 : 0.075);
-      // Sem Math.floor aqui de proposito: a barra usa o valor cru
-      // (fracionado) pra ficar suave a cada frame.
-      const nextProgress = Math.min(100, Math.max(1, progressRef.current));
-      setProgress(nextProgress);
+      // defaults no TIMELINE, nao em gsap.defaults(): a referencia usa o
+      // global e vaza ease/duration pra todo tween da pagina depois disso.
+      tl = gsap.timeline({
+        defaults: { ease: "expo.inOut", duration: STOP_DUR },
+        onComplete: finish,
+      });
 
-      // O numero acompanha o mesmo progresso eased da barra (por isso mantem
-      // as pausas do staging), so que quantizado e com tempo minimo de tela:
-      // se o progresso correu, ele PULA direto pro valor atual em vez de
-      // desfiar todos os intermediarios. Trava em 99 ate canFinish pra nao
-      // bater 100% antes da hora.
-      const stepTarget = canFinish
-        ? Math.min(100, Math.floor(progressRef.current))
-        : Math.min(99, Math.floor(progressRef.current));
-      if (stepTarget > displayValueRef.current && now - lastTickAtRef.current >= MIN_STEP_MS) {
-        displayValueRef.current = Math.min(stepTarget, displayValueRef.current + MAX_STEP);
-        lastTickAtRef.current = now;
-        setDisplayValue(displayValueRef.current);
-      }
+      // Uma linha ABAIXO do primeiro digito = janela vazia. A pilha entra em
+      // cena rolando, nunca aparece ja escrita.
+      tl.set([tens, units], { yPercent: ROW });
+      tl.set([hundreds, percent], { yPercent: 100 });
+      tl.set(barFill, { scaleY: 0 });
+      // So agora o contador acende. Ate aqui ele estava com visibility:hidden
+      // no CSS — sem isso, o useEffect roda depois do paint e o primeiro tick
+      // do GSAP so vem no rAF seguinte (medido em 145-270ms), intervalo em que
+      // o loader aparecia escrito "111" (a primeira linha das tres pilhas).
+      // Resolver isso com transform no CSS NAO funciona: ver o comentario em
+      // .initial-loader__counter no 03-loader.css.
+      tl.set(counter, { visibility: "visible" });
 
-      // O lerp chega em 100 por aproximacao (nunca exato) — fecha a barra na
-      // mao. O numero NAO e forcado junto: ele continua subindo pelo passo
-      // normal ate cravar 100, senao o teto do MAX_STEP faria um 90 -> 100
-      // seco bem no fim, que e justamente o que a saida quer evitar.
-      if (canFinish && progressRef.current >= 99.35) {
-        progressRef.current = 100;
-        setProgress(100);
-      }
+      // Parada 1
+      tl.to(barFill, { scaleY: Number(`${tens1}${units1}`) / 100 })
+        .to(tens, { yPercent: yFor(tens1) }, "<")
+        .to(units, { yPercent: yFor(units1) }, "<")
+        .to(percent, { yPercent: 0 }, "<");
 
-      if (displayValueRef.current >= 100) {
-        holdTimer = window.setTimeout(startLeave, HOLD_100_MS);
-        return;
-      }
+      // Parada 2
+      tl.to(barFill, { scaleY: Number(`${tens2}${units2}`) / 100 })
+        .to(tens, { yPercent: yFor(tens2) }, "<")
+        .to(units, { yPercent: yFor(units2) }, "<");
 
-      rafId = window.requestAnimationFrame(tick);
-    };
+      // Gate: so fecha em 100 com fonte e logo prontos. Na pratica as duas
+      // paradas acima (1,7s) ja cobrem a carga, entao isso quase nunca cobra
+      // espera — e o que impede o 100 de mentir quando cobra.
+      tl.addPause(">", () => {
+        gate.then(() => {
+          if (!cancelled) tl.play();
+        });
+      });
 
-    rafId = window.requestAnimationFrame(tick);
+      // Parada 3 — 100
+      tl.to(barFill, { scaleY: 1 })
+        .to(tens, { yPercent: yFor(0) }, "<")
+        .to(units, { yPercent: yFor(0) }, "<")
+        .to(hundreds, { yPercent: 0 }, "<");
+
+      // Saida: os numerais sobem um a um — centena, dezena, unidade, % — e a
+      // barra recolhe pra CIMA (origem no topo) por ULTIMO. A referencia manda
+      // barra e numeros juntos, mas ai a barra (sem stagger) termina bem antes
+      // do ultimo numeral e a tela fica um tempo so com o "100" orfao.
+      tl.to(tracks, { yPercent: -100, duration: OUT_DUR, stagger: 0.08 })
+        .to(percent, { yPercent: -100, duration: OUT_DUR }, "<+=0.24")
+        .to(barTrack, { scaleY: 0, transformOrigin: "top", duration: OUT_DUR }, "<+=0.06");
+    }
 
     return () => {
       cancelled = true;
-      window.cancelAnimationFrame(rafId);
       window.clearTimeout(exitTimer);
-      window.clearTimeout(holdTimer);
-      window.clearTimeout(leaveTimer);
+      tl?.kill();
       document.body.style.overflow = previousOverflow;
     };
   }, [onDone]);
 
-  // O rolo dos digitos precisa parar EXATAMENTE em cada linha (offset em em
-  // inteiro) — com offset fracionado a janela de 1em (overflow:hidden) sempre
-  // mostra um recorte de duas linhas empilhadas ao mesmo tempo, em vez de um
-  // digito limpo. displayValue já é o inteiro quantizado do loop, entao cada
-  // parada e um digito limpo; a barra e que segue no valor cru, suave.
-  const tensPos = Math.floor(displayValue / 10);
-  const hundredsReveal = Math.max(0, Math.min(1, (displayValue - 97) / 3));
-
   return (
     <div
-      className={`initial-loader${isLeaving ? " is-leaving" : ""}${isExiting ? " is-exiting" : ""}`}
-      aria-label={`Carregando ${displayValue}%`}
+      ref={rootRef}
+      className={`initial-loader${isExiting ? " is-exiting" : ""}`}
       role="status"
-      style={{ "--loader-progress": progress / 100 }}
+      aria-label="Carregando"
     >
       <div className="initial-loader__bar" aria-hidden="true">
         <div className="initial-loader__bar-fill"></div>
@@ -223,38 +207,28 @@ function InitialLoader({ onDone }) {
       <div className="initial-loader__counter" aria-hidden="true">
         <span className="initial-loader__number">
           <span className="initial-loader__digit initial-loader__digit--hundreds">
-            <span
-              className="initial-loader__digit-row"
-              style={{
-                transform: `translateY(${(1 - hundredsReveal) * 100}%)`,
-                opacity: hundredsReveal,
-              }}
-            >
-              1
+            <span className="initial-loader__digit-track">
+              <span className="initial-loader__digit-row">1</span>
             </span>
           </span>
           <span className="initial-loader__digit initial-loader__digit--tens">
-            <span
-              className="initial-loader__digit-track"
-              style={{ transform: `translateY(-${tensPos}em)` }}
-            >
-              {TENS_ROWS.map((d, i) => (
-                <span className="initial-loader__digit-row" key={i}>{d}</span>
+            <span className="initial-loader__digit-track">
+              {DIGITS.map((d) => (
+                <span className="initial-loader__digit-row" key={d}>{d}</span>
               ))}
             </span>
           </span>
           <span className="initial-loader__digit initial-loader__digit--units">
-            <span
-              className="initial-loader__digit-track"
-              style={{ transform: `translateY(-${displayValue}em)` }}
-            >
-              {UNITS_ROWS.map((d, i) => (
-                <span className="initial-loader__digit-row" key={i}>{d}</span>
+            <span className="initial-loader__digit-track">
+              {DIGITS.map((d) => (
+                <span className="initial-loader__digit-row" key={d}>{d}</span>
               ))}
             </span>
           </span>
         </span>
-        <span className="initial-loader__percent">%</span>
+        <span className="initial-loader__percent-mask">
+          <span className="initial-loader__percent">%</span>
+        </span>
       </div>
     </div>
   );
