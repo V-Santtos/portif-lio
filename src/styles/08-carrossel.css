@@ -400,8 +400,9 @@
   .lp__thumb-pill { padding: 0.4rem 0.75rem; font-size: 10px; }
 }
 
-/* ── Faixas satélites do carrossel — placeholders (só mobile) ──── */
+/* ── Faixas satélites do carrossel (só mobile) ─────────────────── */
 .lp__strip { display: none; }
+.lp__experience-note { display: none; }
 
 @media (max-width: 767px) {
   /* as faixas vivem fora da caixa do carrossel — libera o clip vertical
@@ -425,15 +426,37 @@
   .lp__strip--top { top: calc(50% - 74.25vw - 1.25rem); }
   .lp__strip--bottom { top: calc(50% + 24.75vw + 1.25rem); }
 
+  .lp__strip-carriage,
   .lp__strip-track {
-    display: flex;
-    gap: 1.25rem;
     width: max-content;
     will-change: transform;
   }
+  .lp__strip-track {
+    display: flex;
+    gap: 1.25rem;
+    animation-duration: var(--lp-strip-duration, 20s);
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+    animation-play-state: paused;
+    backface-visibility: hidden;
+    transform: translateZ(0);
+  }
+  .lp__strip--top .lp__strip-track { animation-name: lp-strip-loop-left; }
+  .lp__strip--bottom .lp__strip-track { animation-name: lp-strip-loop-right; }
+  .lp__strip-track.is-cruising { animation-play-state: running; }
+
+  @keyframes lp-strip-loop-left {
+    from { transform: translate3d(0, 0, 0); }
+    to { transform: translate3d(var(--lp-strip-period-neg, -1000px), 0, 0); }
+  }
+
+  @keyframes lp-strip-loop-right {
+    from { transform: translate3d(0, 0, 0); }
+    to { transform: translate3d(var(--lp-strip-period, 1000px), 0, 0); }
+  }
   /* estado inicial (antes do JS): trens fora da tela, janela vazia */
-  .lp__strip--top .lp__strip-track { transform: translateX(120vw); }
-  .lp__strip--bottom .lp__strip-track { transform: translateX(-800vw); }
+  .lp__strip--top .lp__strip-carriage { transform: translateX(120vw); }
+  .lp__strip--bottom .lp__strip-carriage { transform: translateX(-800vw); }
 
   .lp__strip-card {
     flex: 0 0 auto;
@@ -477,6 +500,53 @@
     line-height: 1;
     text-transform: uppercase;
     letter-spacing: 0.02em;
+  }
+
+  /* O trio de cards termina pouco antes da borda inferior. A nota ocupa esse
+     respiro sem alterar a geometria do pin nem a altura das faixas. */
+  .lp__experience-note {
+    position: absolute;
+    z-index: 4;
+    top: calc(50% + 74.25vw + 2.75rem);
+    left: 6vw;
+    right: 6vw;
+    display: block;
+    color: var(--color-foreground);
+    text-align: center;
+    pointer-events: none;
+    visibility: hidden;
+    opacity: 0;
+    will-change: transform, opacity;
+  }
+
+  .lp__experience-line {
+    display: block;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+
+  .lp__experience-line-inner {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 0.18em;
+    font-family: var(--font-body);
+    font-size: clamp(10px, 2.8vw, 11px);
+    font-weight: 500;
+    line-height: 1;
+    letter-spacing: 0.015em;
+    will-change: transform;
+  }
+
+  .lp__experience-accent {
+    display: inline-block;
+    padding: 0 0.08em 0.12em 0;
+    font-family: "Birthstone", cursive;
+    font-size: 2.25em;
+    font-weight: 400;
+    line-height: 0.55;
+    letter-spacing: 0;
+    color: var(--color-accent);
   }
 }
 

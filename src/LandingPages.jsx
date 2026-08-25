@@ -4,10 +4,9 @@ import { Flip, ScrollTrigger, currentScrollY, gsap, prefersReducedMotion, scroll
 import CasePreviewFrame from "./CasePreviewFrame.jsx";
 import LandingPreview from "./LandingPreview.jsx";
 
-// Linha principal do carrossel — MESMA lista no desktop e no mobile
-// (Victor, 2026-08-21). Até então o mobile rodava uma lista própria e os cases
-// reais só entravam no desktop, via um mapa de substituições; com todos os seis
-// validados, a bifurcação deixou de ter motivo e foi removida.
+// Linha principal do carrossel — MESMA lista no desktop e no mobile.
+// O Next é a exceção deliberada: desde 2026-08-24 ele vive apenas na faixa
+// satélite mobile (STRIP_TOP), enquanto o China ocupa seu antigo slot aqui.
 //
 // Slot 1 é fixo: o EcoScape é a origem da transição Flip de entrada da seção.
 // Do slot 2 pra frente a ordem é livre.
@@ -31,6 +30,12 @@ const LP_ITEMS = [
     title: "EcoScape",
   },
   {
+    preview: "china",
+    capsuleSrc: "/previews/china/index.html",
+    tag: "Restaurante japonês",
+    title: "China",
+  },
+  {
     preview: "minas",
     capsuleSrc: "/previews/minas/index.html",
     tag: "Loja de tintas",
@@ -47,12 +52,6 @@ const LP_ITEMS = [
     title: "Fervor",
   },
   {
-    preview: "nexous",
-    capsuleSrc: "/previews/nexous/index.html",
-    tag: "Agência",
-    title: "Nexous",
-  },
-  {
     preview: "aurea",
     capsuleSrc: "/previews/aurea/index.html",
     tag: "Imobiliária",
@@ -66,26 +65,20 @@ const LP_ITEMS = [
   },
 ];
 
-// Faixas satélites (só mobile) — cards leves espelhando o tamanho/gap do
-// carrossel central. Os que têm `preview` são reais (renderizam o preview React
-// de verdade); os demais ainda são placeholders só-CSS, a trocar pelos reais.
-//
-// Roofora e Minta desceram da linha principal pra cá em 2026-08-21, quando
-// desktop e mobile passaram a mostrar os mesmos seis cases. A Minas Tintas fez
-// o caminho inverso na mesma passagem: era o card real desta faixa e subiu pra
-// linha principal, agora como cápsula.
+// Faixas satélites (só mobile) — três cases reais por trilho. O render duplica
+// cada trio e `makeStrip()` mede do primeiro card até a sua cópia para obter o
+// ponto exato de wrap. Depois do terceiro, o primeiro reaparece sem fresta. Como
+// só dois cards ficam expostos de forma direta, não há placeholders esperando
+// fora da tela nem um trem maior que o necessário.
 const STRIP_TOP = [
   { preview: "roofora", tag: "Serviços", title: "Roofora" },
-  { tag: "Clínica", title: "Vitalis", theme: "light" },
-  { tag: "Imobiliária", title: "Alta Vista", theme: "dark" },
-  { tag: "Advocacia", title: "Priori", theme: "light" },
+  { preview: "nexous", tag: "Agência", title: "Next" },
+  { preview: "minta", tag: "Fintech", title: "Minta" },
 ];
 const STRIP_BOTTOM = [
   { preview: "minta", tag: "Fintech", title: "Minta" },
-  { tag: "Restaurante", title: "Braseiro", theme: "light" },
-  { tag: "Academia", title: "Forja", theme: "dark" },
-  { tag: "Petshop", title: "Aumigo", theme: "light" },
-  { tag: "Estética", title: "Lume", theme: "dark" },
+  { preview: "isabely", tag: "Harmonização orofacial", title: "Isabely Miranda" },
+  { preview: "roofora", tag: "Serviços", title: "Roofora" },
 ];
 
 function StripCard({ item }) {
@@ -153,6 +146,7 @@ function LandingPages({ onGeometryReady }) {
   const stripBottomRef = useRef(null);
   const stripTopTrackRef = useRef(null);
   const stripBottomTrackRef = useRef(null);
+  const experienceNoteRef = useRef(null);
 
   // A linha principal NÃO depende mais deste estado (desde 2026-08-21 desktop e
   // mobile mostram a mesma LP_ITEMS). Ele segue vivo para o resto da
@@ -240,6 +234,7 @@ function LandingPages({ onGeometryReady }) {
     let skipTween;
     let resizeTimer;
     let stripMarquees = [];
+    let experienceTl;
     // Amortecimento da miniatura no mobile. Ticker próprio, separado do das
     // faixas satélites de propósito: são duas responsabilidades sem relação, e
     // fundir os callbacks só acoplaria o que não precisa andar junto.
@@ -289,6 +284,7 @@ function LandingPages({ onGeometryReady }) {
       if (scrollTl) { scrollTl.scrollTrigger?.kill(); scrollTl.kill(); }
       if (carouselTl) { carouselTl.scrollTrigger?.kill(); carouselTl.kill(); }
       if (flipDamper) { flipDamper.destroy(); flipDamper = null; }
+      if (experienceTl) { experienceTl.kill(); experienceTl = null; }
 
       gsap.set(target, { clearProps: "all" });
       gsap.set(settleTarget, { clearProps: "transform,borderRadius" });
@@ -435,74 +431,114 @@ function LandingPages({ onGeometryReady }) {
       const hasStrips =
         isMobile && stripTopTrackRef.current && stripBottomTrackRef.current;
 
-      // Faixas satélites — posição 100% derivada do PROGRESSO do scroll
-      // (imune a jank/throttle de rAF durante a rolagem: não tem como "pular").
-      // Rampas: entrada 0.16→0.34, cruzeiro, saída 0.62→0.78. Só o cruzeiro
-      // (marquee) acumula por tempo; se o ticker congelar num frame, a faixa
-      // apenas desliza mais devagar — nunca salta.
+      const experienceNote = experienceNoteRef.current;
+      if (isMobile && experienceNote) {
+        const lines = experienceNote.querySelectorAll(".lp__experience-line-inner");
+
+        // A nota não tem relógio próprio: a timeline fica pausada e recebe o
+        // progresso do carrossel no ticker abaixo. Assim ela também desfaz a
+        // animação com precisão quando o usuário volta a página.
+        gsap.set(experienceNote, { autoAlpha: 0, y: 10 });
+        gsap.set(lines, { yPercent: 110 });
+
+        experienceTl = gsap.timeline({ paused: true })
+          .to(experienceNote, {
+            autoAlpha: 1,
+            y: 0,
+            duration: 0.28,
+            ease: "power2.out",
+          }, 0)
+          .to(lines, {
+            yPercent: 0,
+            duration: 0.46,
+            ease: "power3.out",
+          }, 0.04)
+          .to({}, { duration: 0.84 })
+          .to(experienceNote, {
+            autoAlpha: 0,
+            y: -9,
+            duration: 0.32,
+            ease: "power2.in",
+          });
+        experienceTl.progress(0);
+      }
+
+      // Faixas satélites: a carruagem externa faz apenas as rampas de entrada e
+      // saída derivadas do scroll. O trilho interno roda no compositor via CSS,
+      // sem depender do ticker da main thread durante o cruzeiro.
       const easeOutQ = (t) => 1 - (1 - t) * (1 - t);
       const easeInQ = (t) => t * t;
       const P_IN_A = 0.16, P_IN_B = 0.34, P_OUT_A = 0.62, P_OUT_B = 0.78;
       const CRUISE_SPEED = 55; // px/s
 
-      const makeStrip = (trackEl, movesLeft) => {
-        const halfW = trackEl.scrollWidth / 2;
-        const vw = window.innerWidth;
-        const startX = movesLeft ? vw : -2 * halfW; // trem fora da tela
-        // cruzeiro a UMA TELA do início nos dois lados — viagem de entrada
-        // idêntica (antes o de baixo percorria meio trem na mesma rampa e
-        // entrava ~3.7× mais rápido). O +40 é folga anti-fresta no wrap.
-        const cruiseX = movesLeft ? 0 : -2 * halfW + vw + 40;
-        const state = { offset: 0, exitFromX: null, enterToX: null, lastX: null };
+      const makeStrip = (carriageEl, movesLeft) => {
+        const railEl = carriageEl.querySelector(".lp__strip-track");
+        const cards = railEl?.children;
+        const uniqueCount = Math.floor((cards?.length || 0) / 2);
+        if (!railEl || !cards?.length || !uniqueCount) {
+          return { update: () => {}, destroy: () => {} };
+        }
 
-        const update = (p, dt) => {
-          // marquee acumula só no cruzeiro (wrap na meia-volta duplicada)
-          if (p > P_IN_B && p < P_OUT_A) {
-            state.offset += (movesLeft ? -1 : 1) * CRUISE_SPEED * dt;
-            if (movesLeft && state.offset <= -halfW) state.offset += halfW;
-            if (!movesLeft && state.offset >= halfW) state.offset -= halfW;
+        // A distância verdadeira do loop é do card 1 até a sua cópia, não
+        // scrollWidth/2. Com seis cards existem cinco gaps; dividir a largura
+        // total também divide o gap ímpar e fazia o wrap saltar meio gap.
+        const period = cards[uniqueCount].offsetLeft - cards[0].offsetLeft;
+        const trackW = railEl.scrollWidth;
+        const vw = window.innerWidth;
+        const startX = movesLeft ? vw : -trackW; // trem fora da tela
+        // cruzeiro a UMA TELA do início nos dois lados — viagem de entrada
+        // idêntica. O +40 é a folga anti-fresta na borda direita.
+        const cruiseX = movesLeft ? 0 : -trackW + vw + 40;
+        const setX = gsap.quickSetter(carriageEl, "x", "px");
+        const state = { exitFromX: null, lastX: null, cruising: false };
+
+        railEl.style.setProperty("--lp-strip-period", `${period}px`);
+        railEl.style.setProperty("--lp-strip-period-neg", `${-period}px`);
+        railEl.style.setProperty("--lp-strip-duration", `${period / CRUISE_SPEED}s`);
+
+        const update = (p) => {
+          const cruising = p >= P_IN_B && p <= P_OUT_A;
+          if (cruising !== state.cruising) {
+            railEl.classList.toggle("is-cruising", cruising);
+            state.cruising = cruising;
           }
+
           let x;
           if (p <= P_IN_A) {
             x = startX;
-            state.offset = 0;
             state.exitFromX = null;
-            state.enterToX = null;
           } else if (p < P_IN_B) {
-            // entrada: rampa da borda até a posição de cruzeiro ATUAL
-            // (cruiseX + offset), espelhando a saída (que captura exitFromX).
-            // Sem isso, descer do cruzeiro pra entrada pulava ~offset px porque
-            // o cruzeiro carrega +offset e a entrada largava em +0. Capturar o
-            // offset aqui casa os dois lados no mesmo ponto — contínuo indo e
-            // voltando, em qualquer velocidade — mantendo o marquee vivo.
-            if (state.enterToX === null) state.enterToX = cruiseX + state.offset;
             const t = easeOutQ((p - P_IN_A) / (P_IN_B - P_IN_A));
-            x = startX + (state.enterToX - startX) * t;
+            x = startX + (cruiseX - startX) * t;
             state.exitFromX = null;
           } else if (p < P_OUT_A) {
-            x = cruiseX + state.offset;
+            x = cruiseX;
             state.exitFromX = null;
-            state.enterToX = null;
           } else if (p < P_OUT_B) {
-            // saída: retrocede pra borda de origem, proporcional ao progresso
-            if (state.exitFromX === null) state.exitFromX = cruiseX + state.offset;
+            if (state.exitFromX === null) state.exitFromX = cruiseX;
             const t = easeInQ((p - P_OUT_A) / (P_OUT_B - P_OUT_A));
             x = state.exitFromX + (startX - state.exitFromX) * t;
-            state.enterToX = null;
           } else {
             x = startX;
-            state.enterToX = null;
           }
-          // Pula o set quando nada mudou (parado fora da rampa/cruzeiro): evita
-          // reescrever o transform todo frame à toa.
+
           if (state.lastX === null || Math.abs(x - state.lastX) > 0.01) {
-            gsap.set(trackEl, { x });
+            setX(x);
             state.lastX = x;
           }
         };
 
-        update(0, 0);
-        return { update };
+        update(0);
+        return {
+          update,
+          destroy: () => {
+            railEl.classList.remove("is-cruising");
+            railEl.style.removeProperty("--lp-strip-period");
+            railEl.style.removeProperty("--lp-strip-period-neg");
+            railEl.style.removeProperty("--lp-strip-duration");
+            gsap.set(carriageEl, { clearProps: "transform" });
+          },
+        };
       };
 
       stripMarquees.forEach((s) => s.destroy());
@@ -515,21 +551,32 @@ function LandingPages({ onGeometryReady }) {
         // Fonte de verdade: o progresso AMORTECIDO do scrub (o mesmo que move
         // os cards centrais). Num flick violento o scrub suaviza o salto —
         // faixas e carrossel percorrem o caminho juntos, sem pop.
-        const onTick = (time, deltaTime) => {
+        const onTick = () => {
           // Só trabalha enquanto o carrossel está engatado (pin ativo). Fora
           // dele as faixas estão paradas na borda (startX, fora da tela) — não
           // há motivo pra rodar o cálculo/set todo frame. Corta o custo do
           // ticker pra ~zero quando a seção não está em tela.
           const st = carouselTl && carouselTl.scrollTrigger;
           if (!st || !st.isActive) return;
-          const dt = Math.min(deltaTime, 100) / 1000;
           // Ignore the landing and exit runways: strips only move with cards.
           const motionTime = Math.max(0, carouselTl.time() - settleDist);
           const p = scrollDist > 0 ? Math.min(1, motionTime / scrollDist) : 1;
-          strips.forEach((s) => s.update(p, dt));
+          strips.forEach((s) => s.update(p));
+
+          // Começa a entrar antes do meio (26%), fica legível durante o
+          // cruzeiro e termina de sair ainda com carrossel em cena (82%).
+          if (experienceTl) {
+            const NOTE_IN = 0.26;
+            const NOTE_OUT = 0.82;
+            const noteProgress = Math.max(0, Math.min(1, (p - NOTE_IN) / (NOTE_OUT - NOTE_IN)));
+            experienceTl.progress(noteProgress);
+          }
         };
         gsap.ticker.add(onTick);
-        stripMarquees = [{ destroy: () => gsap.ticker.remove(onTick) }];
+        stripMarquees = [
+          ...strips,
+          { destroy: () => gsap.ticker.remove(onTick) },
+        ];
       }
 
       carouselTl = gsap.timeline({
@@ -670,6 +717,7 @@ function LandingPages({ onGeometryReady }) {
       if (scrollTl) { scrollTl.scrollTrigger?.kill(); scrollTl.kill(); }
       if (carouselTl) { carouselTl.scrollTrigger?.kill(); carouselTl.kill(); }
       if (flipDamper) { flipDamper.destroy(); flipDamper = null; }
+      if (experienceTl) { experienceTl.kill(); experienceTl = null; }
       stripMarquees.forEach((s) => s.destroy());
       gsap.set(target, { clearProps: "all" });
       gsap.set(settleTarget, { clearProps: "transform,borderRadius" });
@@ -796,19 +844,31 @@ function LandingPages({ onGeometryReady }) {
         {/* Faixas satélites (só mobile): entram das bordas na altura do 2º
             card e saem na metade do penúltimo (coreografia no build()) */}
         <div className="lp__strip lp__strip--top" aria-hidden="true" ref={stripTopRef}>
-          <div className="lp__strip-track" ref={stripTopTrackRef}>
-            {[...STRIP_TOP, ...STRIP_TOP].map((item, i) => (
-              <StripCard key={i} item={item} />
-            ))}
+          <div className="lp__strip-carriage" ref={stripTopTrackRef}>
+            <div className="lp__strip-track">
+              {[...STRIP_TOP, ...STRIP_TOP].map((item, i) => (
+                <StripCard key={i} item={item} />
+              ))}
+            </div>
           </div>
         </div>
         <div className="lp__strip lp__strip--bottom" aria-hidden="true" ref={stripBottomRef}>
-          <div className="lp__strip-track" ref={stripBottomTrackRef}>
-            {[...STRIP_BOTTOM, ...STRIP_BOTTOM].map((item, i) => (
-              <StripCard key={i} item={item} />
-            ))}
+          <div className="lp__strip-carriage" ref={stripBottomTrackRef}>
+            <div className="lp__strip-track">
+              {[...STRIP_BOTTOM, ...STRIP_BOTTOM].map((item, i) => (
+                <StripCard key={i} item={item} />
+              ))}
+            </div>
           </div>
         </div>
+
+        <aside className="lp__experience-note" ref={experienceNoteRef}>
+          <span className="lp__experience-line">
+            <span className="lp__experience-line-inner">
+              No computador, a experiência fica ainda <span className="lp__experience-accent">melhor.</span>
+            </span>
+          </span>
+        </aside>
       </div>
 
       {/* position:fixed → vai pro body: dentro do #smooth-content (que tem
