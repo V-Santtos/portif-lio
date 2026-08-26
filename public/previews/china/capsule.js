@@ -10,7 +10,7 @@
   document.addEventListener("submit", stopNavigation, true);
   document.addEventListener("auxclick", stopNavigation, true);
 
-  const heroVideo = document.querySelector(".capsule__hero-media");
+  const heroVideo = document.querySelector(".capsule main video");
   heroVideo?.play().catch(() => {});
 
   window.addEventListener(
