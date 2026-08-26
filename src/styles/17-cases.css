@@ -172,6 +172,11 @@
   position: relative;
   z-index: 1;
 }
+@media (max-width: 860px) {
+  .case-shot--mobile-breathing-room {
+    padding-bottom: clamp(8rem, 22vw, 10rem);
+  }
+}
 @keyframes flux-time-capsule-halo {
   to {
     opacity: 1;
@@ -499,6 +504,14 @@
   margin-left: 0;
   margin-right: 0;
 }
+.case-split--text-right .case-split__text,
+.case-split--text-right .case-split__body {
+  text-align: right;
+}
+.case-split--text-right .case-split__body {
+  margin-left: auto;
+  margin-right: 0;
+}
 @media (min-width: 861px) {
   .case-split--gap-wide .case-split__grid {
     gap: clamp(6rem, 10vw, 9rem);
@@ -754,7 +767,18 @@
     align-self: auto;
     padding-top: 0;
   }
+  .case-split--text-left .case-split__text,
+  .case-split--text-left .case-split__body,
+  .case-split--text-right .case-split__text,
+  .case-split--text-right .case-split__body {
+    text-align: center;
+  }
   .case-split__body {
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .case-split--text-left .case-split__body,
+  .case-split--text-right .case-split__body {
     margin-left: auto;
     margin-right: auto;
   }
@@ -805,6 +829,14 @@
   line-height: 1;
   text-transform: uppercase;
   border-radius: 6px;
+}
+.case-cta--access .case-cta__btn {
+  display: inline-flex;
+  justify-content: center;
+  max-width: 100%;
+  padding: 1.35rem clamp(1.5rem, 5vw, 3.75rem) 1.05rem;
+  font-size: clamp(1.45rem, 4.3vw, 2.6rem);
+  white-space: nowrap;
 }
 
 /* Área final do case — botão voltar ao topo centralizado */

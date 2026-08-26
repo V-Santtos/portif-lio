@@ -13,14 +13,6 @@ const BUDGETS = [
   "Acima de R$ 2.500",
 ];
 
-// Destino do formulário: webhook do n8n (workflow "portfolio").
-// PRODUÇÃO (padrão) — exige o workflow ATIVO no n8n:
-const WEBHOOK_URL = "https://webhook.autohost.shop/webhook/portifolio";
-// TESTE (só dispara com "Listen for test event" ligado no n8n; captura 1 envio):
-// const WEBHOOK_URL = "https://webhook.autohost.shop/webhook-test/portifolio";
-// Nota: o node do webhook precisa liberar CORS (Options → Allowed Origins) pro
-// domínio do site, senão o fetch cross-origin do navegador falha.
-
 function Comecar() {
   const { transitionTo } = usePageTransition();
   const titleRef = useRef(null);
@@ -36,6 +28,8 @@ function Comecar() {
   const [contactMode, setContactMode] = useState("email"); // "email" | "tel"
   const [contactError, setContactError] = useState("");
   const [messageError, setMessageError] = useState("");
+  const [submitError, setSubmitError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
   useIsoLayoutEffect(() => {
     document.documentElement.removeAttribute("data-booting");
@@ -111,16 +105,17 @@ function Comecar() {
     if (messageError) setMessageError(""); // some ao corrigir
   };
 
-  // Envio: valida contato + ideia; se ok, dispara o POST de forma OTIMISTA e já
-  // mostra a tela de sucesso. Não esperamos a resposta do n8n de propósito — o
-  // servidor às vezes leva ~30s e estoura em 504, mas o request já foi entregue
-  // (por isso `keepalive`). A experiência não fica refém do servidor.
-  const handleSubmit = (e) => {
+  // Envio: valida contato + ideia e espera a confirmação do back-end antes de
+  // mostrar a tela de sucesso. Assim não há falso positivo se o e-mail falhar.
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    if (submitting) return;
+
     const cErr = validateContact();
     const mErr = validateMessage();
     setContactError(cErr);
     setMessageError(mErr);
+    setSubmitError("");
     if (cErr) {
       contactRef.current?.focus();
       return;
@@ -139,23 +134,23 @@ function Comecar() {
       orcamento: (fd.get("orcamento") || "").toString(),
       mensagem: (fd.get("mensagem") || "").toString().trim(),
       origem: "portfolio /comecar",
-      enviadoEm: new Date().toISOString(),
     };
 
-    // Dispara e esquece (não trava a UI). `.catch` silencioso: o dado chega no
-    // n8n mesmo quando a resposta demora/estoura.
     try {
-      fetch(WEBHOOK_URL, {
+      setSubmitting(true);
+      const response = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
-        keepalive: true,
-      }).catch(() => {});
-    } catch {
-      /* noop — a tela de sucesso segue mesmo assim */
-    }
+      });
 
-    setSuccess(true);
+      if (!response.ok) throw new Error("Falha no envio");
+      setSuccess(true);
+    } catch {
+      setSubmitError("Não foi possível enviar agora. Tente novamente em instantes.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   // Coreografia de sucesso: o conteúdo some, e no centro entram o ✓ que se
@@ -288,7 +283,10 @@ function Comecar() {
           </div>
 
           <div className="comecar__field comecar__submit-row" data-reveal>
-            <button type="submit" className="comecar__submit">Bora!</button>
+            <button type="submit" className="comecar__submit" disabled={submitting}>
+              {submitting ? "Enviando..." : "Bora!"}
+            </button>
+            {submitError && <span className="comecar__hint is-error" role="alert">{submitError}</span>}
           </div>
         </form>
       </div>

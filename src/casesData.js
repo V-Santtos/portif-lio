@@ -110,6 +110,7 @@ export const CASES = {
         ratio: "16 / 9",
         framed: true,
         ambientGlow: "red",
+        mobileBreathingRoom: true,
         captionTop: true,
         label: "Tela principal",
         captionSeparator: " ",
@@ -139,17 +140,19 @@ export const CASES = {
         rounded: true,
         entrance: true,
         reverse: true,
+        textAlign: "right",
         title: "Seu dia, na palma da mão.",
         body: "Na rua, no intervalo ou onde você estiver, o Flux Time mantém suas tarefas por perto. Acompanhe a semana, registre uma anotação e não deixe o que importa escapar.",
       },
-      // CTA único: aqui o fechamento é TESTAR o produto (case de produto próprio).
-      // Sem bloco de contato — o "Contato" da nav cai no fallback /#contato.
+      // CTA único com solicitação de acesso ao produto.
+      // Sem bloco de contato. O "Contato" da navegação cai no fallback /#contato.
       {
         type: "cta",
-        title: "Quer entrar no foco?\nTesta você mesmo.",
-        body: "O Flux Time está no ar — abre, dá o play e sente a diferença.",
-        buttonLabel: "Usar o Flux Time",
-        buttonHref: "https://rel-gio-taupe.vercel.app/",
+        variant: "access",
+        title: "Seu foco no seu ritmo.",
+        body: "Solicite acesso ao Flux Time para organizar suas sessões, tarefas e anotações no mesmo lugar.",
+        buttonLabel: "Solicitar acesso",
+        buttonHref: "https://wa.me/5533984246770",
       },
     ],
   },

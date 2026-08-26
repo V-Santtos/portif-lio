@@ -434,7 +434,7 @@ function Case() {
                 </figcaption>
               ) : null;
               return (
-                <section className="section case-shot" key={i}>
+                <section className={`section case-shot${block.mobileBreathingRoom ? " case-shot--mobile-breathing-room" : ""}`} key={i}>
                   <div className="container-x">
                     <div className="case-shot__inner">
                       {block.eyebrow && (
@@ -567,7 +567,7 @@ function Case() {
             }
             if (block.type === "cta") {
               return (
-                <section className="section case-cta" key={i}>
+                <section className={`section case-cta${block.variant ? ` case-cta--${block.variant}` : ""}`} key={i}>
                   <div className="container-x">
                     <div className="case-cta__card" data-reveal>
                       {block.title && <h3 className="case-cta__title">{block.title}</h3>}
