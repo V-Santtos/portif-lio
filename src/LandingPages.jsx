@@ -71,14 +71,14 @@ const LP_ITEMS = [
 // só dois cards ficam expostos de forma direta, não há placeholders esperando
 // fora da tela nem um trem maior que o necessário.
 const STRIP_TOP = [
-  { preview: "roofora", tag: "Serviços", title: "Roofora" },
+  { preview: "atoks", tag: "Fintech", title: "Atoks" },
   { preview: "nexous", tag: "Agência", title: "Next" },
   { preview: "minta", tag: "Fintech", title: "Minta" },
 ];
 const STRIP_BOTTOM = [
-  { preview: "minta", tag: "Fintech", title: "Minta" },
+  { theme: "light", tag: "Em breve", title: "Novo case" },
   { preview: "isabely", tag: "Harmonização orofacial", title: "Isabely Miranda" },
-  { preview: "roofora", tag: "Serviços", title: "Roofora" },
+  { theme: "dark", tag: "Em breve", title: "Novo case" },
 ];
 
 function StripCard({ item }) {
@@ -463,82 +463,71 @@ function LandingPages({ onGeometryReady }) {
         experienceTl.progress(0);
       }
 
-      // Faixas satélites: a carruagem externa faz apenas as rampas de entrada e
-      // saída derivadas do scroll. O trilho interno roda no compositor via CSS,
-      // sem depender do ticker da main thread durante o cruzeiro.
+      // Faixas satélites — posição 100% derivada do PROGRESSO do scroll
+      // (imune a jank/throttle de rAF durante a rolagem: não tem como "pular").
+      // Rampas: entrada 0.16→0.34, cruzeiro, saída 0.62→0.78. Só o cruzeiro
+      // (marquee) acumula por tempo; se o ticker congelar num frame, a faixa
+      // apenas desliza mais devagar — nunca salta.
       const easeOutQ = (t) => 1 - (1 - t) * (1 - t);
       const easeInQ = (t) => t * t;
       const P_IN_A = 0.16, P_IN_B = 0.34, P_OUT_A = 0.62, P_OUT_B = 0.78;
       const CRUISE_SPEED = 55; // px/s
 
-      const makeStrip = (carriageEl, movesLeft) => {
-        const railEl = carriageEl.querySelector(".lp__strip-track");
-        const cards = railEl?.children;
-        const uniqueCount = Math.floor((cards?.length || 0) / 2);
-        if (!railEl || !cards?.length || !uniqueCount) {
-          return { update: () => {}, destroy: () => {} };
-        }
-
-        // A distância verdadeira do loop é do card 1 até a sua cópia, não
-        // scrollWidth/2. Com seis cards existem cinco gaps; dividir a largura
-        // total também divide o gap ímpar e fazia o wrap saltar meio gap.
-        const period = cards[uniqueCount].offsetLeft - cards[0].offsetLeft;
-        const trackW = railEl.scrollWidth;
+      const makeStrip = (trackEl, movesLeft) => {
+        const halfW = trackEl.scrollWidth / 2;
         const vw = window.innerWidth;
-        const startX = movesLeft ? vw : -trackW; // trem fora da tela
+        const startX = movesLeft ? vw : -2 * halfW; // trem fora da tela
         // cruzeiro a UMA TELA do início nos dois lados — viagem de entrada
-        // idêntica. O +40 é a folga anti-fresta na borda direita.
-        const cruiseX = movesLeft ? 0 : -trackW + vw + 40;
-        const setX = gsap.quickSetter(carriageEl, "x", "px");
-        const state = { exitFromX: null, lastX: null, cruising: false };
+        // idêntica (antes o de baixo percorria meio trem na mesma rampa e
+        // entrava ~3.7× mais rápido). O +40 é folga anti-fresta no wrap.
+        const cruiseX = movesLeft ? 0 : -2 * halfW + vw + 40;
+        const state = { offset: 0, exitFromX: null, enterToX: null, lastX: null };
 
-        railEl.style.setProperty("--lp-strip-period", `${period}px`);
-        railEl.style.setProperty("--lp-strip-period-neg", `${-period}px`);
-        railEl.style.setProperty("--lp-strip-duration", `${period / CRUISE_SPEED}s`);
-
-        const update = (p) => {
-          const cruising = p >= P_IN_B && p <= P_OUT_A;
-          if (cruising !== state.cruising) {
-            railEl.classList.toggle("is-cruising", cruising);
-            state.cruising = cruising;
+        const update = (p, dt) => {
+          // marquee acumula só no cruzeiro (wrap na meia-volta duplicada)
+          if (p > P_IN_B && p < P_OUT_A) {
+            state.offset += (movesLeft ? -1 : 1) * CRUISE_SPEED * dt;
+            if (movesLeft && state.offset <= -halfW) state.offset += halfW;
+            if (!movesLeft && state.offset >= halfW) state.offset -= halfW;
           }
-
           let x;
           if (p <= P_IN_A) {
             x = startX;
+            state.offset = 0;
             state.exitFromX = null;
+            state.enterToX = null;
           } else if (p < P_IN_B) {
+            // entrada: rampa da borda até a posição de cruzeiro ATUAL
+            // (cruiseX + offset), espelhando a saída (que captura exitFromX).
+            // Capturar o offset casa os dois lados no mesmo ponto e mantém o
+            // marquee contínuo indo e voltando, em qualquer velocidade.
+            if (state.enterToX === null) state.enterToX = cruiseX + state.offset;
             const t = easeOutQ((p - P_IN_A) / (P_IN_B - P_IN_A));
-            x = startX + (cruiseX - startX) * t;
+            x = startX + (state.enterToX - startX) * t;
             state.exitFromX = null;
           } else if (p < P_OUT_A) {
-            x = cruiseX;
+            x = cruiseX + state.offset;
             state.exitFromX = null;
+            state.enterToX = null;
           } else if (p < P_OUT_B) {
-            if (state.exitFromX === null) state.exitFromX = cruiseX;
+            // saída: retrocede pra borda de origem, proporcional ao progresso
+            if (state.exitFromX === null) state.exitFromX = cruiseX + state.offset;
             const t = easeInQ((p - P_OUT_A) / (P_OUT_B - P_OUT_A));
             x = state.exitFromX + (startX - state.exitFromX) * t;
+            state.enterToX = null;
           } else {
             x = startX;
+            state.enterToX = null;
           }
 
           if (state.lastX === null || Math.abs(x - state.lastX) > 0.01) {
-            setX(x);
+            gsap.set(trackEl, { x });
             state.lastX = x;
           }
         };
 
-        update(0);
-        return {
-          update,
-          destroy: () => {
-            railEl.classList.remove("is-cruising");
-            railEl.style.removeProperty("--lp-strip-period");
-            railEl.style.removeProperty("--lp-strip-period-neg");
-            railEl.style.removeProperty("--lp-strip-duration");
-            gsap.set(carriageEl, { clearProps: "transform" });
-          },
-        };
+        update(0, 0);
+        return { update };
       };
 
       stripMarquees.forEach((s) => s.destroy());
@@ -551,17 +540,14 @@ function LandingPages({ onGeometryReady }) {
         // Fonte de verdade: o progresso AMORTECIDO do scrub (o mesmo que move
         // os cards centrais). Num flick violento o scrub suaviza o salto —
         // faixas e carrossel percorrem o caminho juntos, sem pop.
-        const onTick = () => {
-          // Só trabalha enquanto o carrossel está engatado (pin ativo). Fora
-          // dele as faixas estão paradas na borda (startX, fora da tela) — não
-          // há motivo pra rodar o cálculo/set todo frame. Corta o custo do
-          // ticker pra ~zero quando a seção não está em tela.
+        const onTick = (time, deltaTime) => {
           const st = carouselTl && carouselTl.scrollTrigger;
           if (!st || !st.isActive) return;
+          const dt = Math.min(deltaTime, 100) / 1000;
           // Ignore the landing and exit runways: strips only move with cards.
           const motionTime = Math.max(0, carouselTl.time() - settleDist);
           const p = scrollDist > 0 ? Math.min(1, motionTime / scrollDist) : 1;
-          strips.forEach((s) => s.update(p));
+          strips.forEach((s) => s.update(p, dt));
 
           // Começa a entrar antes do meio (26%), fica legível durante o
           // cruzeiro e termina de sair ainda com carrossel em cena (82%).
@@ -573,10 +559,7 @@ function LandingPages({ onGeometryReady }) {
           }
         };
         gsap.ticker.add(onTick);
-        stripMarquees = [
-          ...strips,
-          { destroy: () => gsap.ticker.remove(onTick) },
-        ];
+        stripMarquees = [{ destroy: () => gsap.ticker.remove(onTick) }];
       }
 
       carouselTl = gsap.timeline({
@@ -844,21 +827,17 @@ function LandingPages({ onGeometryReady }) {
         {/* Faixas satélites (só mobile): entram das bordas na altura do 2º
             card e saem na metade do penúltimo (coreografia no build()) */}
         <div className="lp__strip lp__strip--top" aria-hidden="true" ref={stripTopRef}>
-          <div className="lp__strip-carriage" ref={stripTopTrackRef}>
-            <div className="lp__strip-track">
-              {[...STRIP_TOP, ...STRIP_TOP].map((item, i) => (
-                <StripCard key={i} item={item} />
-              ))}
-            </div>
+          <div className="lp__strip-track" ref={stripTopTrackRef}>
+            {[...STRIP_TOP, ...STRIP_TOP].map((item, i) => (
+              <StripCard key={i} item={item} />
+            ))}
           </div>
         </div>
         <div className="lp__strip lp__strip--bottom" aria-hidden="true" ref={stripBottomRef}>
-          <div className="lp__strip-carriage" ref={stripBottomTrackRef}>
-            <div className="lp__strip-track">
-              {[...STRIP_BOTTOM, ...STRIP_BOTTOM].map((item, i) => (
-                <StripCard key={i} item={item} />
-              ))}
-            </div>
+          <div className="lp__strip-track" ref={stripBottomTrackRef}>
+            {[...STRIP_BOTTOM, ...STRIP_BOTTOM].map((item, i) => (
+              <StripCard key={i} item={item} />
+            ))}
           </div>
         </div>
 

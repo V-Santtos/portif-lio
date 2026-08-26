@@ -16,6 +16,7 @@ import minasLogo from "./preview-assets/minas-logo.png";
 
 import isabelyHero from "./preview-assets/isabely-hero.webp";
 import isabelyMonogram from "./preview-assets/isabely-monogram.svg";
+import atoksHero from "./preview-assets/atoks-hero.png";
 
 const PREVIEW_CANVAS = {
   width: 1280,
@@ -84,6 +85,29 @@ function EcoPreview() {
         loading="eager"
         draggable="false"
       />
+    </PreviewShell>
+  );
+}
+
+function AtoksPreview() {
+  return (
+    <PreviewShell className="lp-preview--atoks" label="Hero preview do site Atoks">
+      <img
+        className="atoks-static-thumbnail"
+        src={atoksHero}
+        alt=""
+        width="1280"
+        height="720"
+        loading="lazy"
+        draggable="false"
+      />
+      <span className="atoks-static-cta" aria-hidden="true">
+        Comece hoje
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <line x1="7" y1="17" x2="17" y2="7" />
+          <polyline points="7 7 17 7 17 17" />
+        </svg>
+      </span>
     </PreviewShell>
   );
 }
@@ -370,6 +394,7 @@ function IsabelyPreview() {
 
 const PREVIEWS = {
   eco: EcoPreview,
+  atoks: AtoksPreview,
   nexous: NexousPreview,
   roofora: RooforaPreview,
   minta: MintaPreview,

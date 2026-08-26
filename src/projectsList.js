@@ -10,7 +10,7 @@ export const PROJECTS = [
   { id: "minas-tintas", name: "Minas Tintas", img: "/minas-tintas.png",        href: "/projetos/minas-tintas" },
   // { id: "barbearia",    name: "Barbearia",    video: "/videos/barbearia.mp4",  href: "/projetos/barbearia"    },
   { id: "hawk-street",  name: "Hawk Street",  video: "/hawk-street.mp4",       href: "/projetos/hawk-street"  },
-  { id: "flux-time",    name: "Flux Time",    video: "/videos/flux.mp4",       href: "/projetos/flux-time"    },
+  { id: "flux-time",    name: "Flux Time",    img: "/flux-time.png",           href: "/projetos/flux-time"    },
   { id: "art-piso",     name: "Art Piso",     img: "/art-piso.png",            href: "/projetos/art-piso"     },
 ];
 

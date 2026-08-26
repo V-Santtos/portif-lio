@@ -116,11 +116,57 @@
   font-family: "Geist Eco Preview", Inter, system-ui, sans-serif;
 }
 
-.lp-preview .eco-static-thumbnail {
+.lp-preview .eco-static-thumbnail,
+.lp-preview .atoks-static-thumbnail {
   width: 100%;
   height: 100%;
   object-fit: cover;
   user-select: none;
+}
+
+/* O arquivo do Atoks é uma captura do preview validado; os últimos 16 px
+   pertencem à scrollbar do navegador da captura, não à composição do case.
+   Recortamos só essa faixa dentro do canvas, preservando a escala e o
+   enquadramento usados pelos demais cards estáticos. */
+.lp-preview .atoks-static-thumbnail {
+  clip-path: inset(0 16px 0 0);
+}
+
+.lp-preview--atoks {
+  background: #fff;
+}
+
+/* CTA presente no hero original. Ele fica fora da captura estática para que
+   a miniatura continue nítida e mantenha o mesmo canvas de 1280 × 720. */
+.lp-preview .atoks-static-cta {
+  position: absolute;
+  z-index: 1;
+  top: 448px;
+  left: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  min-width: 185.86px;
+  height: 56px;
+  padding: 0 28px;
+  border-radius: 107px;
+  box-sizing: border-box;
+  transform: translateX(-50%);
+  background: linear-gradient(90deg, #663cf6 19.7115%, #ff8da4 59.6154%, #ff9b5d 83.1731%, #ffe999 100%);
+  color: #fff;
+  font: 500 16px/24px Inter, Arial, sans-serif;
+  white-space: nowrap;
+}
+
+.lp-preview .atoks-static-cta svg {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 18px;
+  stroke: #fff;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
 .lp-preview .hero-preview,
@@ -1654,18 +1700,14 @@
 
 @media (max-width: 760px) {
   .lp-preview .hero-preview__links,
-  .lp-preview .nexous-hero__nav-group:first-child,
   .lp-preview .roofora-hero__links,
-  .lp-preview .dinevo-nav__links,
-  .lp-preview .minta-nav__links {
+  .lp-preview .dinevo-nav__links {
     display: none;
   }
 
   .lp-preview .hero-preview__nav,
-  .lp-preview .nexous-hero__nav,
   .lp-preview .roofora-hero__nav-inner,
-  .lp-preview .dinevo-nav,
-  .lp-preview .minta-nav {
+  .lp-preview .dinevo-nav {
     grid-template-columns: 1fr auto;
   }
 

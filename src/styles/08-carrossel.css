@@ -426,37 +426,15 @@
   .lp__strip--top { top: calc(50% - 74.25vw - 1.25rem); }
   .lp__strip--bottom { top: calc(50% + 24.75vw + 1.25rem); }
 
-  .lp__strip-carriage,
-  .lp__strip-track {
-    width: max-content;
-    will-change: transform;
-  }
   .lp__strip-track {
     display: flex;
     gap: 1.25rem;
-    animation-duration: var(--lp-strip-duration, 20s);
-    animation-timing-function: linear;
-    animation-iteration-count: infinite;
-    animation-play-state: paused;
-    backface-visibility: hidden;
-    transform: translateZ(0);
-  }
-  .lp__strip--top .lp__strip-track { animation-name: lp-strip-loop-left; }
-  .lp__strip--bottom .lp__strip-track { animation-name: lp-strip-loop-right; }
-  .lp__strip-track.is-cruising { animation-play-state: running; }
-
-  @keyframes lp-strip-loop-left {
-    from { transform: translate3d(0, 0, 0); }
-    to { transform: translate3d(var(--lp-strip-period-neg, -1000px), 0, 0); }
-  }
-
-  @keyframes lp-strip-loop-right {
-    from { transform: translate3d(0, 0, 0); }
-    to { transform: translate3d(var(--lp-strip-period, 1000px), 0, 0); }
+    width: max-content;
+    will-change: transform;
   }
   /* estado inicial (antes do JS): trens fora da tela, janela vazia */
-  .lp__strip--top .lp__strip-carriage { transform: translateX(120vw); }
-  .lp__strip--bottom .lp__strip-carriage { transform: translateX(-800vw); }
+  .lp__strip--top .lp__strip-track { transform: translateX(120vw); }
+  .lp__strip--bottom .lp__strip-track { transform: translateX(-800vw); }
 
   .lp__strip-card {
     flex: 0 0 auto;
@@ -530,9 +508,9 @@
     align-items: baseline;
     justify-content: center;
     gap: 0.18em;
-    font-family: var(--font-body);
+    font-family: var(--font-display);
     font-size: clamp(10px, 2.8vw, 11px);
-    font-weight: 500;
+    font-weight: 400;
     line-height: 1;
     letter-spacing: 0.015em;
     will-change: transform;
