@@ -118,7 +118,8 @@
 
 .lp-preview .eco-static-thumbnail,
 .lp-preview .atoks-static-thumbnail,
-.lp-preview .cleanhub-static-thumbnail {
+.lp-preview .cleanhub-static-thumbnail,
+.lp-preview .pawsy-static-thumbnail {
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -127,6 +128,10 @@
 
 .lp-preview--cleanhub {
   background: #161513;
+}
+
+.lp-preview--pawsy {
+  background: #afbcf0;
 }
 
 /* O arquivo do Atoks é uma captura do preview validado; os últimos 16 px

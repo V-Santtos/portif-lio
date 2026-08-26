@@ -491,6 +491,19 @@
   font-size: 1.15rem;
   max-width: 46ch;
 }
+.case-split--text-left .case-split__text,
+.case-split--text-left .case-split__body {
+  text-align: left;
+}
+.case-split--text-left .case-split__body {
+  margin-left: 0;
+  margin-right: 0;
+}
+@media (min-width: 861px) {
+  .case-split--gap-wide .case-split__grid {
+    gap: clamp(6rem, 10vw, 9rem);
+  }
+}
 
 /* Espelhado: mídia à direita, texto à esquerda — alterna o ritmo quando há
    dois splits seguidos. A grade ancora no fim para a foto encostar na margem

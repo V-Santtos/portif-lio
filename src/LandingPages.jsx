@@ -76,7 +76,7 @@ const STRIP_TOP = [
   { preview: "minta", tag: "Fintech", title: "Minta" },
 ];
 const STRIP_BOTTOM = [
-  { theme: "light", tag: "Em breve", title: "Novo case" },
+  { preview: "pawsy", tag: "Cuidado pet", title: "Pawsy" },
   { preview: "isabely", tag: "Harmonização orofacial", title: "Isabely Miranda" },
   { preview: "cleanhub", tag: "Limpeza residencial", title: "CleanHub" },
 ];

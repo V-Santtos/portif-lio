@@ -426,7 +426,7 @@ function Case() {
                     <span className="case-shot__caption-label">{block.label}</span>
                   )}
                   {block.label && block.caption && (
-                    <span className="case-shot__caption-sep"> — </span>
+                    <span className="case-shot__caption-sep">{block.captionSeparator ?? " — "}</span>
                   )}
                   {block.caption && (
                     <span className="case-shot__caption-text">{block.caption}</span>
@@ -542,7 +542,7 @@ function Case() {
               const textAttr = block.entrance ? { "data-entrance": "text" } : { "data-reveal": true };
               return (
                 <section
-                  className={`section case-split${block.variant === "photo" ? " case-split--photo" : ""}${block.mediaSize ? ` case-split--media-${block.mediaSize}` : ""}${block.reverse ? " case-split--reverse" : ""}`}
+                  className={`section case-split${block.variant === "photo" ? " case-split--photo" : ""}${block.mediaSize ? ` case-split--media-${block.mediaSize}` : ""}${block.reverse ? " case-split--reverse" : ""}${block.textAlign ? ` case-split--text-${block.textAlign}` : ""}${block.contentGap ? ` case-split--gap-${block.contentGap}` : ""}`}
                   key={i}
                 >
                   <div className="container-x">

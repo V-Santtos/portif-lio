@@ -18,6 +18,7 @@ import isabelyHero from "./preview-assets/isabely-hero.webp";
 import isabelyMonogram from "./preview-assets/isabely-monogram.svg";
 import atoksHero from "./preview-assets/atoks-hero.png";
 import cleanhubHero from "./preview-assets/cleanhub-hero.webp";
+import pawsyHero from "./preview-assets/pawsy-hero.webp";
 
 const PREVIEW_CANVAS = {
   width: 1280,
@@ -409,6 +410,22 @@ function CleanHubPreview() {
   );
 }
 
+function PawsyPreview() {
+  return (
+    <PreviewShell className="lp-preview--pawsy" label="Hero preview do site Pawsy">
+      <img
+        className="pawsy-static-thumbnail"
+        src={pawsyHero}
+        alt=""
+        width="1920"
+        height="1080"
+        loading="lazy"
+        draggable="false"
+      />
+    </PreviewShell>
+  );
+}
+
 const PREVIEWS = {
   eco: EcoPreview,
   atoks: AtoksPreview,
@@ -418,6 +435,7 @@ const PREVIEWS = {
   minas: MinasPreview,
   isabely: IsabelyPreview,
   cleanhub: CleanHubPreview,
+  pawsy: PawsyPreview,
 };
 
 function LandingPreview({ variant }) {

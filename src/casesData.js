@@ -99,9 +99,9 @@ export const CASES = {
     tags: ["APP", "FOCO", "2026"],
     title: "FLUX TIME",
     desc: "Aplicativo de foco e produtividade construído para concentração profunda. Um timer Pomodoro com display flip-clock, modo imersivo que apaga toda a interface e sons ambientes para o usuário entrar no fluxo.",
-    challenge: "Apps de produtividade costumam ser poluídos e cheios de distração — o oposto do que prometem. Eu precisava de uma ferramenta de foco bonita, calma e que saísse da frente na hora de concentrar. Como não encontrei, construí a minha.",
-    solution: "Um timer Pomodoro configurável com display flip-clock e um modo foco imersivo que esconde tudo — controles, navbar e até o cursor — como um player de vídeo. Complementado por cronômetro, tarefas com alarmes, trilhas e frequências sonoras e temas claro/escuro, num PWA instalável.",
-    results: "Uma experiência de foco fluida e instalável, que leva à concentração com poucos cliques: interface limpa no uso e rica nos detalhes — animações suaves, som e tema sob medida. Hoje é a ferramenta que eu mesmo uso todos os dias — e está disponível para quem quiser.",
+    challenge: "Os aplicativos de produtividade costumam colocar muita coisa na mesma tela. Quando listas, controles e informações aparecem todos juntos, fica difícil até entender por onde começar. Criei o Flux Time para mudar essa lógica e deixar o usuário concentrado na tarefa que escolheu fazer.",
+    solution: "No Flux Time, você define o tempo que tem e a tarefa que quer fazer. Na hora de configurar a sessão, também pode escolher uma trilha para acompanhar aquele momento e ajudar na concentração. Os ciclos de foco e pausa organizam a sessão, enquanto as tarefas e anotações ficam ali para você retomar depois. Com tudo no mesmo lugar, o dia continua organizado sem precisar alternar entre várias ferramentas.",
+    results: "Trabalho, estudo e tarefas do dia ficam mais simples de conduzir quando a tela mostra apenas o que precisa estar ali. O Flux Time foi pensado para tirar o excesso do caminho e deixar sua atenção naquilo que você decidiu fazer. Com menos coisa disputando espaço, fica mais fácil manter o ritmo.",
     blocks: [
       {
         type: "shot",
@@ -112,7 +112,8 @@ export const CASES = {
         ambientGlow: "red",
         captionTop: true,
         label: "Tela principal",
-        caption: "Da abertura ao modo foco: um clique, uma contagem e o resto sai de cena.",
+        captionSeparator: " ",
+        caption: "Em poucos cliques, você define seu fluxo e começa a tarefa no seu ritmo.",
       },
       {
         type: "split",
@@ -123,8 +124,10 @@ export const CASES = {
         mediaSize: "wide",
         rounded: true,
         entrance: true,
+        textAlign: "left",
+        contentGap: "wide",
         title: "Você define o ritmo.",
-        body: "Escolha quantos ciclos quer fazer, quanto cada foco dura e quando a pausa entra. A sessão se adapta ao tempo que você tem para estudar ou trabalhar.",
+        body: "Você escolhe quantos ciclos quer fazer e ajusta o tempo de foco e de pausa conforme a tarefa. A sessão acompanha o tempo que você tem, seja para estudar ou organizar o restante do dia.",
       },
       {
         type: "split",
