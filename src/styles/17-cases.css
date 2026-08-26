@@ -150,10 +150,43 @@
 .case-shot__figure {
   margin: 0;
 }
-.case-shot__img {
+.case-shot__figure--glow-red {
+  position: relative;
+  isolation: isolate;
+}
+.case-shot__figure--glow-red::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  inset: auto -8% -14%;
+  height: 42%;
+  border-radius: 50%;
+  pointer-events: none;
+  background: radial-gradient(ellipse 74% 100% at 50% 92%, rgba(244, 91, 85, 0.94) 0%, rgba(244, 91, 85, 0.68) 40%, rgba(244, 91, 85, 0.24) 67%, rgba(244, 91, 85, 0) 100%);
+  filter: blur(30px);
+  opacity: 0.9;
+  transform: scaleX(0.96) scaleY(0.82);
+  animation: flux-time-capsule-halo 9s ease-in-out infinite alternate;
+}
+.case-shot__figure--glow-red > * {
+  position: relative;
+  z-index: 1;
+}
+@keyframes flux-time-capsule-halo {
+  to {
+    opacity: 1;
+    transform: scaleX(1.03) scaleY(1);
+  }
+}
+.case-shot__img,
+.case-shot__video {
   display: block;
   width: 100%;
   height: auto;
+}
+.case-shot__video {
+  background: #090909;
+  object-fit: cover;
 }
 /* Print retangular sem mockup (ex.: Art Piso). Só com `framed: true` no bloco:
    o shot do Minas é um PNG recortado e ganharia uma caixa em volta.
@@ -169,7 +202,8 @@
    solta no creme vazio; contido dentro da imagem, ficava 100% escondido
    atrás dela (z-index:-1) e não aparecia nada. Nas duas versões o resultado
    era pior que só a box-shadow abaixo. */
-.case-shot__img--framed {
+.case-shot__img--framed,
+.case-shot__video--framed {
   border-radius: clamp(14px, 1.6vw, 22px);
   /* Escada de 5 camadas: quanto mais longe da borda, mais difusa e mais fraca.
      É o que separa sombra crível de borrão único.
@@ -433,6 +467,15 @@
     0 26px 40px -18px rgba(72, 56, 31, 0.18),
     0 50px 70px -40px rgba(72, 56, 31, 0.3);
 }
+/* Variações pontuais de tamanho: usadas quando a história pede um bloco
+   horizontal dominante antes de um retrato menor, sem mudar os demais cases. */
+.case-split--photo.case-split--media-wide .case-split__grid {
+  grid-template-columns: minmax(0, 800px) minmax(0, var(--split-text-col));
+  --split-text-col: 440px;
+}
+.case-split--photo.case-split--media-wide .case-split__img {
+  max-width: 800px;
+}
 .case-split--photo .case-split__text {
   justify-self: stretch;
   align-self: center;
@@ -462,10 +505,20 @@
 .case-split--photo.case-split--reverse .case-split__img {
   max-width: 800px;
 }
+/* O retrato espelhado volta ao tamanho compacto. Sem esta regra ele herdaria
+   os 800px do padrão reverso, feito para as fotos largas do Art Piso. */
+.case-split--photo.case-split--reverse.case-split--media-compact .case-split__grid {
+  grid-template-columns: minmax(0, var(--split-text-col)) minmax(0, 480px);
+}
+.case-split--photo.case-split--reverse.case-split--media-compact .case-split__img {
+  max-width: 480px;
+}
 
 @media (max-width: 860px) {
   .case-split--photo .case-split__grid,
-  .case-split--photo.case-split--reverse .case-split__grid {
+  .case-split--photo.case-split--reverse .case-split__grid,
+  .case-split--photo.case-split--media-wide .case-split__grid,
+  .case-split--photo.case-split--reverse.case-split--media-compact .case-split__grid {
     grid-template-columns: 1fr;
     justify-content: stretch;
   }

@@ -17,6 +17,7 @@ import minasLogo from "./preview-assets/minas-logo.png";
 import isabelyHero from "./preview-assets/isabely-hero.webp";
 import isabelyMonogram from "./preview-assets/isabely-monogram.svg";
 import atoksHero from "./preview-assets/atoks-hero.png";
+import cleanhubHero from "./preview-assets/cleanhub-hero.webp";
 
 const PREVIEW_CANVAS = {
   width: 1280,
@@ -392,6 +393,22 @@ function IsabelyPreview() {
   );
 }
 
+function CleanHubPreview() {
+  return (
+    <PreviewShell className="lp-preview--cleanhub" label="Hero preview do site CleanHub">
+      <img
+        className="cleanhub-static-thumbnail"
+        src={cleanhubHero}
+        alt=""
+        width="1280"
+        height="720"
+        loading="lazy"
+        draggable="false"
+      />
+    </PreviewShell>
+  );
+}
+
 const PREVIEWS = {
   eco: EcoPreview,
   atoks: AtoksPreview,
@@ -400,6 +417,7 @@ const PREVIEWS = {
   minta: MintaPreview,
   minas: MinasPreview,
   isabely: IsabelyPreview,
+  cleanhub: CleanHubPreview,
 };
 
 function LandingPreview({ variant }) {

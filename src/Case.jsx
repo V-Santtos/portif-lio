@@ -440,15 +440,29 @@ function Case() {
                       {block.eyebrow && (
                         <p className="eyebrow case-shot__eyebrow" data-reveal>{block.eyebrow}</p>
                       )}
-                      <figure className={`case-shot__figure${block.framed ? " case-shot__figure--framed" : ""}`} data-reveal>
+                      <figure className={`case-shot__figure${block.framed ? " case-shot__figure--framed" : ""}${block.ambientGlow ? ` case-shot__figure--glow-${block.ambientGlow}` : ""}`} data-reveal>
                         {block.captionTop && caption}
-                        <img
-                          className={`case-shot__img${block.framed ? " case-shot__img--framed" : ""}`}
-                          src={block.image}
-                          alt={block.alt || ""}
-                          style={block.ratio ? { aspectRatio: block.ratio } : undefined}
-                          loading="lazy"
-                        />
+                        {block.video ? (
+                          <video
+                            className={`case-shot__video${block.framed ? " case-shot__video--framed" : ""}`}
+                            src={block.video}
+                            aria-label={block.alt || undefined}
+                            style={block.ratio ? { aspectRatio: block.ratio } : undefined}
+                            autoPlay
+                            loop
+                            muted
+                            playsInline
+                            preload="metadata"
+                          />
+                        ) : (
+                          <img
+                            className={`case-shot__img${block.framed ? " case-shot__img--framed" : ""}`}
+                            src={block.image}
+                            alt={block.alt || ""}
+                            style={block.ratio ? { aspectRatio: block.ratio } : undefined}
+                            loading="lazy"
+                          />
+                        )}
                         {!block.captionTop && caption}
                       </figure>
                     </div>
@@ -528,7 +542,7 @@ function Case() {
               const textAttr = block.entrance ? { "data-entrance": "text" } : { "data-reveal": true };
               return (
                 <section
-                  className={`section case-split${block.variant === "photo" ? " case-split--photo" : ""}${block.reverse ? " case-split--reverse" : ""}`}
+                  className={`section case-split${block.variant === "photo" ? " case-split--photo" : ""}${block.mediaSize ? ` case-split--media-${block.mediaSize}` : ""}${block.reverse ? " case-split--reverse" : ""}`}
                   key={i}
                 >
                   <div className="container-x">

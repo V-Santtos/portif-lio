@@ -78,7 +78,7 @@ const STRIP_TOP = [
 const STRIP_BOTTOM = [
   { theme: "light", tag: "Em breve", title: "Novo case" },
   { preview: "isabely", tag: "Harmonização orofacial", title: "Isabely Miranda" },
-  { theme: "dark", tag: "Em breve", title: "Novo case" },
+  { preview: "cleanhub", tag: "Limpeza residencial", title: "CleanHub" },
 ];
 
 function StripCard({ item }) {

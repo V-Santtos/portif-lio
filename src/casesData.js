@@ -103,6 +103,42 @@ export const CASES = {
     solution: "Um timer Pomodoro configurável com display flip-clock e um modo foco imersivo que esconde tudo — controles, navbar e até o cursor — como um player de vídeo. Complementado por cronômetro, tarefas com alarmes, trilhas e frequências sonoras e temas claro/escuro, num PWA instalável.",
     results: "Uma experiência de foco fluida e instalável, que leva à concentração com poucos cliques: interface limpa no uso e rica nos detalhes — animações suaves, som e tema sob medida. Hoje é a ferramenta que eu mesmo uso todos os dias — e está disponível para quem quiser.",
     blocks: [
+      {
+        type: "shot",
+        video: "/cases/flux-time/abertura.mp4",
+        alt: "Abertura do Flux Time até a entrada no modo foco",
+        ratio: "16 / 9",
+        framed: true,
+        ambientGlow: "red",
+        captionTop: true,
+        label: "Tela principal",
+        caption: "Da abertura ao modo foco: um clique, uma contagem e o resto sai de cena.",
+      },
+      {
+        type: "split",
+        image: "/cases/flux-time/configurar-ciclos.png",
+        alt: "Pessoa configurando os ciclos de foco do Flux Time em um tablet na escrivaninha",
+        ratio: "4 / 3",
+        variant: "photo",
+        mediaSize: "wide",
+        rounded: true,
+        entrance: true,
+        title: "Você define o ritmo.",
+        body: "Escolha quantos ciclos quer fazer, quanto cada foco dura e quando a pausa entra. A sessão se adapta ao tempo que você tem para estudar ou trabalhar.",
+      },
+      {
+        type: "split",
+        image: "/cases/flux-time/tarefas-na-rua.png",
+        alt: "Pessoa acompanhando as tarefas do Flux Time pelo celular na rua",
+        ratio: "848 / 1264",
+        variant: "photo",
+        mediaSize: "compact",
+        rounded: true,
+        entrance: true,
+        reverse: true,
+        title: "Seu dia, na palma da mão.",
+        body: "Na rua, no intervalo ou onde você estiver, o Flux Time mantém suas tarefas por perto. Acompanhe a semana, registre uma anotação e não deixe o que importa escapar.",
+      },
       // CTA único: aqui o fechamento é TESTAR o produto (case de produto próprio).
       // Sem bloco de contato — o "Contato" da nav cai no fallback /#contato.
       {
