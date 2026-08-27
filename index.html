@@ -12,42 +12,47 @@
 
   <!-- Meta padrão (fallback da HOME, e o que scrapers sem JS enxergam).
        As rotas internas sobrescrevem via react-helmet-async (src/Seo.jsx).
-       Domínio atual: deploy grátis da Vercel — trocar as URLs abaixo ao
-       migrar pro domínio próprio (junto de robots.txt / sitemap.xml / seo.js). -->
+       __SITE_URL__ é injetado no build pelo plugin em vite.config.js, a
+       partir de SITE_URL em src/seo.js — não hardcodar domínio aqui de novo. -->
   <!-- data-rh="true": marca essas tags como "gerenciadas pelo Helmet". Quando o
        JS roda, o react-helmet-async as REMOVE e injeta as da rota atual (sem
        duplicar). Sem JS (scraper de WhatsApp/etc.), elas ficam como fallback da
        HOME. O <title> o Helmet já substitui pelo texto; JSON-LD ele não toca. -->
-  <title>Victor Cardoso — Páginas que convertem. Sistemas que escalam.</title>
+  <title>Victor Cardoso — Sites que convertem. Sistemas que escalam</title>
   <meta name="description" data-rh="true" content="Páginas de captura e automações para negócios que querem crescer. Sites e sistemas sob medida, feitos para converter." />
-  <link rel="canonical" data-rh="true" href="https://portif-lio-three-kohl.vercel.app/" />
+  <link rel="canonical" data-rh="true" href="__SITE_URL__/" />
 
   <!-- OpenGraph / Twitter (preview ao compartilhar o link) -->
   <meta property="og:type" data-rh="true" content="website" />
   <meta property="og:site_name" data-rh="true" content="Victor Cardoso" />
-  <meta property="og:title" data-rh="true" content="Victor Cardoso — Páginas que convertem. Sistemas que escalam." />
+  <meta property="og:title" data-rh="true" content="Victor Cardoso — Sites que convertem. Sistemas que escalam" />
   <meta property="og:description" data-rh="true" content="Páginas de captura e automações para negócios que querem crescer. Sites e sistemas sob medida, feitos para converter." />
-  <meta property="og:url" data-rh="true" content="https://portif-lio-three-kohl.vercel.app/" />
-  <meta property="og:image" data-rh="true" content="https://portif-lio-three-kohl.vercel.app/og-image.png" />
+  <meta property="og:url" data-rh="true" content="__SITE_URL__/" />
+  <meta property="og:image" data-rh="true" content="__SITE_URL__/og-image.png" />
   <meta property="og:image:width" data-rh="true" content="1200" />
   <meta property="og:image:height" data-rh="true" content="630" />
   <meta property="og:locale" data-rh="true" content="pt_BR" />
   <meta name="twitter:card" data-rh="true" content="summary_large_image" />
-  <meta name="twitter:title" data-rh="true" content="Victor Cardoso — Páginas que convertem. Sistemas que escalam." />
+  <meta name="twitter:title" data-rh="true" content="Victor Cardoso — Sites que convertem. Sistemas que escalam" />
   <meta name="twitter:description" data-rh="true" content="Páginas de captura e automações para negócios que querem crescer." />
-  <meta name="twitter:image" data-rh="true" content="https://portif-lio-three-kohl.vercel.app/og-image.png" />
+  <meta name="twitter:image" data-rh="true" content="__SITE_URL__/og-image.png" />
 
-  <!-- Dados estruturados (schema.org Person) -->
+  <!-- Dados estruturados (schema.org Person). @id fixo: os schemas injetados
+       por rota (src/seo.js, via react-helmet-async em src/Seo.jsx) referenciam
+       esse nó por @id em vez de reemitir Person — evita duplicar quando o
+       React monta. Não remover o @id nem mudar o sufixo "#person" sem
+       atualizar PERSON_ID em src/seo.js junto. -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
     "@type": "Person",
+    "@id": "__SITE_URL__/#person",
     "name": "Victor Cardoso",
-    "url": "https://portif-lio-three-kohl.vercel.app",
-    "image": "https://portif-lio-three-kohl.vercel.app/og-image.png",
+    "url": "__SITE_URL__",
+    "image": "__SITE_URL__/og-image.png",
     "jobTitle": "Designer & Desenvolvedor",
     "description": "Criação de páginas de captura, sites e automações sob medida para negócios.",
-    "sameAs": ["https://www.instagram.com/victorr.carrdoso/"],
+    "sameAs": ["https://www.instagram.com/victorcard.s/"],
     "contactPoint": {
       "@type": "ContactPoint",
       "telephone": "+5533984246770",

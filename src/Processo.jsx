@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 import Contact from "./Contact.jsx";
 import Seo from "./Seo.jsx";
-import { currentScrollY, fadeJump, gsap, prefersReducedMotion, scrollPageTo, ScrollTrigger, useIsoLayoutEffect } from "./lib.jsx";
+import { currentScrollY, gsap, prefersReducedMotion, scrollPageTo, ScrollTrigger, useIsoLayoutEffect } from "./lib.jsx";
 import { usePageTransition } from "./PageTransition.jsx";
 import { getStaticSeo } from "./seo.js";
 import processHeroPortrait from "../asset/process-hero-portrait.webp";
@@ -585,11 +585,14 @@ function Processo() {
     };
   }, []);
 
+  // "Contato" do nav: /meu-processo já renderiza <Contact/> no fim da própria
+  // página (linha ~728) — é scroll na mesma rota, sem navegar. O bug original
+  // usava scrollIntoView(), que quebra sob o ScrollSmoother (rola o wrapper
+  // por dentro, não o conteúdo suavizado — ver aviso em Navbar.jsx). Trocado
+  // por scrollPageTo(), que passa pelo smoother corretamente.
   const goToContact = () => {
-    fadeJump(() => {
-      document.getElementById("contato")?.scrollIntoView();
-      window.dispatchEvent(new CustomEvent("contact:highlight"));
-    });
+    scrollPageTo("#contato");
+    window.dispatchEvent(new CustomEvent("contact:highlight"));
   };
 
   return (

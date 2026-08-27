@@ -82,11 +82,11 @@ Roteamento em `main.jsx`. Componentes globais (fora das rotas): **Navbar/menu ov
 ## Home — Seções (`App.jsx`)
 
 ```txt
-PreHero → Hero → LandingPages → Bridge → Automation → [About: desligada] → Contact
+PreHero → Hero → LandingPages → Bridge → Automation → About → Contact
 ```
 
-- **Só o `.hero` pina globalmente.** O carrossel (`LandingPages`) tem pin interno próprio; Bridge, Automation e Contact rolam livres.
-- **`About` está construída mas desligada** (`SHOW_ABOUT_SECTION = false` em `App.jsx`) — fora da estrutura ativa, em stand-by até ter foto/asset definitivo. Credibilidade do Victor hoje vive no Contato/rodapé.
+- **Só o `.hero` pina globalmente.** O carrossel (`LandingPages`) tem pin interno próprio; Bridge, Automation, About e Contact rolam livres.
+- **`About` está ativa** (`SHOW_ABOUT_SECTION = true` em `App.jsx`), com foto real (`asset/about-card.jpg`). Reforça a credibilidade que também vive no Contato/rodapé.
 
 ### PreHero (intro)
 Tela escura `100vh`, frase curta, desliza pra cima revelando o Hero. **Abertura (loader + slide-up) é one-shot por aba** — ao voltar de outras rotas, entrega o Hero direto.
@@ -172,13 +172,12 @@ Destino dos botões **COMEÇAR**. Título `VAMOS / CONVERSAR.` + formulário (No
 | E-mail | `sanntos.creator@gmail.com` |
 | Logo | `LOGO.svg` (raiz / `public/`) |
 | Links sociais | a confirmar (LinkedIn/Instagram em placeholder) |
-| Foto pessoal | a confirmar |
+| Foto pessoal | ✅ `asset/about-card.jpg` (seção About) |
 
 ---
 
 ## Itens Ainda Pendentes
 
-- [ ] **Foto/asset do Victor** — destrava o `AboutCard` (reativar `SHOW_ABOUT_SECTION`) e o avatar do botão "Começar".
 - [ ] **Links sociais reais** (LinkedIn, Instagram) — hoje `href="#"`.
 - [ ] **Andar de baixo** dos cases **Flux Time** e **Barbearia** — falta capturar as imagens. (Minas Tintas, Hawk Street e Art Piso ✅.)
 
