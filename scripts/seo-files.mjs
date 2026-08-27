@@ -74,7 +74,7 @@ export function buildLlmsTxt(siteUrl, projects, cases, caseNames, faqs) {
       const data = cases[p.id];
       if (!data) return null;
       const name = caseNames[p.id] || p.name;
-      return `### ${name}\n${data.desc}\n\n**Desafio:** ${data.challenge}\n**Solução:** ${data.solution}\n**Resultado:** ${data.results}\n**Link:** ${siteUrl}/projetos/${p.id}`;
+      return `### ${name}\n${data.desc}\n\n**Desafio:** ${data.challenge}\n**Solução:** ${data.solution}\n**Resultado:** ${data.results}\n**Link:** [${name}](${siteUrl}/projetos/${p.id})`;
     })
     .filter(Boolean)
     .join("\n\n");
@@ -97,7 +97,7 @@ Pessoas físicas (CPF) e pequenos e médios negócios. Não atende grandes empre
 Ferramentas construídas pra resolver uma dor específica de um negócio: controle de estoque, agendamento, programa de fidelidade, atendimento automatizado. Cada sistema nasce de um problema real, não de um catálogo de features prontas.
 
 ### Sites e páginas
-Sites institucionais, e-commerce e landing pages de captura, desenhados pra converter. Cada projeto tem identidade visual própria — sem template genérico. A home do site (${siteUrl}/) também mostra demos interativas de landing pages feitas sob medida, além dos cases completos abaixo.
+Sites institucionais, e-commerce e landing pages de captura, desenhados pra converter. Cada projeto tem identidade visual própria — sem template genérico. [A home do site](${siteUrl}/) também mostra demos interativas de landing pages feitas sob medida, além dos cases completos abaixo.
 
 ## Cases
 
@@ -113,14 +113,14 @@ Não existe tabela de preço fixa — cada projeto tem escopo diferente. O valor
 
 ## Como contratar
 
-Formulário: ${siteUrl}/comecar
-WhatsApp: +55 33 98424-6770 (https://wa.me/5533984246770)
+Formulário: [${siteUrl}/comecar](${siteUrl}/comecar)
+WhatsApp: [+55 33 98424-6770](https://wa.me/5533984246770)
 
 ## Links
 
-- Site: ${siteUrl}/
-- Projetos: ${siteUrl}/projetos
-- Processo de trabalho: ${siteUrl}/meu-processo
-- Instagram: https://www.instagram.com/victorcard.s/
+- [Site](${siteUrl}/)
+- [Projetos](${siteUrl}/projetos)
+- [Processo de trabalho](${siteUrl}/meu-processo)
+- [Instagram](https://www.instagram.com/victorcard.s/)
 `;
 }
