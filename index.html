@@ -5,13 +5,22 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <link rel="icon" type="image/svg+xml" href="/LOGO.svg" />
 
-  <!-- Google Analytics 4 -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-PWDF45HT27"></script>
+  <!-- Google Analytics 4 — script real (172KB) só carrega depois do "load"
+       (medido 2026-08-26: sozinho pesava quase tanto quanto o bundle do app
+       inteiro e derrubou o Performance mobile de 93 pra 74). gtag() já
+       funciona antes disso: as chamadas ficam na fila do dataLayer e são
+       processadas assim que a lib real chega — não perde nenhum evento. -->
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
     gtag('config', 'G-PWDF45HT27');
+    window.addEventListener('load', function () {
+      var s = document.createElement('script');
+      s.async = true;
+      s.src = 'https://www.googletagmanager.com/gtag/js?id=G-PWDF45HT27';
+      document.head.appendChild(s);
+    });
   </script>
 
   <!-- SEM meta theme-color (experimento 2026-07-08): sem a dica, o Safari iOS
