@@ -275,7 +275,7 @@ function About() {
           </p>
           <p className="about__body" data-reveal>
             Para mim, a melhor parte de criar é quando aquilo deixa de ser
-            apenas um projeto e passa a resolver algo de verdade e a fazer
+            apenas um projeto, passa a resolver um problema real e se torna
             parte do dia a dia de alguém.
           </p>
         </div>
