@@ -31,7 +31,10 @@ const LP_ITEMS = [
   },
   {
     preview: "china",
-    capsuleSrc: "/previews/china/index.html",
+    // Troca de apresentação temporária. A cápsula original do China continua
+    // preservada em /previews/china; restaurar é apontar novamente para ela.
+    poster: "positivus",
+    capsuleSrc: "/previews/positivus/index.html",
     tag: "Restaurante japonês",
     title: "China",
   },
@@ -110,9 +113,20 @@ function StripCard({ item }) {
 }
 
 function PreviewCard({ item, loadAllowed }) {
+  const isStaticReplacement = Boolean(item.staticImage);
   return (
-    <article className={`lp__preview-card${item.capsuleSrc ? " lp__preview-card--interactive" : ""}`}>
-      {item.capsuleSrc ? (
+    <article className={`lp__preview-card${item.capsuleSrc && !isStaticReplacement ? " lp__preview-card--interactive" : ""}`}>
+      {isStaticReplacement ? (
+        <img
+          src={item.staticImage}
+          className="lp__thumb-img"
+          alt="Apresentação temporária OMAI"
+          style={{ objectFit: item.staticImageFit ?? "cover" }}
+          loading="lazy"
+          decoding="async"
+          draggable="false"
+        />
+      ) : item.capsuleSrc ? (
         <CasePreviewFrame
           src={item.capsuleSrc}
           posterSrc={`/previews/posters/${item.poster ?? item.preview}.webp`}
