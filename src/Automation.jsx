@@ -443,7 +443,7 @@ function Automation() {
                 <p className="auto__card-desc">{c.desc}</p>
                 {isLast && (
                   <a
-                    href="https://wa.me/5533984246770?text=Oi%20Victor!%20Quero%20automatizar%20algo%20no%20meu%20neg%C3%B3cio."
+                    href="https://wa.me/5533984246770"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="auto__cta-btn"
