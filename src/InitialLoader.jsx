@@ -7,6 +7,11 @@ export const INITIAL_LOADER_KEY = "victor-initial-loader-seen-v1";
 // deles.
 const MAX_WAIT_MS = 3600;
 
+// Última rede de segurança da abertura. O caminho normal termina bem antes;
+// este teto existe para nunca deixar a página presa em overflow:hidden se um
+// callback de fonte, storage ou timeline for interrompido pelo navegador.
+const MAX_LOADER_LIFETIME_MS = 10000;
+
 // Fade do overlay depois que os numerais saem. Precisa bater com a transition
 // do .initial-loader.is-exiting em 03-loader.css.
 const EXIT_MS = 520;
@@ -49,8 +54,30 @@ function waitForImage(src) {
 // media 1,6s no caminho critico e prendia a abertura por causa de algo que o
 // loader/PreHero nem usam. Aqui so as duas fontes que aparecem antes do reveal
 // (Bebas Neue no contador, Inter no PreHero).
-function waitForEssentialFonts() {
+function waitForFontStylesheet() {
+  const link = document.querySelector("#site-fonts");
+  if (!link || link.dataset.ready === "1") return Promise.resolve();
+
+  return new Promise((resolve) => {
+    let settled = false;
+    const done = () => {
+      if (settled) return;
+      settled = true;
+      link.removeEventListener("load", done);
+      link.removeEventListener("error", done);
+      // O primeiro load pertence ao preload. Dá duas pinturas para a troca de
+      // rel registrar os @font-face antes de consultar document.fonts.load().
+      waitForFrame(2).then(resolve);
+    };
+
+    link.addEventListener("load", done, { once: true });
+    link.addEventListener("error", done, { once: true });
+  });
+}
+
+async function waitForEssentialFonts() {
   if (!document.fonts?.load) return Promise.resolve();
+  await waitForFontStylesheet();
   return Promise.all([
     document.fonts.load('400 1em "Bebas Neue"'),
     document.fonts.load('400 1em "Inter"'),
@@ -83,6 +110,7 @@ function InitialLoader({ onDone }) {
 
     let cancelled = false;
     let exitTimer = 0;
+    let lifetimeTimer = 0;
     let tl = null;
 
     const previousOverflow = document.body.style.overflow;
@@ -91,7 +119,15 @@ function InitialLoader({ onDone }) {
     const finish = () => {
       if (cancelled || doneRef.current) return;
       doneRef.current = true;
-      window.sessionStorage.setItem(INITIAL_LOADER_KEY, "1");
+      window.clearTimeout(lifetimeTimer);
+      // Storage pode ser recusado no Safari (modo privado, política ou estado
+      // transitório). Isso só deve fazer a intro reaparecer no próximo acesso;
+      // jamais pode abortar a liberação desta página.
+      try {
+        window.sessionStorage.setItem(INITIAL_LOADER_KEY, "1");
+      } catch {
+        // Segue sem persistir a flag.
+      }
       setIsExiting(true);
       exitTimer = window.setTimeout(() => {
         document.body.style.overflow = previousOverflow;
@@ -100,10 +136,14 @@ function InitialLoader({ onDone }) {
     };
 
     // O unico "carregamento" real do loader. O resto e coreografia.
+    const essentialFonts = waitForEssentialFonts();
+    const fontGate = Promise.race([essentialFonts, delay(MAX_WAIT_MS)]);
     const gate = Promise.race([
-      Promise.all([waitForEssentialFonts(), waitForImage("/LOGO.svg"), waitForFrame(2)]),
+      Promise.all([essentialFonts, waitForImage("/LOGO.svg"), waitForFrame(2)]),
       delay(MAX_WAIT_MS),
     ]);
+
+    lifetimeTimer = window.setTimeout(finish, MAX_LOADER_LIFETIME_MS);
 
     if (prefersReducedMotion()) {
       gate.then(finish);
@@ -133,6 +173,7 @@ function InitialLoader({ onDone }) {
       // defaults no TIMELINE, nao em gsap.defaults(): a referencia usa o
       // global e vaza ease/duration pra todo tween da pagina depois disso.
       tl = gsap.timeline({
+        paused: true,
         defaults: { ease: "expo.inOut", duration: STOP_DUR },
         onComplete: finish,
       });
@@ -183,11 +224,19 @@ function InitialLoader({ onDone }) {
       tl.to(tracks, { yPercent: -100, duration: OUT_DUR, stagger: 0.08 })
         .to(percent, { yPercent: -100, duration: OUT_DUR }, "<+=0.24")
         .to(barTrack, { scaleY: 0, transformOrigin: "top", duration: OUT_DUR }, "<+=0.06");
+
+      // O contador só ganha a primeira pintura depois que a folha assíncrona
+      // registrou e carregou a Bebas. Antes, document.fonts.load() podia
+      // resolver sem existir @font-face e o número aparecia com sans-serif.
+      fontGate.then(() => {
+        if (!cancelled) tl.play();
+      });
     }
 
     return () => {
       cancelled = true;
       window.clearTimeout(exitTimer);
+      window.clearTimeout(lifetimeTimer);
       tl?.kill();
       document.body.style.overflow = previousOverflow;
     };

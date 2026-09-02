@@ -11,6 +11,11 @@ const CAPSULE_CANVAS = {
 // case, então nunca teve motivo pra pagar o carregamento dele.
 const STATIC_QUERY = "(max-width: 767px), (hover: none)";
 
+const normalizeWheelDelta = (event) => {
+  const multiplier = event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? 810 : 1;
+  return Math.max(-240, Math.min(240, event.deltaY * multiplier));
+};
+
 /**
  * Nesses dispositivos o card nunca foi interativo (ver STATIC_QUERY acima).
  * Carregar um documento completo — GSAP, fontes, imagens, e no caso da
@@ -118,6 +123,9 @@ function InteractiveCasePreview({ src, posterSrc, title, loadAllowed = true }) {
   }, [contentReady, frameReady]);
 
   useEffect(() => {
+    const root = rootRef.current;
+    if (!root) return undefined;
+
     let pendingWheelDelta = 0;
     let wheelFrame = 0;
 
@@ -154,6 +162,7 @@ function InteractiveCasePreview({ src, posterSrc, title, loadAllowed = true }) {
       }
 
       if (event.data?.type !== "case-preview:wheel") return;
+      if (!root.closest(".lp__carousel-viewport")?.classList.contains("is-interactive")) return;
 
       const deltaY = Number(event.data.deltaY);
       if (!Number.isFinite(deltaY) || deltaY === 0) return;
@@ -161,12 +170,25 @@ function InteractiveCasePreview({ src, posterSrc, title, loadAllowed = true }) {
       if (!wheelFrame) wheelFrame = requestAnimationFrame(flushWheel);
     };
 
+    const onPosterWheel = (event) => {
+      if (frameReady) return;
+      if (!root.closest(".lp__carousel-viewport")?.classList.contains("is-interactive")) return;
+
+      const deltaY = normalizeWheelDelta(event);
+      if (!Number.isFinite(deltaY) || deltaY === 0) return;
+      event.preventDefault();
+      pendingWheelDelta += deltaY;
+      if (!wheelFrame) wheelFrame = requestAnimationFrame(flushWheel);
+    };
+
     window.addEventListener("message", onMessage);
+    if (!frameReady) root.addEventListener("wheel", onPosterWheel, { passive: false });
     return () => {
       window.removeEventListener("message", onMessage);
+      root.removeEventListener("wheel", onPosterWheel);
       if (wheelFrame) cancelAnimationFrame(wheelFrame);
     };
-  }, []);
+  }, [frameReady]);
 
   const handleFrameLoad = () => {
     if (!shouldLoad) return;

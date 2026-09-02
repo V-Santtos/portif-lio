@@ -17,7 +17,11 @@ const HERO_CASCADE_SAFE_MS = 1900;
 
 function shouldShowInitialLoader() {
   if (typeof window === "undefined") return true;
-  return window.sessionStorage.getItem(INITIAL_LOADER_KEY) !== "1";
+  try {
+    return window.sessionStorage.getItem(INITIAL_LOADER_KEY) !== "1";
+  } catch {
+    return true;
+  }
 }
 
 function App() {
@@ -74,6 +78,22 @@ function App() {
     // carrossel fecha a altura real da página. Ao remover aqui, a scrollbar já
     // nasce no tamanho definitivo e a animação da nav ainda nem começou.
     document.documentElement.removeAttribute("data-booting");
+  }, [pageGeometryReady]);
+
+  useIsoLayoutEffect(() => {
+    if (pageGeometryReady) return undefined;
+
+    // A geometria costuma fechar no primeiro rAF. Se uma exceção rara durante
+    // o build do carrossel impedir o callback, não manter a página inteira sem
+    // scroll. O carrossel pode continuar denunciando o erro, mas a Home fica
+    // navegável e a pessoa não precisa descobrir que Ctrl+Shift+R “cura”.
+    const fallback = window.setTimeout(() => {
+      document.documentElement.removeAttribute("data-booting");
+      setPageGeometryReady(true);
+      ScrollTrigger.refresh();
+    }, 5000);
+
+    return () => window.clearTimeout(fallback);
   }, [pageGeometryReady]);
 
   useIsoLayoutEffect(() => {

@@ -90,10 +90,11 @@
        PageSpeed). Troca pro padrão loadCSS: preload vira stylesheet só
        quando termina de baixar; <noscript> cobre quem não roda JS. -->
   <link
+    id="site-fonts"
     rel="preload"
     as="style"
     href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Birthstone&family=Inter:wght@300;400;500;600;800;900&display=swap"
-    onload="this.onload=null;this.rel='stylesheet'"
+    onload="this.onload=null;this.rel='stylesheet';this.dataset.ready='1'"
   />
   <noscript>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Birthstone&family=Inter:wght@300;400;500;600;800;900&display=swap" />

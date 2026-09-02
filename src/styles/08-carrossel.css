@@ -374,7 +374,17 @@
 }
 
 .lp__preview-card--interactive {
+  pointer-events: none;
+}
+
+.lp__carousel-viewport.is-interactive .lp__preview-card--interactive {
   pointer-events: auto;
+}
+
+@media (max-width: 767px), (hover: none) {
+  .lp__carousel-viewport.is-interactive .lp__preview-card--interactive {
+    pointer-events: none;
+  }
 }
 
 /* ── Carrossel mobile — cards maiores, expansão com mais contraste ── */

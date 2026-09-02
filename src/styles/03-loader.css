@@ -16,7 +16,8 @@
   position: fixed;
   inset: 0;
   z-index: 140;
-  min-height: 100svh;
+  min-height: 100vh;
+  min-height: 100lvh;
   background: var(--color-dark);
   color: #fff;
   overflow: hidden;

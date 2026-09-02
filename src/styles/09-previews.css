@@ -72,12 +72,20 @@
 
 .case-preview-frame.is-ready .case-preview-frame__document {
   opacity: 1;
+}
+
+.lp__carousel-viewport.is-interactive
+  .case-preview-frame.is-ready
+  .case-preview-frame__document {
   pointer-events: auto;
 }
 
 @media (max-width: 767px), (hover: none) {
   .case-preview-frame,
-  .case-preview-frame__document {
+  .case-preview-frame__document,
+  .lp__carousel-viewport.is-interactive
+    .case-preview-frame.is-ready
+    .case-preview-frame__document {
     pointer-events: none;
   }
 }

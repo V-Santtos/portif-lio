@@ -254,6 +254,10 @@ function LandingPages({ onGeometryReady }) {
     // fundir os callbacks só acoplaria o que não precisa andar junto.
     let flipDamper = null;
 
+    const setCarouselInteractive = (active) => {
+      carouselViewport.classList.toggle("is-interactive", Boolean(active));
+    };
+
     const setSkipButton = (direction, visible) => {
       const button = carouselSkipRef.current;
       if (!button) return;
@@ -303,6 +307,7 @@ function LandingPages({ onGeometryReady }) {
       gsap.set(target, { clearProps: "all" });
       gsap.set(settleTarget, { clearProps: "transform,borderRadius" });
       gsap.set(carouselViewport, { opacity: 0, pointerEvents: "none" });
+      setCarouselInteractive(false);
 
       // Mobile: gesto de touch percorre muito mais pixels que a roda do mouse
       // — sem ajuste, um flick engole 3-4 cards de uma vez. Mais distância por
@@ -329,7 +334,11 @@ function LandingPages({ onGeometryReady }) {
                 start: "center center",
                 endTrigger: endWrapper,
                 end: "center center",
-                scrub: 0.45,
+                // O ScrollSmoother já entrega progresso visual amortecido no
+                // desktop. Um scrub numérico aqui criava um segundo atraso:
+                // numa rajada forte a página chegava ao pin enquanto a
+                // miniatura ainda estava pequena e acima do centro.
+                scrub: true,
                 invalidateOnRefresh: true,
               },
             }
@@ -613,15 +622,18 @@ function LandingPages({ onGeometryReady }) {
           anticipatePin: 1,
           invalidateOnRefresh: true,
           onEnter() {
+            setCarouselInteractive(false);
             gsap.set(target, { opacity: 1 });
             gsap.set(carouselViewport, { opacity: 0, pointerEvents: "none" });
             setSkipButton("right", false);
           },
           onLeave() {
+            setCarouselInteractive(false);
             // passou do último template descendo → some
             carouselSkipRef.current?.classList.remove("is-visible");
           },
           onLeaveBack() {
+            setCarouselInteractive(false);
             gsap.set(carouselViewport, { opacity: 0, pointerEvents: "none" });
             gsap.set(target, { opacity: 1 });
             // saiu pelo topo do carrossel → some
@@ -631,6 +643,7 @@ function LandingPages({ onGeometryReady }) {
             const time = carouselTl.time();
             const movingBack = self.direction === -1;
             const carouselIsVisible = time >= settleDist;
+            setCarouselInteractive(self.isActive && carouselIsVisible);
             const reachedLastCard = time >= settleDist + scrollDist - 8;
             setSkipButton(
               movingBack ? "left" : "right",
@@ -719,6 +732,7 @@ function LandingPages({ onGeometryReady }) {
       gsap.set(target, { clearProps: "all" });
       gsap.set(settleTarget, { clearProps: "transform,borderRadius" });
       gsap.set(carouselViewport, { clearProps: "opacity,visibility,pointerEvents" });
+      setCarouselInteractive(false);
       carouselSkipActionRef.current = null;
       carouselSkipRef.current?.classList.remove("is-visible", "is-left", "is-skipping");
     };

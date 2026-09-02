@@ -7,6 +7,8 @@
 import { useRef } from "react";
 import { gsap, prefersReducedMotion, useIsoLayoutEffect } from "./lib.jsx";
 
+const MAX_PREHERO_LIFETIME_MS = 6000;
+
 function PreHero({ active = true, onDone, onHidden }) {
   const rootRef = useRef(null);
   const phraseRef = useRef(null);
@@ -21,17 +23,31 @@ function PreHero({ active = true, onDone, onHidden }) {
 
     const spans = phrase.querySelectorAll(".word > span");
     const dot = phrase.querySelector(".pre-hero__dot");
+    const previousOverflow = document.body.style.overflow;
+    let finishCalled = false;
+    let hiddenCalled = false;
+    let fallbackTimer = 0;
 
     const finish = () => {
+      if (finishCalled) return;
+      finishCalled = true;
       // Permite scroll quando pré-hero terminar
-      document.body.style.overflow = "";
+      document.body.style.overflow = previousOverflow;
       if (onDone) onDone();
+    };
+
+    const hide = () => {
+      if (hiddenCalled) return;
+      hiddenCalled = true;
+      finish();
+      gsap.set(rootRef.current, { yPercent: -100 });
+      if (onHidden) onHidden();
     };
 
     if (reduce) {
       gsap.set(rootRef.current, { yPercent: -100 });
       finish();
-      if (onHidden) onHidden();
+      hide();
       return;
     }
 
@@ -63,10 +79,16 @@ function PreHero({ active = true, onDone, onHidden }) {
       duration: 1.0,
       ease: "power3.inOut",
       onStart: finish, // dispara a Hero ao COMEÇAR o slide-up → entradas em paralelo
-      onComplete: onHidden,
+      onComplete: hide,
     });
 
-    return () => tl.kill();
+    fallbackTimer = window.setTimeout(hide, MAX_PREHERO_LIFETIME_MS);
+
+    return () => {
+      window.clearTimeout(fallbackTimer);
+      tl.kill();
+      document.body.style.overflow = previousOverflow;
+    };
   }, [active, onDone, onHidden]);
 
   return (
