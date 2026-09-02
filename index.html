@@ -3,6 +3,11 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <!-- Override temporario da primeira abertura. Se a intro ja foi vista nesta
+       aba, o script sincronico abaixo remove esta tag antes da primeira
+       pintura. Ao terminar a intro, o React tambem a remove e devolve ao
+       Safari a amostragem natural das secoes. -->
+  <meta id="opening-theme-color" name="theme-color" content="#1b1a18" />
   <link rel="icon" type="image/svg+xml" href="/LOGO.svg" />
 
   <!-- Google Analytics 4 — script real (172KB) só carrega depois do "load"
@@ -22,12 +27,6 @@
       document.head.appendChild(s);
     });
   </script>
-
-  <!-- SEM meta theme-color (experimento 2026-07-08): sem a dica, o Safari iOS
-       amostra as bordas da página de forma independente — topo creme e base
-       laranja do degradê do Hero (mesmo comportamento do site de referência).
-       Se a loteria de amostragem incomodar, restaurar:
-       <meta name="theme-color" content="#FEF8E8" /> -->
 
   <!-- Meta padrão (fallback da HOME, e o que scrapers sem JS enxergam).
        As rotas internas sobrescrevem via react-helmet-async (src/Seo.jsx).
@@ -156,18 +155,22 @@
     }
   </style>
   <script>
-    // Roda ANTES da primeira pintura: se a intro one-shot ainda não foi vista
-    // nesta aba, o boot (e a dica de theme-color) nascem escuros, integrados ao
-    // loader. Nas cargas seguintes fica tudo creme. Decidir aqui é o único
-    // jeito confiável — o Safari iOS ignora trocas tardias de theme-color.
+    // Roda ANTES da primeira pintura. A meta nasce preta por seguranca; se a
+    // intro one-shot ja foi vista nesta aba, ela e removida imediatamente e o
+    // Safari volta a amostrar as cores da pagina por conta propria.
     (function () {
       try {
         if (sessionStorage.getItem("victor-initial-loader-seen-v1") !== "1") {
           document.documentElement.setAttribute("data-boot-dark", "");
-          var meta = document.querySelector('meta[name="theme-color"]');
-          if (meta) meta.setAttribute("content", "#1b1a18");
+        } else {
+          var meta = document.getElementById("opening-theme-color");
+          if (meta) meta.remove();
         }
-      } catch (e) { /* sessionStorage bloqueado → segue creme */ }
+      } catch (e) {
+        // O React tambem mostra a intro quando o storage e recusado. Manter o
+        // estado escuro aqui evita loader preto sobre um chrome claro.
+        document.documentElement.setAttribute("data-boot-dark", "");
+      }
     })();
   </script>
 </head>

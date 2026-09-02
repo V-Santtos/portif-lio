@@ -101,13 +101,11 @@ function App() {
 
     // O estado escuro do boot/status bar é decidido ANTES da primeira pintura
     // por um script inline no index.html (intro one-shot vai tocar → preto).
-    // Aqui só desfazemos quando a intro acaba: fundo volta ao creme e a meta
-    // recebe o valor final (o Safari pode aplicar só na próxima re-amostragem
-    // — aceito; nunca setar a meta pra escuro via JS, ela gruda).
+    // Quando a abertura termina, removemos o override em vez de impor bege ou
+    // laranja: dali em diante o Safari volta a amostrar a seção atual.
     if (!openingActive) {
       document.documentElement.removeAttribute("data-boot-dark");
-      const themeMeta = document.querySelector('meta[name="theme-color"]');
-      if (themeMeta) themeMeta.setAttribute("content", "#FEF8E8");
+      document.getElementById("opening-theme-color")?.remove();
     }
 
     return () => {
