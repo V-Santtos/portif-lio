@@ -143,3 +143,66 @@ body {
 
 .logo-strip span:nth-child(3) { font-style: italic; }
 .logo-strip span:nth-child(5) { font-size: 0.8em; letter-spacing: 0.08em; }
+
+/* ============================================================
+   Interação — mesma regra das outras cápsulas: hover e foco sim,
+   navegação não (Regras/09 item 4; o bloqueio de clique está no
+   capsule.js).
+
+   Nenhuma cor nova entra aqui. A cápsula já traz os dois tratamentos
+   de botão do sistema da Lumora (`--outline` claro e `--dark`
+   escuro); o hover só troca um pelo outro. Os links de navegação
+   ganham sublinhado, que é a affordance própria de link — não é
+   efeito inventado.
+   ============================================================ */
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.brand,
+.site-nav a,
+.button {
+  cursor: pointer;
+  transition: color 180ms ease, background-color 180ms ease,
+    text-decoration-color 180ms ease;
+}
+
+.site-nav a {
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-underline-offset: 4px;
+  text-decoration-thickness: 1.5px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .site-nav a:hover {
+    text-decoration-color: currentColor;
+  }
+
+  .button--outline:hover {
+    color: var(--paper);
+    background: var(--ink);
+  }
+
+  .button--dark:hover {
+    color: var(--ink);
+    background: var(--paper);
+  }
+}
+
+.brand:focus-visible,
+.site-nav a:focus-visible,
+.button:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .brand,
+  .site-nav a,
+  .button {
+    transition: none;
+  }
+}

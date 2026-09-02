@@ -1,6 +1,19 @@
 (() => {
   document.documentElement.dataset.capsuleReady = "true";
 
+  // Obrigatorio agora que a capsula tem <a> de verdade: hover e foco
+  // respondem, mas nada muda a URL, envia formulario ou abre janela
+  // (Regras/09 item 4).
+  const stopNavigation = (event) => {
+    const actionable = event.target.closest("a, button, form, [role='link']");
+    if (!actionable) return;
+    event.preventDefault();
+  };
+
+  document.addEventListener("click", stopNavigation, true);
+  document.addEventListener("submit", stopNavigation, true);
+  document.addEventListener("auxclick", stopNavigation, true);
+
   window.addEventListener(
     "wheel",
     (event) => {
