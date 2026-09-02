@@ -1,3 +1,56 @@
+/* ──────────────────────────────────────────────────────────────────
+   FONTES — self-hosted (2026-09-02)
+
+   Antes vinham do Google via <link> no index.html. O A1 da auditoria
+   (2026-08-18) tirou o bloqueio de renderizacao, mas os ARQUIVOS
+   continuavam em terceiro: fonts.googleapis.com pro CSS e depois
+   fonts.gstatic.com pro woff2 — dois DNS+TLS antes do primeiro glifo
+   real. No Ctrl+Shift+R isso aparecia como FOUT no titulo do hero,
+   porque o sessionStorage sobrevive ao hard reload (a intro e pulada,
+   App.jsx:21) mas o cache HTTP nao: o hero pintava em Arial, sem o
+   loader na frente pra cobrir a troca.
+
+   Local elimina as duas viagens e permite <link rel="preload"
+   as="font"> de verdade — impossivel com o Google, onde a URL do
+   woff2 mora dentro do CSS e e versionada.
+
+   Inter e a VARIAVEL (100-900) de proposito: a URL antiga pedia
+   wght@300;400;500;600;800;900, mas o CSS usa 650 e 700 tambem — esses
+   dois estavam sendo sintetizados pelo navegador. Um arquivo so cobre
+   toda a faixa e corrige isso.
+
+   Os nomes das familias NAO podem mudar: InitialLoader.jsx chama
+   document.fonts.load('400 1em "Bebas Neue"') e '400 1em "Inter"'.
+
+   font-display: swap continua — com o preload a fonte chega antes da
+   primeira pintura de texto, entao a troca praticamente nao acontece,
+   e swap garante que nada fique invisivel se ela atrasar.
+   ────────────────────────────────────────────────────────────────── */
+
+@font-face {
+  font-family: "Bebas Neue";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/bebas-neue-latin.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("/fonts/inter-var-latin.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Birthstone";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/birthstone-latin.woff2") format("woff2");
+}
+
 /* Tokens e variaveis do briefing — extraido do styles.css original, linhas 1-32.
    A ORDEM importa: este arquivo entra na posicao indicada pelo numero do nome.
    Nao reordenar regras nem separar os @media do bloco a que pertencem. */

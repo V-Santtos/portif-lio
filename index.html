@@ -81,23 +81,22 @@
   }
   </script>
 
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <!-- Preload não-bloqueante: a ordem antiga tinha um <link rel="stylesheet">
-       ANTES do preload da MESMA url — nessa ordem o preload não fazia nada,
-       o stylesheet já tinha bloqueado a renderização (medido: 1.490ms no
-       PageSpeed). Troca pro padrão loadCSS: preload vira stylesheet só
-       quando termina de baixar; <noscript> cobre quem não roda JS. -->
-  <link
-    id="site-fonts"
-    rel="preload"
-    as="style"
-    href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Birthstone&family=Inter:wght@300;400;500;600;800;900&display=swap"
-    onload="this.onload=null;this.rel='stylesheet';this.dataset.ready='1'"
-  />
-  <noscript>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Birthstone&family=Inter:wght@300;400;500;600;800;900&display=swap" />
-  </noscript>
+  <!-- Fontes self-hosted (2026-09-02). Antes: preconnect + CSS do Google
+       (padrao loadCSS). O A1 da auditoria tirou o bloqueio de renderizacao,
+       mas os arquivos seguiam em terceiro — googleapis pro CSS, gstatic pro
+       woff2, dois DNS+TLS antes do primeiro glifo. No Ctrl+Shift+R isso virava
+       FOUT visivel: sessionStorage sobrevive ao hard reload (intro pulada), o
+       cache HTTP nao, e o hero pintava em Arial sem o loader cobrindo.
+
+       Preload so nas duas que aparecem antes do reveal e que o
+       InitialLoader espera (Bebas no contador, Inter no PreHero). Birthstone
+       e decorativa e so aparece bem abaixo da dobra — entra pelo @font-face
+       normal, sem disputar banda com o caminho critico.
+
+       Os @font-face vivem em src/styles/01-tokens.css, junto dos tokens
+       --font-display / --font-body. -->
+  <link rel="preload" as="font" type="font/woff2" href="/fonts/bebas-neue-latin.woff2" crossorigin />
+  <link rel="preload" as="font" type="font/woff2" href="/fonts/inter-var-latin.woff2" crossorigin />
 
   <style>
     /* Boot em CREME (não escuro): o Safari iOS amostra os pixels da primeira
