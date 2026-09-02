@@ -125,6 +125,22 @@
       z-index: 99;
       pointer-events: none;
     }
+    /* color-scheme acompanha o boot escuro: com a tela preta, o documento
+       resolver como `dark` e o que casa com scrollbar, controles de formulario
+       e canvas padrao. Fica no <style> inline porque precisa valer ja na
+       primeira pintura, e pega carona no data-boot-dark — mesmo interruptor,
+       nenhuma peca nova.
+
+       🔴 O que ele NAO faz: nao governa a barra de baixo do Safari iOS.
+       Testado no aparelho em 2026-09-02 com uma sonda de 4 paginas. A barra
+       amostra o CONTEUDO ROLAVEL e ignora overlay position:fixed — com
+       theme-color e color-scheme ambos escuros e corretos, ela AINDA nascia
+       creme, porque o Hero (creme) estava embaixo do loader preto. Quem
+       resolve e a classe is-opening-dark (App.jsx + src/styles/06-hero.css).
+       Nao tentar consertar a barra mexendo aqui de novo: ja falhou duas
+       vezes. Regra e porque completo em Regras/05. */
+    html { color-scheme: light; }
+    html[data-boot-dark] { color-scheme: dark; }
     html[data-boot-dark], html[data-boot-dark] body { background: #1b1a18; }
     html[data-boot-dark] #__boot { background: #1b1a18; }
     html:not([data-booting]) #__boot { display: none; }

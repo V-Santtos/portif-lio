@@ -139,6 +139,24 @@
     );
   z-index: 0;
 }
+/* 🔴 Abertura: o Hero pinta ESCURO enquanto loader e PreHero estão no ar.
+   A barra de baixo do Safari iOS amostra o CONTEÚDO ROLÁVEL e ignora overlay
+   position:fixed. Loader e PreHero são fixed e pretos, mas quem está embaixo
+   deles é este Hero — .section pinta creme, o Safari lê o creme e a barra
+   nasce clara com a tela preta por cima. Foi o bug de 2026-09-02, medido no
+   aparelho com uma sonda de 4 páginas: conteúdo creme sob overlay preto dá
+   barra creme; conteúdo escuro sob o MESMO overlay dá barra preta.
+
+   theme-color e color-scheme NÃO resolvem — as duas estavam declaradas e
+   corretas enquanto o bug acontecia. A cor do conteúdo ganha das duas. Regra
+   e porquê completo em Regras/05.
+
+   Aqui mora SO o wash. O escuro das seções vive no 02-base.css, junto do
+   .section — porque no iPhone quem ocupa a faixa que a barra lê nem sempre é
+   este Hero: ele é 100svh e o viewport de layout é 100lvh, então a tira entre
+   os dois é a SEÇÃO 2. Quem liga/desliga a classe é o App.jsx. */
+html.is-opening-dark .hero__wash { opacity: 0; }
+
 /* Garante que o conteúdo (nav, título, meta) fique sobre o wash */
 .hero > .container-x {
   position: relative;

@@ -99,19 +99,47 @@ function App() {
   useIsoLayoutEffect(() => {
     document.documentElement.classList.toggle("is-opening-screen", openingActive);
 
-    // O estado escuro do boot/status bar é decidido ANTES da primeira pintura
-    // por um script inline no index.html (intro one-shot vai tocar → preto).
-    // Quando a abertura termina, removemos o override em vez de impor bege ou
-    // laranja: dali em diante o Safari volta a amostrar a seção atual.
-    if (!openingActive) {
-      document.documentElement.removeAttribute("data-boot-dark");
-      document.getElementById("opening-theme-color")?.remove();
-    }
+    // 🔴 O escuro NÃO é solto quando a abertura acaba — ele vale a CARGA INTEIRA.
+    // Contrato do Victor (2026-09-02): loader preto, PreHero preto, e o Hero
+    // abrindo TAMBÉM preto, porque nenhuma tela foi recarregada. A cor da barra
+    // do Safari é propriedade do CARREGAMENTO, não da seção. Quem devolve o
+    // creme é o reload seguinte: lá o script inline do index.html vê a intro já
+    // vista no sessionStorage e remove a meta ANTES da primeira pintura.
+    // Remover aqui era o que fazia a barra virar creme com o Hero abrindo.
 
     return () => {
       document.documentElement.classList.remove("is-opening-screen");
     };
   }, [openingActive]);
+
+  // 🔴 A barra de baixo do Safari iOS amostra o CONTEÚDO ROLÁVEL e ignora
+  // overlay position:fixed. Na abertura, loader e PreHero são fixed e pretos,
+  // mas quem está embaixo deles é o Hero — e .section pinta creme. O Safari lê
+  // o creme e a barra nasce clara com a tela preta por cima. theme-color e
+  // color-scheme NÃO resolvem: medido no aparelho em 2026-09-02 (sonda P1..P4),
+  // a cor do conteúdo ganha das duas. Detalhe em Regras/05.
+  //
+  // O par é openingActive && !heroReady, e os DOIS lados importam:
+  //
+  // openingActive (não playOpening) — playOpening é derivado do
+  // showInitialLoader e vira false quando o LOADER termina, não quando a
+  // abertura termina. Com ele a classe caía na entrada do PreHero e a barra
+  // voltava pra creme na tela do "Seu próximo nível". openingActive cobre
+  // loader E PreHero.
+  //
+  // !heroReady (não o fim do openingActive) — o PreHero chama onDone no
+  // onStart do slide-up (PreHero.jsx), ou seja no instante em que o Hero começa
+  // a ser revelado PELA BASE da tela — exatamente onde a barra lê. Soltar aqui
+  // devolve o creme no mesmo frame em que o creme aparece. Esperar o FIM do
+  // openingActive seguraria o escuro até o slide acabar, e o Hero seria
+  // revelado PRETO na frente do usuário.
+  useIsoLayoutEffect(() => {
+    const backdropDark = openingActive && !heroReady;
+    document.documentElement.classList.toggle("is-opening-dark", backdropDark);
+    return () => {
+      document.documentElement.classList.remove("is-opening-dark");
+    };
+  }, [openingActive, heroReady]);
 
   useIsoLayoutEffect(() => {
     if (prefersReducedMotion()) return;

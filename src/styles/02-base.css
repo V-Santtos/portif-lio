@@ -81,6 +81,21 @@ p { line-height: 1.6; }
 }
 .section--dark .muted { color: rgba(241, 237, 224, 0.55); }
 
+/* 🔴 Abertura: TODA seção pinta escuro enquanto loader e PreHero estão no ar.
+   A barra de baixo do Safari iOS amostra o CONTEÚDO ROLÁVEL e ignora overlay
+   position:fixed — os overlays são pretos, mas o Safari lê o que está embaixo.
+
+   Tem que ser `.section`, NÃO só `.hero`: no iPhone o Hero é 100svh e o
+   viewport de layout é 100lvh (svh = barra visível, lvh = barra recolhida). A
+   tira entre os dois cai exatamente atrás da barra do Safari — e quem está lá
+   é a SEÇÃO 2 (.lp), não o Hero. Pintar só o Hero deixa a barra creme. No
+   Chromium isso é invisível: lá svh == lvh == vh, não existe barra dinâmica.
+
+   #smooth-content fecha qualquer vão entre seções. Detalhe em Regras/05. */
+html.is-opening-dark #smooth-content { background: var(--color-dark); }
+html.is-opening-dark .section { background: var(--color-dark); }
+
+
 .muted { color: var(--color-muted-foreground); }
 
 /* Divisor sutil */
