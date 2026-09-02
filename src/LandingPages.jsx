@@ -39,10 +39,10 @@ const LP_ITEMS = [
     title: "China",
   },
   {
-    preview: "minas",
-    capsuleSrc: "/previews/minas/index.html",
-    tag: "Loja de tintas",
-    title: "Minas Tintas",
+    preview: "isabely",
+    capsuleSrc: "/previews/isabely/index.html",
+    tag: "Harmonização orofacial",
+    title: "Isabely Miranda",
   },
   {
     preview: "dinevo",
@@ -80,7 +80,7 @@ const STRIP_TOP = [
 ];
 const STRIP_BOTTOM = [
   { preview: "pawsy", tag: "Cuidado pet", title: "Pawsy" },
-  { preview: "isabely", tag: "Harmonização orofacial", title: "Isabely Miranda" },
+  { preview: "minas", tag: "Loja de tintas", title: "Minas Tintas" },
   { preview: "cleanhub", tag: "Limpeza residencial", title: "CleanHub" },
 ];
 

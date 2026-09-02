@@ -1,0 +1,373 @@
+/* ============================================================
+   Cápsula Isabelly Miranda — conversão geométrica exata do hero
+   validado na origem (Next 16, localhost:3001) em 1920×1080.
+
+   Contrato (Regras/09 item 13 + PREVIEW-CAPSULES.md §0):
+     .capsule = prancheta lógica 1920×1080, reduzida por scale(0.75)
+     pro canvas do carrossel 1440×810. Nenhum padding/fonte/posição foi
+     reajustado à mão — é a MESMA folha da origem (hero.module.css,
+     ramo desktop >= 64rem), só trocando a unidade de medida:
+     vw→cqw, svh→cqh (mesmos números), porque dentro da cápsula o
+     viewport real do documento é 1440×810 (html/body fixos), não
+     1920×1080 — quem tem 1920×1080 é o container `.capsule`, e cq*
+     resolve contra ELE (container-type: size).
+
+   Cascata achatada: a origem resolve o layout por media query
+   (base → 48rem → 64rem). Media query dentro da cápsula resolveria
+   contra 1440×810 e cairia no ramo errado, então o ramo desktop está
+   escrito direto, sem @media.
+
+   Conferência do fator 1920 (por que a referência é essa e não outra):
+     .navigation      30.3646cqw → 583.0px
+     4 links          4 × 8.1771cqw (157px) + 3 × -0.9375rem (-15px) = 583px
+   Os dois batem no mesmo pixel — 1920 é a largura de desenho da origem.
+
+   Layout TRAVADO: sem media query de mobile — a cápsula é uma
+   composição única, não responsiva.
+   ============================================================ */
+
+@font-face {
+  font-family: "Playfair Preview";
+  src: url("./assets/playfair-latin.woff2") format("woff2");
+  font-weight: 400 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Playfair Preview";
+  src: url("./assets/playfair-italic-latin.woff2") format("woff2");
+  font-weight: 400 900;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Inter Preview";
+  src: url("./assets/inter-latin.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --hero-background: #555a5d;
+  --hero-foreground: #ffffff;
+  --hero-muted: #d1d6d8;
+
+  --font-display: "Playfair Preview", Georgia, serif;
+  --font-body: "Inter Preview", Arial, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  width: 1440px;
+  height: 810px;
+  margin: 0;
+  overflow: hidden;
+  background: var(--hero-background);
+  color: var(--hero-foreground);
+  font-family: var(--font-body);
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+::selection {
+  background: var(--hero-muted);
+  color: var(--hero-background);
+}
+
+/* ------------------------------------------------------------
+   Prancheta
+   ------------------------------------------------------------ */
+
+.capsule {
+  position: relative;
+  width: 1920px;
+  height: 1080px;
+  overflow: hidden;
+  isolation: isolate;
+  container-type: size;
+  transform: scale(0.75);
+  transform-origin: 0 0;
+  background: var(--hero-background);
+}
+
+/* ------------------------------------------------------------
+   Hero — hero.module.css `.hero`
+   O ::after da origem é `display:none` a partir de 48rem: não existe aqui.
+   ------------------------------------------------------------ */
+
+.hero {
+  position: relative;
+  z-index: 1;
+  height: 100cqh;
+  overflow: hidden;
+  isolation: isolate;
+  background: var(--hero-background);
+}
+
+/* Retrato — base + 48rem + 64rem achatados.
+   A origem nasce com opacity 0 e sobe pra 1 no onLoad da <Image>; a
+   cápsula nasce no estado final (mesmo padrão da MV: nenhuma pose
+   inicial pra `case-preview:restore` ter que desfazer). */
+.portrait {
+  position: absolute;
+  z-index: 0;
+  top: -8.3cqh;
+  right: 0;
+  width: auto;
+  max-width: none;
+  height: 145cqh;
+  object-fit: contain;
+  backface-visibility: hidden;
+  transform: translateZ(0);
+  user-select: none;
+}
+
+/* ------------------------------------------------------------
+   Header
+   ------------------------------------------------------------ */
+
+.header {
+  position: absolute;
+  inset: 0 auto auto 0;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  min-height: 0;
+  padding: 0;
+}
+
+.monogram {
+  position: absolute;
+  top: 7.4074cqh;
+  left: 5.9375cqw;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: clamp(2.875rem, 2.8125cqw, 3.375rem);
+  min-width: 0;
+  min-height: 0;
+  transform: translateY(-50%);
+}
+
+.monogram__viewport {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 1074.226 / 822.263;
+  overflow: hidden;
+}
+
+.monogram__asset {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  max-width: none;
+  height: 100%;
+  user-select: none;
+}
+
+.navigation {
+  position: absolute;
+  top: 6.2963cqh;
+  left: 19.4271cqw;
+  display: flex;
+  align-items: center;
+  width: 30.3646cqw;
+  height: 2.2222cqh;
+}
+
+.navigation__link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: clamp(6.75rem, 8.1771cqw, 9.8125rem);
+  min-height: 2.75rem;
+  color: var(--hero-foreground);
+  font-family: var(--font-body);
+  font-size: clamp(0.6875rem, 0.6771cqw, 0.8125rem);
+  font-weight: 500;
+  line-height: 1rem;
+  letter-spacing: 0.04em;
+}
+
+.navigation__link + .navigation__link {
+  margin-left: clamp(-0.9375rem, -0.78125cqw, -0.625rem);
+}
+
+/* ------------------------------------------------------------
+   Conteúdo
+   ------------------------------------------------------------ */
+
+.content {
+  position: absolute;
+  z-index: 3;
+  top: 24.4444cqh;
+  right: auto;
+  bottom: auto;
+  left: 5.9375cqw;
+  width: 43.8542cqw;
+}
+
+.title {
+  margin: 0;
+  max-width: none;
+  color: var(--hero-foreground);
+  font-family: var(--font-display);
+  font-size: clamp(3.25rem, 3.75cqw, 4.5rem);
+  font-weight: 500;
+  line-height: 1.083333;
+  letter-spacing: 0;
+}
+
+.title__line {
+  display: block;
+}
+
+/* `.title em { color: var(--hero-muted) }` da origem vive só no ramo
+   mobile (max-width: 47.999rem). No desktop o itálico é branco. */
+.title em {
+  font-weight: 500;
+}
+
+.description {
+  width: 31.25cqw;
+  max-width: 37.5rem;
+  margin: 3.8889cqh 0 0;
+  color: var(--hero-foreground);
+  font-family: var(--font-body);
+  font-size: clamp(0.9375rem, 1.0417cqw, 1.25rem);
+  font-weight: 200;
+  line-height: 1.5;
+}
+
+.cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 14.7917cqw;
+  max-width: 17.75rem;
+  min-width: 14rem;
+  height: 5.1852cqh;
+  min-height: 3.5rem;
+  margin-top: 3.9815cqh;
+  border: 1.5px solid var(--hero-muted);
+  border-radius: 1.75rem;
+  color: var(--hero-muted);
+  font-family: var(--font-body);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  line-height: 1rem;
+  letter-spacing: 0.04em;
+  transition: color 180ms ease, background-color 180ms ease;
+}
+
+/* Única interação de hover comprovada no hero da origem. */
+@media (hover: hover) and (pointer: fine) {
+  .cta:hover {
+    color: var(--hero-background);
+    background: var(--hero-muted);
+  }
+}
+
+.cta:focus-visible,
+.navigation__link:focus-visible,
+.monogram:focus-visible {
+  outline: 2px solid var(--hero-foreground);
+  outline-offset: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cta {
+    transition: none;
+  }
+}
+
+/* ============================================================
+   FASE 3 — legibilidade no tamanho real de exibição
+   (PREVIEW-CAPSULES.md §0, Fase 3)
+
+   A escala geométrica da Fase 2 está confirmada e NÃO é tocada aqui:
+   posições, proporção e composição continuam as da origem. O que muda
+   é só corpo de texto, porque o card do carrossel é muito menor que a
+   tela cheia onde o hero foi validado — e o hero da Isabely é definido
+   em `rem` com teto (`clamp(..., 4.5rem)`), então ele NÃO cresce junto
+   com a prancheta: 72px lógicos viram 54px de canvas, enquanto EcoScape
+   e Lumora desenham direto em 1440×810 e chegam com 72px e 66px reais.
+   Era isso que deixava a Isabely fora de tom no trilho.
+
+   Medido nos três, em pixels finais de canvas (antes → depois):
+     título      54   → 64     (Lumora 66, EcoScape 72)
+     descrição   15   → 17.6   (Lumora 18, EcoScape 17)
+     navegação    9.8 → 13.9   (EcoScape 15)
+     CTA          9.8 → 13.1
+     monograma   41px → 52px de largura (EcoScape 132px, marca maior)
+
+   A coluna de texto precisou alargar junto: a linha mais longa do
+   título já ocupava 584 dos 632px da coluna, e subir a fonte sem
+   alargar quebraria as 3 linhas do original. Largura e caixas crescem
+   pelo MESMO fator do texto — a composição não é redesenhada.
+   ============================================================ */
+
+.monogram {
+  width: 58px;
+}
+
+.navigation {
+  width: 648px;
+}
+
+.navigation__link {
+  width: 175px;
+  font-size: 18.5px;
+}
+
+.navigation__link + .navigation__link {
+  margin-left: -17.5px;
+}
+
+.content {
+  width: 950px;
+}
+
+.title {
+  font-size: 85px;
+}
+
+.description {
+  width: 700px;
+  max-width: none;
+  margin-top: 48px;
+  font-size: 23.5px;
+}
+
+.cta {
+  width: 320px;
+  max-width: none;
+  min-width: 0;
+  height: 66px;
+  min-height: 0;
+  margin-top: 50px;
+  border-width: 2px;
+  border-radius: 999px;
+  font-size: 17.5px;
+}

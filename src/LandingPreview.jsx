@@ -14,8 +14,7 @@ import mintaGrain from "./preview-assets/grain.png";
 import minasSwatches from "./preview-assets/minas-swatches.jpg";
 import minasLogo from "./preview-assets/minas-logo.png";
 
-import isabelyHero from "./preview-assets/isabely-hero.webp";
-import isabelyMonogram from "./preview-assets/isabely-monogram.svg";
+import isabelyHero from "./preview-assets/isabely-hero-full.webp";
 import atoksHero from "./preview-assets/atoks-hero.png";
 import cleanhubHero from "./preview-assets/cleanhub-hero.webp";
 import pawsyHero from "./preview-assets/pawsy-hero.webp";
@@ -358,38 +357,16 @@ function IsabelyPreview() {
       className="lp-preview--isabely"
       label="Hero do site de Isabely Miranda, especialista em harmonização orofacial"
     >
-      <section className="isabely-hero">
-        <img
-          className="isabely-hero__portrait"
-          src={isabelyHero}
-          alt=""
-          loading="lazy"
-          draggable="false"
-        />
-
-        <header className="isabely-hero__header">
-          <img className="isabely-hero__monogram" src={isabelyMonogram} alt="" />
-          <nav className="isabely-hero__nav" aria-label="Navegação do preview">
-            <span>Sobre</span>
-            <span>Tratamentos</span>
-            <span>Resultados</span>
-            <span>Contato</span>
-          </nav>
-        </header>
-
-        <div className="isabely-hero__content">
-          <div className="isabely-hero__title" role="heading" aria-level="2">
-            <span>Harmonização orofacial</span>
-            <span>com <em>precisão</em> e respeito</span>
-            <span>à sua identidade.</span>
-          </div>
-          <p>
-            Cada plano começa pela escuta, considerando e respeitando a anatomia,
-            expressão, momento e suas expectativas reais.
-          </p>
-          <PreviewLink className="isabely-hero__cta">Agendar avaliação</PreviewLink>
-        </div>
-      </section>
+      <img
+        className="isabely-static-thumbnail"
+        src={isabelyHero}
+        alt=""
+        width="1280"
+        height="720"
+        loading="lazy"
+        decoding="async"
+        draggable="false"
+      />
     </PreviewShell>
   );
 }

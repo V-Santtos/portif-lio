@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1440, initial-scale=1" />
+    <meta name="color-scheme" content="light" />
+    <title>Preview do hero Isabelly Miranda</title>
+    <link rel="preload" href="./assets/portrait.webp" as="image" type="image/webp" />
+    <link rel="preload" href="./assets/playfair-latin.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="./assets/inter-latin.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="stylesheet" href="./capsule.css" />
+  </head>
+  <body>
+    <main class="capsule" aria-label="Preview do hero de Isabelly Miranda">
+      <section id="inicio" class="hero" aria-label="Hero principal">
+        <img
+          class="portrait"
+          src="./assets/portrait.webp"
+          alt="Isabelly Miranda sorrindo"
+          width="1080"
+          height="1623"
+          decoding="sync"
+          fetchpriority="high"
+        />
+
+        <header class="header">
+          <a class="monogram" href="#inicio" aria-label="Isabelly Miranda — início">
+            <span class="monogram__viewport" aria-hidden="true">
+              <img class="monogram__asset" src="./assets/monogram.svg" alt="" width="1076" height="824" />
+            </span>
+          </a>
+
+          <nav class="navigation" aria-label="Navegação visual do preview">
+            <a class="navigation__link" href="#sobre">Sobre</a>
+            <a class="navigation__link" href="#tratamentos">Tratamentos</a>
+            <a class="navigation__link" href="#resultados">Resultados</a>
+            <a class="navigation__link" href="#contato">Contato</a>
+          </nav>
+        </header>
+
+        <div class="content">
+          <h1 class="title" id="hero-title">
+            <span class="title__line">Harmonização orofacial</span>
+            <span class="title__line">com <em>precisão</em> e respeito</span>
+            <span class="title__line">à sua identidade.</span>
+          </h1>
+
+          <p class="description">
+            Cada plano começa pela escuta, considerando e respeitando a<br />
+            anatomia, expressão, momento e suas expectativas reais.
+          </p>
+
+          <a class="cta" href="#contato">AGENDAR AVALIAÇÃO</a>
+        </div>
+      </section>
+    </main>
+
+    <script src="../_shared/gsap.min.js"></script>
+    <script src="./capsule.js"></script>
+    <script src="../_shared/preview-ready.js"></script>
+  </body>
+</html>
