@@ -105,6 +105,13 @@
      Preto sobre ele da 5,14:1 — passa AA (Regras/04). */
   background: #f05235;
   clip-path: inset(0 0 100% 0);
+  /* 🔴 visibility, nao so o recorte. Recortado a zero ele SOME da tela, mas
+     continua sendo uma superficie fixa cobrindo a viewport inteira, laranja,
+     em z-index 800 — acima do loader (140) e do PreHero (100). O olho nao ve
+     e o Chromium nao acusa; o Safari do iPhone lia isso e estragava a cor das
+     barras no primeiro carregamento. Quem religa e o Navbar.jsx, nas mesmas
+     tweens que abrem e fecham o menu. */
+  visibility: hidden;
   display: flex;
   flex-direction: column;
 }

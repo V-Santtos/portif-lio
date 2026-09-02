@@ -10,10 +10,14 @@
   position: fixed;
   inset: 0;
   z-index: 9999;
-  /* Creme (não escuro): o Safari iOS amostra a tela em momentos imprevisíveis
-     (troca de rota inclusa) pra colorir a status bar — painel escuro deixava
-     a tarja preta grudada na página seguinte. */
-  background: var(--color-surface);
+  /* 🔴 PRETO por decisão do Victor (2026-09-02). Era creme, e a regra antiga
+     mandava ser creme pra tarja preta não grudar na página seguinte. Isso foi
+     SUPERADO: a abertura inteira agora é preta de propósito, então tarja preta
+     virou o resultado desejado, não o defeito. Era este painel creme que
+     estourava no meio da abertura preta.
+     A logo é desenhada em CLARO pra aparecer — ver LOGO_STROKE em
+     PageTransition.jsx, que tem que casar com este fundo. */
+  background: var(--color-dark);
   display: flex;
   align-items: center;
   justify-content: center;

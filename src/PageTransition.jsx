@@ -2,6 +2,12 @@ import { createContext, useContext, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import gsap from "gsap";
 
+// Cor da logo na transição. CLARA porque o painel é PRETO (16-transicao.css).
+// Traço e preenchimento usam a MESMA constante de propósito: a animação desenha
+// o contorno e depois preenche por cima — se as duas divergirem, a logo troca de
+// cor no meio do próprio desenho.
+const LOGO_STROKE = "#FEF8E8";
+
 const TransitionContext = createContext(null);
 
 export function usePageTransition() {
@@ -56,7 +62,7 @@ export function PageTransitionProvider({ children }) {
 
     // logo: preenche
     tl.to(paths, {
-      fill: "#1b1a18",
+      fill: LOGO_STROKE,
       strokeOpacity: 0,
       duration: 0.3,
       ease: "power1.in",
@@ -94,7 +100,7 @@ export function PageTransitionProvider({ children }) {
               key={i}
               d={d}
               fill="transparent"
-              stroke="#1b1a18"
+              stroke={LOGO_STROKE}
               strokeWidth="5"
               strokeLinecap="round"
               strokeLinejoin="round"

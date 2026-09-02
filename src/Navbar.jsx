@@ -194,7 +194,7 @@ function Navbar() {
 
       gsap.fromTo(
         overlay,
-        { clipPath: "inset(0 0 100% 0)" },
+        { clipPath: "inset(0 0 100% 0)", visibility: "visible" },
         { clipPath: "inset(0 0 0% 0)", duration: 0.6, ease: "power3.inOut" }
       );
 
@@ -212,6 +212,9 @@ function Navbar() {
         clipPath: "inset(0 0 100% 0)",
         duration: 0.5,
         ease: "power3.inOut",
+        // Desliga de verdade no fim: recortado a zero ele ainda pintaria pro
+        // Safari. Ver o comentario no .nav-overlay em 19-navbar.css.
+        onComplete: () => gsap.set(overlay, { visibility: "hidden" }),
       });
     }
   }, [menuOpen]);

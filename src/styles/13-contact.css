@@ -14,6 +14,9 @@
     #f05235 98%,
     #e84a22 100%
   );
+  /* Os trechos translúcidos do degradê compõem sobre creme, não sobre o
+     fundo escuro global usado pela abertura. */
+  background-color: var(--color-surface);
   color: var(--color-foreground);
   overflow: hidden;
   position: relative;

@@ -389,6 +389,10 @@
 
 /* ── Carrossel mobile — cards maiores, expansão com mais contraste ── */
 @media (max-width: 767px) {
+  /* A seção pinada termina antes do rodapé da viewport. O espaço de scroll
+     reservado pelo GSAP precisa continuar creme, sem expor o body escuro.
+     Pintar só este spacer preserva a geometria, a abertura e a cortina. */
+  .pin-spacer:has(> .lp) { background: var(--color-surface); }
   .lp { padding-top: 7rem; }
   .lp__title--desktop { display: none; }
   .lp__title--mobile {

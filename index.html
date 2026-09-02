@@ -104,24 +104,12 @@
        deixava a tarja preta presa até o usuário interagir. Exceção: quando a
        intro one-shot VAI tocar (decidido pelo script abaixo, antes da primeira
        pintura), o boot é escuro pra casar com o loader. */
-    html[data-booting], html[data-booting] body { background: #FEF8E8; }
+    html[data-booting], html[data-booting] body { background: #1b1a18; }
     html[data-booting] body { overflow: hidden; }
     html[data-booting] #__boot {
       position: fixed;
       inset: 0;
-      /* Mesmo wash do Hero desktop, comprimido para a viewport inteira.
-         No refresh recorrente este e o primeiro frame: nada de creme chapado
-         antes do React montar e fechar a geometria dos pins. */
-      background:
-        linear-gradient(to top,
-          #f05235 0%,
-          rgba(240, 82, 53, 0.86) 10.44%,
-          rgba(240, 82, 53, 0.55) 22.04%,
-          rgba(240, 82, 53, 0.28) 33.64%,
-          rgba(240, 82, 53, 0.10) 46.4%,
-          rgba(240, 82, 53, 0) 58%
-        ),
-        #FEF8E8;
+      background: #1b1a18;
       z-index: 99;
       pointer-events: none;
     }
@@ -144,49 +132,12 @@
     html[data-boot-dark], html[data-boot-dark] body { background: #1b1a18; }
     html[data-boot-dark] #__boot { background: #1b1a18; }
     html:not([data-booting]) #__boot { display: none; }
-    /* Mobile: a primeira pintura JÁ carrega o wash do Hero (creme→laranja),
-       porque o Hero é client-rendered e o Safari iOS amostra os pixels do
-       primeiro frame pra colorir as barras (e só re-amostra em scroll). Sem
-       isso a 1a pintura é creme chapado e as barras CONGELAM creme. Com o
-       laranja na base do boot, a barra inferior nasce laranja como no site de
-       referencia. Nao vale pro boot escuro da intro (data-boot-dark). */
-    @media (max-width: 767px) {
-      html[data-booting]:not([data-boot-dark]) #__boot {
-        /* Replica os pontos do wash final do Hero. Assim, a primeira pintura
-           que o Safari vê não exibe um gradiente maior nem mais duro antes do
-           CSS da aplicação assumir. */
-        background:
-          linear-gradient(to top,
-            #f05235 0%,
-            #f05235 11.04%,
-            rgba(240, 82, 53, 0.94) 17.48%,
-            rgba(240, 82, 53, 0.72) 25.76%,
-            rgba(240, 82, 53, 0.44) 34.04%,
-            rgba(240, 82, 53, 0.16) 40.48%,
-            rgba(240, 82, 53, 0) 46%
-          ),
-          #FEF8E8;
-      }
-    }
   </style>
   <script>
-    // Roda ANTES da primeira pintura. A meta nasce preta por seguranca; se a
-    // intro one-shot ja foi vista nesta aba, ela e removida imediatamente e o
-    // Safari volta a amostrar as cores da pagina por conta propria.
-    (function () {
-      try {
-        if (sessionStorage.getItem("victor-initial-loader-seen-v1") !== "1") {
-          document.documentElement.setAttribute("data-boot-dark", "");
-        } else {
-          var meta = document.getElementById("opening-theme-color");
-          if (meta) meta.remove();
-        }
-      } catch (e) {
-        // O React tambem mostra a intro quando o storage e recusado. Manter o
-        // estado escuro aqui evita loader preto sobre um chrome claro.
-        document.documentElement.setAttribute("data-boot-dark", "");
-      }
-    })();
+    // Preto SEMPRE, sem condicao. Roda antes da primeira pintura. Nao existe
+    // mais caminho creme no boot: nem no primeiro acesso, nem no refresh com a
+    // intro ja vista. Decisao do Victor, 2026-09-02.
+    document.documentElement.setAttribute("data-boot-dark", "");
   </script>
 </head>
 <body>
