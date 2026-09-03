@@ -68,6 +68,76 @@ const LP_ITEMS = [
   },
 ];
 
+// No touch, as cápsulas viram posters estáticos. Prepará-los em sequência,
+// enquanto a pessoa ainda lê a abertura da seção, evita que download e decode
+// disputem o frame em que cada card começa a cruzar a viewport.
+const MOBILE_POSTER_SOURCES = LP_ITEMS.map(
+  (item) => `/previews/posters/${item.poster ?? item.preview}.webp`
+);
+
+function useMobilePosterWarmup(enabled) {
+  useEffect(() => {
+    if (!enabled || !window.matchMedia("(max-width: 767px), (hover: none)").matches) {
+      return undefined;
+    }
+
+    let cancelled = false;
+    let pendingIdleTask = 0;
+    let sourceIndex = 0;
+
+    const cancelPendingTask = () => {
+      if (!pendingIdleTask) return;
+      if ("cancelIdleCallback" in window) {
+        window.cancelIdleCallback(pendingIdleTask);
+      } else {
+        window.clearTimeout(pendingIdleTask);
+      }
+      pendingIdleTask = 0;
+    };
+
+    const scheduleNext = () => {
+      if (cancelled || sourceIndex >= MOBILE_POSTER_SOURCES.length) return;
+      if ("requestIdleCallback" in window) {
+        pendingIdleTask = window.requestIdleCallback(warmNext);
+      } else {
+        pendingIdleTask = window.setTimeout(warmNext, 120);
+      }
+    };
+
+    const warmNext = () => {
+      pendingIdleTask = 0;
+      if (cancelled || sourceIndex >= MOBILE_POSTER_SOURCES.length) return;
+
+      const image = new Image();
+      const source = MOBILE_POSTER_SOURCES[sourceIndex++];
+      let settled = false;
+      const settle = () => {
+        if (settled) return;
+        settled = true;
+
+        // decode() deixa a imagem pronta para a primeira composição, não só
+        // presente no cache de rede. Uma por vez mantém CPU e memória previsíveis.
+        Promise.resolve(image.decode?.())
+          .catch(() => undefined)
+          .finally(scheduleNext);
+      };
+
+      image.decoding = "async";
+      image.fetchPriority = "low";
+      image.addEventListener("load", settle, { once: true });
+      image.addEventListener("error", settle, { once: true });
+      image.src = source;
+      if (image.complete) settle();
+    };
+
+    scheduleNext();
+    return () => {
+      cancelled = true;
+      cancelPendingTask();
+    };
+  }, [enabled]);
+}
+
 // Faixas satélites (só mobile) — três cases reais por trilho. O render duplica
 // cada trio e `makeStrip()` mede do primeiro card até a sua cópia para obter o
 // ponto exato de wrap. Depois do terceiro, o primeiro reaparece sem fresta. Como
@@ -171,6 +241,7 @@ function LandingPages({ onGeometryReady }) {
   );
   const [caseLoadingAllowed, setCaseLoadingAllowed] = useState(false);
   const unlockCaseLoading = useCallback(() => setCaseLoadingAllowed(true), []);
+  useMobilePosterWarmup(caseLoadingAllowed);
   useEffect(() => {
     const mq = window.matchMedia("(max-width: 767px)");
     const onChange = (e) => setIsMobileView(e.matches);
@@ -441,11 +512,9 @@ function LandingPages({ onGeometryReady }) {
       // No desktop o mesmo trecho também é atravessado ao VOLTAR da Escada —
       // o pin é simétrico, então a mesma distância que seguia o flick de
       // saída vira um respiro parado antes do carrossel reagir na entrada de
-      // volta (2026-08-18: tentativa de pular isso reativamente via
-      // onEnterBack + scroll forçado deu flick, por reentrância com o scrub
-      // ativo — revertida). Encolher o valor em vez de zerá-lo mantém a
-      // desaceleração da saída, só bem mais curta nos dois sentidos.
-      const EXIT_RUNWAY_VH = isMobile ? 0.7 : 0.08;
+      // volta. No mobile ele fica em zero: a transição para a Escada deve
+      // ser contínua, sem uma faixa neutra que pareça travamento.
+      const EXIT_RUNWAY_VH = isMobile ? 0 : 0.08;
       const runway = Math.round(window.innerHeight * EXIT_RUNWAY_VH);
       const endDist = settleDist + scrollDist + runway;
 
@@ -590,7 +659,10 @@ function LandingPages({ onGeometryReady }) {
           trigger: endWrapper,
           start: "center center",
           end: `+=${endDist}`,
-          scrub: isMobile ? 1 : 0.6,
+          // No touch, o trilho acompanha diretamente o progresso nativo. O
+          // scrub numérico criava um catch-up de até 1s justamente quando o
+          // pin soltava, fazendo a chegada à Escada parecer um salto.
+          scrub: isMobile ? true : 0.6,
           // 🔴 SEM `snap` no mobile — removido em 2026-08-16 depois de medido.
           //
           // O snap por card existia aqui e era INCOMPATIVEL com o ScrollSmoother
@@ -609,8 +681,9 @@ function LandingPages({ onGeometryReady }) {
           // Mesma familia do bug de pin resolvido com `pinType:"fixed"` logo
           // abaixo: o proxy e a verdade pro ScrollTrigger, mas no touch o scroll
           // real passa por fora dele. Pro snap nao existe escape hatch — a saida
-          // e nao usar snap. Quem cobria o motivo original (nao passar batido
-          // pela Bridge num flick) e a EXIT_RUNWAY_VH, que continua no lugar.
+          // e nao usar snap. A antiga pista EXIT_RUNWAY_VH cobria o motivo
+          // original (não passar batido pela Bridge), mas foi zerada no mobile
+          // por criar uma zona morta perceptível em navegação normal.
           //
           // Nao reintroduzir sem antes conferir que o snap pousa certo com o
           // ScrollSmoother ativo.
